@@ -1,29 +1,31 @@
 //
-// Created by kranya on 05.03.2021.
+// Created by kranya on 13.03.2021.
 //
 
 #include "Symbol.h"
 
-Symbol::Symbol() {
-    value_ = 0;
+Symbol operator+(const Symbol &a, const Symbol &b) {
+    return Symbol((int)(a.value_ + b.value_) % 2);
 }
 
-Symbol::Symbol(double val) {
-    if (val > 0) {
-        value_ = 1;
-    } else {
-        value_ = 0;
-    }
+Symbol operator*(const Symbol &a, const Symbol &b) {
+    return Symbol((int)(a.value_ * b.value_) % 2);
 }
 
-int Symbol::get() {
-    return value_;
+Symbol &Symbol::operator+=(const Symbol &other) {
+    value_ = (int)(value_ + other.value_) % 2;
+    return *this;
+}
+
+Symbol &Symbol::operator*=(const Symbol &other) {
+    value_ = (int)(value_ * other.value_) % 2;
+    return *this;
 }
 
 void Symbol::addNoise(double noise) {
-    if ((double)value_ + noise > 1) {
-        value_ = 1;
+    if (value_ == 0) {
+        value_ = 1.0 + noise;
     } else {
-        value_ = 0;
+        value_ = noise - 1;
     }
 }

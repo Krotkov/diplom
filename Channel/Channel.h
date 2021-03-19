@@ -12,5 +12,7 @@ private:
 public:
     explicit Channel(double E) : E(E), gen(rd()) {};
 
+    double sigma(int n, int k) const;
+
     Message runMessage(Message& message, int n, int k);
 };

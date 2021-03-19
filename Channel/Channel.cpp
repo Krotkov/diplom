@@ -5,7 +5,7 @@
 #include "Channel.h"
 
 Message Channel::runMessage(Message &message, int n, int k) {
-    const double mySigma = sqrt(0.5 * pow(10, -E / 10) * ((double)n / k));
+    const double mySigma = sqrt(sigma(n, k));
     std::normal_distribution<> d{0, mySigma};
     auto res = Message(message);
     for (int i = 0; i < res.size(); i++) {
@@ -13,4 +13,8 @@ Message Channel::runMessage(Message &message, int n, int k) {
         res[i].addNoise(noise);
     }
     return res;
+}
+
+double Channel::sigma(int n, int k) const {
+    return 0.5 * pow(10, -E / 10) * ((double) n / k);
 }

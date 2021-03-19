@@ -2,14 +2,22 @@
 
 class Symbol {
 public:
-    Symbol();
+    Symbol() : value_(0) {};
 
-    Symbol(double val);
+    Symbol(double v) : value_(v) {};
 
-    int get();
+    friend Symbol operator+(const Symbol& a, const Symbol& b);
 
-    void addNoise(double val);
+    friend Symbol operator*(const Symbol& a, const Symbol& b);
 
+    Symbol& operator+=(const Symbol& other);
+
+    Symbol& operator*=(const Symbol& other);
+
+    void addNoise(double noise);
 private:
-    int value_;
+    double value_;
 };
+
+Symbol operator+(const Symbol& a, const Symbol& b);
+Symbol operator*(const Symbol& a, const Symbol& b);
