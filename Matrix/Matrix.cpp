@@ -1,0 +1,82 @@
+//
+// Created by kranya on 12.03.2021.
+//
+
+#include "Matrix.h"
+
+Matrix &Matrix::operator=(const Matrix &other) {
+    std::vector<std::vector<Symbol>>::operator=(other);
+
+    this->n_ = other.n_;
+    this->k_ = other.k_;
+
+    return *this;
+}
+
+Matrix &Matrix::operator=(Matrix &&other) noexcept {
+    std::vector<std::vector<Symbol>>::operator=(other);
+
+    this->n_ = other.n_;
+    this->k_ = other.k_;;
+
+    return *this;
+}
+
+Matrix getIdMatrix(int n) {
+    Matrix ans(n, n);
+
+    for (int i = 0; i < n; i++) {
+        ans[i][i] = 1;
+    }
+
+    return ans;
+}
+
+Matrix dot(const Matrix &a, const Matrix &b) {
+    assert(a.k_ == b.n_);
+    Matrix ans(a.n_, b.k_);
+    for (int i = 0; i < a.n_; i++) {
+        for (int j = 0; j < b.k_; j++) {
+            for (int q = 0; q < a.k_; q++) {
+                ans[i][j] += a[i][q] * b[q][j];
+            }
+        }
+    }
+    return ans;
+}
+
+Matrix kronMul(const Matrix &a, const Matrix &b) {
+    Matrix ans(a.n_ * b.n_, a.k_ * b.k_);
+
+    for (int i = 0; i < a.n_; i++) {
+        for (int j = 0; j < a.k_; j++) {
+            for (int q = 0; q < b.n_; q++) {
+                for (int w = 0; w < b.k_; w++) {
+                    ans[i * b.n_ + q][j * b.k_ + w] = a[i][j] * b[q][w];
+                }
+            }
+        }
+    }
+
+    return ans;
+}
+
+Matrix kronPower(const Matrix &a, int n) {
+    Matrix ans(1, 1);
+
+    ans[0][0] = 1;
+
+    for (int i = 0; i < n; i++) {
+        ans = kronMul(a, ans);
+    }
+
+    return ans;
+}
+
+int Matrix::getN() const {
+    return n_;
+}
+
+int Matrix::getK() const {
+    return k_;
+}

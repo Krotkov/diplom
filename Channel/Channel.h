@@ -5,14 +5,13 @@
 
 class Channel {
 private:
-    const double E;
     std::random_device rd;
     mutable std::mt19937 gen;
 
 public:
-    explicit Channel(double E) : E(E), gen(rd()) {};
+    explicit Channel() : gen(rd()) {};
 
-    double sigma(int n, int k) const;
+    static double sigma(int n, int k, double E);
 
-    Message runMessage(Message& message, int n, int k);
+    Message runMessage(Message& message, int n, int k, double E);
 };

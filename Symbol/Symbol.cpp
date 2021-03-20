@@ -26,6 +26,14 @@ void Symbol::addNoise(double noise) {
     if (value_ == 0) {
         value_ = 1.0 + noise;
     } else {
-        value_ = noise - 1;
+        value_ = noise - 1.0;
     }
+}
+
+bool operator==(const Symbol &a, const Symbol &b) {
+    return a.value_ == b.value_;
+}
+
+double Symbol::get() const {
+    return value_;
 }
