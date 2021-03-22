@@ -127,7 +127,7 @@ Message PolarCode::decode(const Message &message) {
             decoded.add(0);
         } else {
             double value = calculateL(message, decoded, logN, i);
-            if (value >= 1) {
+            if (value > 0) {
                 decoded.add(0);
             } else {
                 decoded.add(1);
@@ -147,7 +147,7 @@ Message PolarCode::decode(const Message &message) {
 
 double PolarCode::calculateL(const Message &y, const Message &u, int n, int i, int pref) {
     if (n == 0) {
-        l_[n][pref + i] = std::exp(2 * (y[0]).get() / Channel::sigma(n_, k_, noise_));
+        l_[n][pref + i] = 2 * (y[0]).get() / Channel::sigma(n_, k_, noise_);
         return l_[n][pref + i];
     }
     if (!std::isnan(l_[n][pref + i])) {
@@ -155,7 +155,7 @@ double PolarCode::calculateL(const Message &y, const Message &u, int n, int i, i
     }
     int next_pref_1 = pref;
     int next_pref_2 = pref + (1 << (n - 1));
-    double value1, value2;
+    long double value1, value2;
 
     if (std::isnan(l_[n - 1][next_pref_1 + (i) / 2])) {
         Message new_y;
@@ -186,13 +186,19 @@ double PolarCode::calculateL(const Message &y, const Message &u, int n, int i, i
         value2 = l_[n - 1][next_pref_2 + (i) / 2];
     }
     if (i % 2 == 0) {
-        l_[n][pref + i] = (value1 * value2 + 1) / (value1 + value2);
+        double value = std::min(std::abs(value1), std::abs(value2));
+        l_[n][pref+i] = (value1 * value2 > 0) ? value : -value;
+//        l_[n][pref + i] = (value1 * value2 + 1) / (value1 + value2);
     } else {
         if (u[i - 1].get() == 0) {
-            l_[n][pref+i] = value1 * value2;
+            l_[n][pref+i] = value1 + value2;
         } else {
-            l_[n][pref+i] = value1 / value2;
+            l_[n][pref+i] = value1 - value2;
         }
     }
     return l_[n][pref + i];
+}
+
+void PolarCode::setNoise(double noise) {
+    noise_ = noise;
 }

@@ -13,6 +13,7 @@ public:
 
     Message decode(const Message& message);
 
+    void setNoise(double noise);
 private:
     double calculateL(const Message& y, const Message& u, int n, int i, int pref=0);
 
@@ -22,8 +23,7 @@ private:
 
     Matrix calcBn(int n) const;
 
-
-    std::vector<std::vector<double> > l_;
+    std::vector<std::vector<long double> > l_;
 
     int n_;
     int k_;
