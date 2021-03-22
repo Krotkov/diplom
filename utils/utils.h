@@ -1,19 +1,7 @@
 #pragma once
 
-bool checkIfPowerOfTwo(int n) {
-    int a = 1;
-    while (a < n) {
-        a *= 2;
-    }
-    return a == n;
-}
+bool checkIfPowerOfTwo(int n);
+int getLog(int n);
 
-int getLog(int n) {
-    int a = 1;
-    int ans = 0;
-    while (a < n) {
-        a *= 2;
-        ans++;
-    }
-    return ans;
-}
+Message generateWord(int n);
+int compareWords(const Message &a, const Message &b);

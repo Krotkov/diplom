@@ -37,3 +37,7 @@ bool operator==(const Symbol &a, const Symbol &b) {
 double Symbol::get() const {
     return value_;
 }
+
+bool operator!=(const Symbol &a, const Symbol &b) {
+    return !(a == b);
+}

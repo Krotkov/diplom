@@ -22,12 +22,9 @@ void PolarCode::constructCode(int n, int k, double err, double noise) {
     std::reverse(zz.begin(), zz.end());
 
     frozen_.resize(n_, false);
-    std::cout << "frozen: ";
-    for (int i = 0; i < n-k; i++) {
-        std::cout << i << " ";
+    for (int i = 0; i < n - k; i++) {
         frozen_[zz[i].second] = true;
     }
-    std::cout << "\n";
 
     Matrix f = Matrix(2, 2);
     f[0][0] = 1;
@@ -35,6 +32,7 @@ void PolarCode::constructCode(int n, int k, double err, double noise) {
     f[1][0] = 1;
     f[1][1] = 1;
 
+    auto b = calcBn(n);
     g_ = dot(calcBn(n), kronPower(f, getLog(n)));
 }
 
@@ -84,8 +82,8 @@ Matrix PolarCode::calcBn(int n) const {
 PolarCode::PolarCode(int n, int k, double err, double noise) {
     constructCode(n, k, err, noise);
     int logN = getLog(n);
-    l_.resize(logN+1);
-    for (int i = 0; i < logN+1; i++) {
+    l_.resize(logN + 1);
+    for (int i = 0; i < logN + 1; i++) {
         l_[i].resize(n);
     }
 }
@@ -118,36 +116,24 @@ Message PolarCode::encode(const Message &message) const {
 
 Message PolarCode::decode(const Message &message) {
     int logN = getLog(n_);
-    for (int i = 0; i < logN+1; i++) {
+    for (int i = 0; i < logN + 1; i++) {
         for (int j = 0; j < n_; j++) {
             l_[i][j] = NAN;
         }
     }
     Message decoded;
     for (int i = 0; i < message.size(); i++) {
-        double value = calculateL(message, decoded, logN, i);
         if (frozen_[i]) {
             decoded.add(0);
         } else {
-            if (value > 0) {
+            double value = calculateL(message, decoded, logN, i);
+            if (value >= 1) {
                 decoded.add(0);
             } else {
                 decoded.add(1);
             }
         }
     }
-
-    for (int i = 0; i < logN+1; i++) {
-        for (int j = 0; j < n_; j++) {
-            std::cout << l_[i][j] << " ";
-        }
-        std::cout << "\n";
-    }
-
-    for (int i = 0; i < decoded.size(); i++) {
-        std::cout << decoded[i].get() << " ";
-    }
-    std::cout << "\n";
 
     Message ans;
     for (int i = 0; i < decoded.size(); i++) {
@@ -161,66 +147,52 @@ Message PolarCode::decode(const Message &message) {
 
 double PolarCode::calculateL(const Message &y, const Message &u, int n, int i, int pref) {
     if (n == 0) {
-        l_[n][pref + i] = 2 * (y[0]).get() / Channel::sigma(n_, k_, noise_);
-        std::cout << "sigma: " << Channel::sigma(n_, k_, noise_) << "\n";
+        l_[n][pref + i] = std::exp(2 * (y[0]).get() / Channel::sigma(n_, k_, noise_));
         return l_[n][pref + i];
     }
     if (!std::isnan(l_[n][pref + i])) {
-        return l_[n][i];
-    }
-    if (i % 2 == 0) {
-        int next_pref = pref + (1 << (n - 1));
-        double value;
-        if (std::isnan(l_[n-1][next_pref + i / 2])) {
-            Message new_y;
-            for (int j = 0; j < y.size(); j+=2) {
-                new_y.add(y[j]);
-            }
-            Message new_u;
-            for (int j = 0; j < u.size(); j+=2) {
-                new_u.add(u[j] + u[j+1]);
-            }
-            value = calculateL(new_y, new_u, n - 1, i / 2, next_pref);
-        } else {
-            value = l_[n-1][next_pref + i / 2];
-        }
-        std::cout << "tanh: " << value / 2 << " " << std::tanh(value / 2) << " " << 2 * std::atanh(std::tanh(value / 2) * std::tanh(value / 2)) << "\n";
-        l_[n][pref + i] = 2 * std::atanh(std::tanh(value / 2) * std::tanh(value / 2));
         return l_[n][pref + i];
-    } else {
-        int next_pref_1 = pref;
-        int next_pref_2 = pref + (1 << (n-1));
-        double value1, value2;
-        if (std::isnan(l_[n-1][next_pref_1 + (i - 1) / 2])) {
-            Message new_y;
-            for (int j = 1; j < y.size(); j += 2) {
-                new_y.add(y[j]);
-            }
-            Message new_u;
-            for (int j = 1; j < u.size() - 1; j += 2) {
-                new_u.add(u[j]);
-            }
-            value1 = calculateL(new_y, new_u, n - 1, (i - 1) / 2, next_pref_1);
-        } else {
-            value1 = l_[n-1][next_pref_1 + (i - 1) / 2];
+    }
+    int next_pref_1 = pref;
+    int next_pref_2 = pref + (1 << (n - 1));
+    double value1, value2;
+
+    if (std::isnan(l_[n - 1][next_pref_1 + (i) / 2])) {
+        Message new_y;
+        for (int j = y.size() / 2; j < y.size(); j++) {
+            new_y.add(y[j]);
         }
-        if (std::isnan(l_[n-1][next_pref_2 + (i - 1) / 2])) {
-            Message new_y;
-            for (int j = 0; j < y.size(); j += 2) {
-                new_y.add(y[j]);
-            }
-            Message new_u;
-            for (int j = 0; j < u.size() - 1; j += 2) {
+        Message new_u;
+        for (int j = 1; j < u.size(); j += 2) {
+            new_u.add(u[j]);
+        }
+        value1 = calculateL(new_y, new_u, n - 1, (i) / 2, next_pref_1);
+    } else {
+        value1 = l_[n - 1][next_pref_1 + (i) / 2];
+    }
+    if (std::isnan(l_[n - 1][next_pref_2 + (i) / 2])) {
+        Message new_y;
+        for (int j = 0; j < y.size() / 2; j++) {
+            new_y.add(y[j]);
+        }
+        Message new_u;
+        for (int j = 0; j < u.size(); j += 2) {
+            if (j + 1 != u.size()) {
                 new_u.add(u[j] + u[j + 1]);
             }
-            value2 = calculateL(new_y, new_u, n - 1, (i - 1) / 2, next_pref_2);
-        } else {
-            value2 = l_[n-1][next_pref_2 + (i - 1) / 2];
         }
-        std::cout << "l: " << value1 << " " << value2 << " " << u[i-1].get() << "\n";
-        l_[n][pref + i] = value1 + ((u[i - 1].get() == 0) ? value2 : -value2);
-        std::cout << l_[n][pref + i] << "\n";
-        return l_[n][pref + i];
+        value2 = calculateL(new_y, new_u, n - 1, (i) / 2, next_pref_2);
+    } else {
+        value2 = l_[n - 1][next_pref_2 + (i) / 2];
     }
-    return 0;
+    if (i % 2 == 0) {
+        l_[n][pref + i] = (value1 * value2 + 1) / (value1 + value2);
+    } else {
+        if (u[i - 1].get() == 0) {
+            l_[n][pref+i] = value1 * value2;
+        } else {
+            l_[n][pref+i] = value1 / value2;
+        }
+    }
+    return l_[n][pref + i];
 }

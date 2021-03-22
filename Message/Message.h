@@ -10,4 +10,6 @@ public:
 
     void add(const Symbol &s);
 
+    void print();
+
 };

@@ -52,7 +52,7 @@ Matrix kronMul(const Matrix &a, const Matrix &b) {
         for (int j = 0; j < a.k_; j++) {
             for (int q = 0; q < b.n_; q++) {
                 for (int w = 0; w < b.k_; w++) {
-                    ans[i * b.n_ + q][j * b.k_ + w] = a[i][j] * b[q][w];
+                    ans[q * a.n_ + i][w * a.k_ + j] = a[i][j] * b[q][w];
                 }
             }
         }
