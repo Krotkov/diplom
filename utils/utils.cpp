@@ -1,4 +1,4 @@
-#include "../Message/Message.h"
+#include "Message/Message.h"
 
 bool checkIfPowerOfTwo(int n) {
     int a = 1;

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <random>
-#include "../Message/Message.h"
+#include "Message/Message.h"
 
 class Channel {
 private:

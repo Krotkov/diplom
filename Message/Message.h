@@ -2,7 +2,7 @@
 
 #include <vector>
 #include <cassert>
-#include "../Symbol/Symbol.h"
+#include "Matrix/Matrix.h"
 
 class Message : public std::vector<Symbol> {
 public:
@@ -12,4 +12,5 @@ public:
 
     void print();
 
+    void mulOnMatrix(const Matrix& matrix);
 };

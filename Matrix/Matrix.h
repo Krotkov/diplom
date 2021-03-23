@@ -2,7 +2,7 @@
 
 #include <vector>
 #include <cassert>
-#include "../Message/Message.h"
+#include "Symbol/Symbol.h"
 
 
 class Matrix : public std::vector<std::vector<Symbol> > {
@@ -37,6 +37,8 @@ public:
     int getN() const;
 
     int getK() const;
+
+    void print() const;
 
 private:
 

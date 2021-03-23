@@ -2,6 +2,7 @@
 // Created by kranya on 12.03.2021.
 //
 
+#include <iostream>
 #include "Matrix.h"
 
 Matrix &Matrix::operator=(const Matrix &other) {
@@ -79,4 +80,13 @@ int Matrix::getN() const {
 
 int Matrix::getK() const {
     return k_;
+}
+
+void Matrix::print() const {
+    for (int i = 0; i < getN(); i++) {
+        for (int j = 0; j < getK(); j++) {
+            std::cout << (*this)[i][j].get();
+        }
+        std::cout << "\n";
+    }
 }
