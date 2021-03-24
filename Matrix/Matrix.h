@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <cassert>
+#include <Message/Message.h>
 #include "Symbol/Symbol.h"
 
 
@@ -22,6 +23,17 @@ public:
         this->k_ = other.k_;
     };
 
+    Matrix(const Message &message) {
+        this->n_ = 1;
+        this->k_ = message.size();
+        this->resize(1);
+        (*this)[0] = message;
+    }
+
+    Message getRow(int ind) const;
+
+    Message getColumn(int ind) const;
+
     Matrix &operator=(const Matrix &other);
 
     Matrix &operator=(Matrix &&other) noexcept;
@@ -33,6 +45,8 @@ public:
     friend Matrix kronMul(const Matrix &a, const Matrix &b);
 
     friend Matrix kronPower(const Matrix &a, int n);
+
+    friend Matrix transpose(const Matrix &a);
 
     int getN() const;
 
@@ -53,3 +67,5 @@ Matrix getIdMatrix(int n);
 Matrix kronMul(const Matrix &a, const Matrix &b);
 
 Matrix kronPower(const Matrix &a, int n);
+
+Matrix transpose(const Matrix &a);

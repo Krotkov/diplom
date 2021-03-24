@@ -95,9 +95,7 @@ Message PolarCode::encode(const Message &message) const {
         }
     }
 
-    expanded.mulOnMatrix(g_);
-
-    return expanded;
+    return dot(Matrix(expanded), g_).getRow(0);
 }
 
 std::vector<bool> PolarCode::getFrozen() const {

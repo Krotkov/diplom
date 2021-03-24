@@ -90,3 +90,35 @@ void Matrix::print() const {
         std::cout << "\n";
     }
 }
+
+Matrix transpose(const Matrix &a) {
+    Matrix ans(a.k_, a.n_);
+    for (int i = 0; i < ans.n_; i++) {
+        for (int j = 0; j < ans.k_; j++) {
+            ans[i][j] = a[j][i];
+        }
+    }
+    return ans;
+}
+
+Message Matrix::getRow(int ind) const {
+    assert(ind < this->n_);
+    Message ans;
+
+    for (int i = 0; i < this->k_; i++) {
+        ans.add((*this)[ind][i]);
+    }
+
+    return ans;
+}
+
+Message Matrix::getColumn(int ind) const {
+    assert(ind < this->k_);
+    Message ans;
+
+    for (int i = 0; i < this->n_; i++) {
+        ans.add((*this)[i][ind]);
+    }
+
+    return ans;
+}
