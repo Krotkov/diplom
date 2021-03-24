@@ -11,4 +11,8 @@ public:
     void add(const Symbol &s);
 
     void print();
+
+    friend int compare(const Message& a, const Message& b);
 };
+
+int compare(const Message& a, const Message& b);

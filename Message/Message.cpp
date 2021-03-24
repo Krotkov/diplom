@@ -11,3 +11,16 @@ void Message::print() {
     }
     std::cout << "\n";
 }
+
+int compare(const Message &a, const Message &b) {
+    if (a.size() != b.size()) {
+        return (int)(1e9);
+    }
+    int ans = 0;
+    for (int i = 0; i < a.size(); i++) {
+        if (a[i] != b[i]) {
+            ans++;
+        }
+    }
+    return ans;
+}

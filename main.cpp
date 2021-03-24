@@ -19,7 +19,7 @@ double standart_main(int n, int k, double noise, double erasure, int max_word_nu
         b = code.encode(a);
         b = channel.runMessage(b, n, k, noise);
         b = decoder.decode(b);
-        if (compareWords(a, b) > 0) {
+        if (compare(a, b) > 0) {
             error_count++;
         }
     }

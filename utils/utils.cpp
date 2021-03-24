@@ -26,15 +26,10 @@ Message generateWord(int n) {
     return ans;
 }
 
-int compareWords(const Message &a, const Message &b) {
-    if (a.size() != b.size()) {
-        return 1000000000;
-    }
-    int ans = 0;
-    for (int i = 0; i < a.size(); i++) {
-        if (a[i] != b[i]) {
-            ans++;
-        }
+int pow(int a, int b) {
+    int ans = 1;
+    for (int i = 0; i < b; i++) {
+        ans *= a;
     }
     return ans;
 }
