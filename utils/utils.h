@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Message/Message.h>
+
 bool checkIfPowerOfTwo(int n);
 int getLog(int n);
 
