@@ -1,7 +1,7 @@
 #include <iostream>
 #include <getopt.h>
 #include <future>
-#include "Channel/Channel.h"
+#include "Channel/Gaus/GausChannel.h"
 #include "Code/PolarCode.h"
 #include "utils/utils.h"
 #include "Decoder/SC/SC.h"
@@ -10,15 +10,15 @@ double standart_main(int n, int k, double noise, double erasure, int max_word_nu
     int error_count = 0;
     double word_error = 0;
     PolarCode code{n, k, erasure, noise};
-    Channel channel;
+    GausChannel channel(n, k, noise);
     Message a, b;
-    SC decoder(code, noise);
+    SC decoder(code);
     for (int i = 0; i < max_word_num; i++) {
         a = generateWord(k);
 
         b = code.encode(a);
-        b = channel.runMessage(b, n, k, noise);
-        b = decoder.decode(b);
+        b = channel.runMessage(b);
+        b = decoder.decode(b, channel);
         if (compare(a, b) > 0) {
             error_count++;
         }

@@ -2,14 +2,13 @@
 // Created by kranya on 23.03.2021.
 //
 
+#include <cmath>
 #include "SC.h"
 #include "utils/utils.h"
 
-SC::SC(const PolarCode &code, double noise) {
+SC::SC(const PolarCode &code) {
     frozen_ = code.getFrozen();
     n_ = code.getN();
-    k_ = code.getK();
-    noise_ = noise;
 
     int ln = getLog(n_);
     l_.resize(ln+1);
@@ -19,9 +18,9 @@ SC::SC(const PolarCode &code, double noise) {
     }
 }
 
-double SC::calculateL(const Message &y, const Message &u, int n, int i, int pref) {
+double SC::calculateL(const Message &y, const Message &u, const Channel &channel, int n, int i, int pref) {
     if (n == 0) {
-        l_[n][pref + i] = 2 * (y[0]).get() / Channel::sigma(n_, k_, noise_);
+        l_[n][pref + i] = channel.getLLR(y[0]);
         return l_[n][pref + i];
     }
     if (!std::isnan(l_[n][pref + i])) {
@@ -40,7 +39,7 @@ double SC::calculateL(const Message &y, const Message &u, int n, int i, int pref
         for (int j = 1; j < u.size(); j += 2) {
             new_u.add(u[j]);
         }
-        value1 = calculateL(new_y, new_u, n - 1, (i) / 2, next_pref_1);
+        value1 = calculateL(new_y, new_u, channel, n - 1, (i) / 2, next_pref_1);
     } else {
         value1 = l_[n - 1][next_pref_1 + (i) / 2];
     }
@@ -55,7 +54,7 @@ double SC::calculateL(const Message &y, const Message &u, int n, int i, int pref
                 new_u.add(u[j] + u[j + 1]);
             }
         }
-        value2 = calculateL(new_y, new_u, n - 1, (i) / 2, next_pref_2);
+        value2 = calculateL(new_y, new_u, channel, n - 1, (i) / 2, next_pref_2);
     } else {
         value2 = l_[n - 1][next_pref_2 + (i) / 2];
     }
@@ -72,7 +71,7 @@ double SC::calculateL(const Message &y, const Message &u, int n, int i, int pref
     return l_[n][pref + i];
 }
 
-Message SC::decode(const Message &message) {
+Message SC::decode(const Message &message, const Channel& channel) {
     int logN = getLog(n_);
     for (int i = 0; i < logN + 1; i++) {
         for (int j = 0; j < n_; j++) {
@@ -84,7 +83,7 @@ Message SC::decode(const Message &message) {
         if (frozen_[i]) {
             decoded.add(0);
         } else {
-            double value = calculateL(message, decoded, logN, i);
+            double value = calculateL(message, decoded, channel, logN, i);
             if (value > 0) {
                 decoded.add(0);
             } else {

@@ -11,9 +11,9 @@ struct Node {
 
 class Viterbi {
 public:
-    explicit Viterbi(const Matrix& matrix, int n, int k, double noise);
+    explicit Viterbi(const Matrix& matrix);
 
-    Message decode(const Message& message);
+    Message decode(const Message& message, const Channel& channel);
 
 private:
     void build_grid();
@@ -21,7 +21,4 @@ private:
     std::vector<std::vector<Node>> grid_;
 
     Matrix matrix_;
-    int n_;
-    int k_;
-    double noise_;
 };

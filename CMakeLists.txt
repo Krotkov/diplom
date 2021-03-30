@@ -3,9 +3,33 @@ project(diplom)
 
 set(CMAKE_CXX_STANDARD 20)
 
-set (CMAKE_CXX_FLAGS "-pthread")
+set(CMAKE_CXX_FLAGS "-pthread")
 include_directories(${CMAKE_SOURCE_DIR})
 
-add_executable(diplom main.cpp Message/Message.cpp Message/Message.h Channel/Channel.cpp Channel/Channel.h Matrix/Matrix.cpp Matrix/Matrix.h utils/utils.h Code/PolarCode.cpp Code/PolarCode.h Symbol/Symbol.cpp Symbol/Symbol.h utils/utils.cpp Decoder/SC/SC.cpp Decoder/SC/SC.h Decoder/viterbi/Viterbi.cpp Decoder/viterbi/Viterbi.h)
+add_library(polar_code STATIC Message/Message.cpp
+        Message/Message.h
+        Channel/Gaus/GausChannel.cpp
+        Channel/Gaus/GausChannel.h
+        Matrix/Matrix.cpp
+        Matrix/Matrix.h
+        utils/utils.h
+        Code/PolarCode.cpp
+        Code/PolarCode.h
+        Symbol/Symbol.cpp
+        Symbol/Symbol.h
+        utils/utils.cpp
+        Decoder/SC/SC.cpp
+        Decoder/SC/SC.h
+        Decoder/viterbi/Viterbi.cpp
+        Decoder/viterbi/Viterbi.h
+        Channel/Channel.h
+        Channel/PerfectGauss/PerfectGauss.cpp
+        Channel/PerfectGauss/PerfectGauss.h)
 
-add_executable(viterbi viterbi.cpp Message/Message.cpp Message/Message.h Channel/Channel.cpp Channel/Channel.h Matrix/Matrix.cpp Matrix/Matrix.h utils/utils.h Code/PolarCode.cpp Code/PolarCode.h Symbol/Symbol.cpp Symbol/Symbol.h utils/utils.cpp Decoder/SC/SC.cpp Decoder/SC/SC.h Decoder/viterbi/Viterbi.cpp Decoder/viterbi/Viterbi.h)
+add_executable(diplom main.cpp)
+
+target_link_libraries(diplom polar_code)
+
+add_executable(viterbi viterbi.cpp)
+
+target_link_libraries(viterbi polar_code)

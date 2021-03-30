@@ -3,7 +3,6 @@
 //
 
 #include <iostream>
-#include <set>
 #include <Channel/Channel.h>
 #include "Viterbi.h"
 #include "utils/utils.h"
@@ -169,16 +168,13 @@ void Viterbi::build_grid() {
 
 }
 
-Viterbi::Viterbi(const Matrix &matrix, int n, int k, double noise) {
+Viterbi::Viterbi(const Matrix &matrix) {
     matrix_ = matrix;
-    n_ = n;
-    k_ = k;
-    noise_ = noise;
     toSpanForm(matrix_);
     build_grid();
 }
 
-Message Viterbi::decode(const Message &message) {
+Message Viterbi::decode(const Message &message, const Channel& channel) {
     std::vector<std::vector<std::pair<double, int>>> dp(grid_.size());
 
     for (int i = 0; i < dp.size(); i++) {
@@ -189,13 +185,7 @@ Message Viterbi::decode(const Message &message) {
 
     for (int i = 0; i + 1 < dp.size(); i++) {
         for (int j = 0; j < dp[i].size(); j++) {
-            double value;
-            if (message[i] == 1) {
-                value = std::log(0.01 / 0.99);
-            } else {
-                value = std::log(0.99 / 0.01);
-            }
-//            double value = 2 * message[i].get() / Channel::sigma(n_, k_, noise_);
+            double value = channel.getLLR(message[i]);
             if (dp[i + 1][grid_[i][j].next_0].first <
                 dp[i][j].first + value * (grid_[i][j].s_0 == 1 ? 1 : -1)) {
                 dp[i + 1][grid_[i][j].next_0].first =

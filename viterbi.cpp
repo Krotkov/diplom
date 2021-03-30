@@ -2,38 +2,38 @@
 // Created by kranya on 23.03.2021.
 //
 
-#include <iostream>
 #include <utils/utils.h>
-#include "Decoder/SC/SC.h"
+#include <Channel/PerfectGauss/PerfectGauss.h>
+#include <Code/PolarCode.h>
 #include "Decoder/viterbi/Viterbi.h"
 
 int main() {
     int n = 2, k = 1;
     double erasure = 0.5, noise = 1;
     PolarCode code{n, k, erasure, noise};
-    Channel channel;
+    PerfectGauss channel;
 
     Message a = generateWord(k);
     auto b = code.encode(a);
     b[0] = 1;
     b[1] = 1;
     b.print();
-    auto c = channel.runMessage(b, n, k, noise);
+//    auto c = channel.runMessage(b);
 
-    for (int i = 0; i < c.size(); i++) {
-        if (b[i] == 0) {
-            c[i] = 1;
-        } else {
-            c[i] = -1;
-        }
-    }
+//    for (int i = 0; i < c.size(); i++) {
+//        if (b[i] == 0) {
+//            c[i] = 1;
+//        } else {
+//            c[i] = -1;
+//        }
+//    }
 
-    c.print();
+//    c.print();
 
-    Viterbi viterbi(code.getG(), n, k, noise);
-    auto d = viterbi.decode(c);
+//    Viterbi viterbi(code.getG());
+//    auto d = viterbi.decode(c, channel);
 
-    d.print();
+//    d.print();
 //
 //    int n = 3, k = 1;
 //    double noise = 30;
@@ -50,7 +50,7 @@ int main() {
 //    word.add(1);
 //    word.add(0);
 //
-//    Channel channel;
+//    GausChannel channel;
 //    Viterbi viterbi(g, n, k, noise);
 //
 //    auto w1 = channel.runMessage(word, n, k, noise);

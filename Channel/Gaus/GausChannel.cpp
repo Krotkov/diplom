@@ -2,10 +2,10 @@
 // Created by kranya on 05.03.2021.
 //
 
-#include "Channel.h"
+#include "GausChannel.h"
 
-Message Channel::runMessage(Message &message, int n, int k, double E) {
-    const double mySigma = sqrt(sigma(n, k, E));
+Message GausChannel::runMessage(const Message &message) const {
+    const double mySigma = sqrt(sigma_);
     std::normal_distribution<> d{0, mySigma};
     auto res = Message(message);
     for (int i = 0; i < res.size(); i++) {
@@ -15,6 +15,6 @@ Message Channel::runMessage(Message &message, int n, int k, double E) {
     return res;
 }
 
-double Channel::sigma(int n, int k, double E) {
-    return 0.5 * pow(10, -E / 10) * ((double) n / k);
+double GausChannel::getLLR(const Symbol &symbol) const {
+    return 2 * symbol.get() / sigma_;
 }
