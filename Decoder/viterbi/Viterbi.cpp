@@ -93,19 +93,15 @@ void Viterbi::build_grid() {
             if (first == i) {
                 openedNum++;
             }
-            if (last == i) {
-                openedNum--;
-            }
-//            if (first == i && first == last) {
-//                openedNum++;
-//                isOneRow = true;
-//            }
         }
         int layout_size = pow(2, openedNum);
         grid_[i + 1].resize(layout_size);
-//        if (isOneRow) {
-//            openedNum--;
-//        }
+        for (int j = 0; j < matrix_.getN(); j++) {
+            int last = getLast(matrix_[j]);
+            if (last == i) {
+                openedNum--;
+            }
+        }
     }
 
     std::vector<bool> opened(matrix_.getN(), false);
@@ -115,7 +111,7 @@ void Viterbi::build_grid() {
             if (getFirst(matrix_[j]) == i) {
                 openOnNext = j;
             }
-            if (getLast(matrix_[j]) == i) {
+            if (getLast(matrix_[j]) == i - 1) {
                 closeOnNext = j;
             }
         }
@@ -152,14 +148,14 @@ void Viterbi::build_grid() {
 
             if (openOnNext != -1) {
                 grid_[i][j].next_0 = newIndexTemplate + (0 << ind);
-                grid_[i][j].s_0 = sumMessage(gridColumn, column) + closedJVal;
+                grid_[i][j].s_0 = sumMessage(gridColumn, column);
 
                 gridColumn[openOnNext] = Symbol(1);
                 grid_[i][j].next_1 = newIndexTemplate + (1 << ind);
-                grid_[i][j].s_1 = sumMessage(gridColumn, column) + closedJVal;
+                grid_[i][j].s_1 = sumMessage(gridColumn, column);
             } else {
                 grid_[i][j].next_0 = newIndexTemplate;
-                grid_[i][j].s_0 = sumMessage(gridColumn, column) + closedJVal;
+                grid_[i][j].s_0 = sumMessage(gridColumn, column);
             }
         }
 
@@ -222,6 +218,9 @@ Message Viterbi::decode(const Message &message) {
     }
     Message ans;
     int indJ = 0, indI = dp.size() - 1;
+    if (dp.back().size() > 1 && dp.back()[1].first > dp.back()[0].first) {
+        indJ = 1;
+    }
     for (int i = 1; i < dp.size(); i++) {
         int newIndJ = dp[indI][indJ].second;
         indI--;
