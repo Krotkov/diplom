@@ -120,14 +120,11 @@ void Viterbi::build_grid() {
             int newIndexTemplate = 0;
             int ind = 0;
             int curIndex = j;
-            Symbol closedJVal = 0;
             for (int q = 0; q < matrix_.getN(); q++) {
                 if (opened[q]) {
                     if (closeOnNext != q) {
                         newIndexTemplate += ((curIndex & 1) << ind);
                         ind++;
-                    } else {
-                        closedJVal = (curIndex & 1);
                     }
                     curIndex >>= 1;
                 }
@@ -199,12 +196,6 @@ Message Viterbi::decode(const Message &message, const Channel& channel) {
                 dp[i + 1][grid_[i][j].next_1].second = j;
             }
         }
-    }
-    for (int i = 0; i < dp.size(); i++) {
-        for (int j = 0; j < dp[i].size(); j++) {
-            std::cout << "(" << dp[i][j].first << ", " << dp[i][j].second << ") ";
-        }
-        std::cout << "\n";
     }
     Message ans;
     int indJ = 0, indI = dp.size() - 1;
