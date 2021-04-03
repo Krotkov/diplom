@@ -26,7 +26,8 @@ add_library(polar_code STATIC Message/Message.cpp
         Channel/PerfectGauss/PerfectGauss.cpp
         Channel/PerfectGauss/PerfectGauss.h
         Code/ReedMuller/ReedMullerCode.cpp
-        Code/ReedMuller/ReedMullerCode.h)
+        Code/ReedMuller/ReedMullerCode.h
+        Code/Code.h)
 
 add_executable(diplom main.cpp)
 

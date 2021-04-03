@@ -1,16 +1,17 @@
 #pragma once
 
 #include <vector>
+#include <Code/Code.h>
 #include "Matrix/Matrix.h"
 #include "Message/Message.h"
 
-class PolarCode {
+class PolarCode : public Code {
 public:
     PolarCode(int n, int k, double err);
 
     void constructCode(int n, int k, double err);
 
-    Message encode(const Message& message) const;
+    Message encode(const Message& message) const override;
 
     std::vector<bool> getFrozen() const;
 

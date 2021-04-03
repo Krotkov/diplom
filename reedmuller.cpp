@@ -28,7 +28,7 @@ double standart_main(int n, int k, int d, double noise, double erasure, int max_
 int main(int argc, char *argv[]) {
     int n = 32, k = 16, d = 8;
     double noise = 1, erasure = 0.5;
-    int max_word_num = 10000000;
+    int max_word_num = 1;
     double max_word_error = 1;
 
     std::vector<std::future<double>> results;
