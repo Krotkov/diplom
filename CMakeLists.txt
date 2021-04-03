@@ -25,7 +25,6 @@ add_library(polar_code STATIC Message/Message.cpp
         Channel/Channel.h
         Channel/PerfectGauss/PerfectGauss.cpp
         Channel/PerfectGauss/PerfectGauss.h
-        Code/ReedMuller/ReedMullerCode.cpp
         Code/ReedMuller/ReedMullerCode.h
         Code/Code.h)
 
