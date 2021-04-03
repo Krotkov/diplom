@@ -76,7 +76,7 @@ Matrix PolarCode::calcBn(int n) const {
     return b;
 }
 
-PolarCode::PolarCode(int n, int k, double err, double noise) {
+PolarCode::PolarCode(int n, int k, double err) {
     constructCode(n, k, err);
 }
 

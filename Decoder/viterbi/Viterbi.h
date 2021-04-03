@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Channel/Channel.h>
 #include "Matrix/Matrix.h"
 
 struct Node {

@@ -13,8 +13,8 @@ add_library(polar_code STATIC Message/Message.cpp
         Matrix/Matrix.cpp
         Matrix/Matrix.h
         utils/utils.h
-        Code/PolarCode.cpp
-        Code/PolarCode.h
+        Code/PolarCode/PolarCode.cpp
+        Code/PolarCode/PolarCode.h
         Symbol/Symbol.cpp
         Symbol/Symbol.h
         utils/utils.cpp
@@ -24,7 +24,9 @@ add_library(polar_code STATIC Message/Message.cpp
         Decoder/viterbi/Viterbi.h
         Channel/Channel.h
         Channel/PerfectGauss/PerfectGauss.cpp
-        Channel/PerfectGauss/PerfectGauss.h)
+        Channel/PerfectGauss/PerfectGauss.h
+        Code/ReedMuller/ReedMullerCode.cpp
+        Code/ReedMuller/ReedMullerCode.h)
 
 add_executable(diplom main.cpp)
 
@@ -33,3 +35,7 @@ target_link_libraries(diplom polar_code)
 add_executable(viterbi viterbi.cpp)
 
 target_link_libraries(viterbi polar_code)
+
+add_executable(reedmuller reedmuller.cpp)
+
+target_link_libraries(reedmuller polar_code)

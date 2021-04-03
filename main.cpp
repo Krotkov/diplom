@@ -2,14 +2,13 @@
 #include <getopt.h>
 #include <future>
 #include "Channel/Gaus/GausChannel.h"
-#include "Code/PolarCode.h"
+#include "Code/PolarCode/PolarCode.h"
 #include "utils/utils.h"
 #include "Decoder/SC/SC.h"
 
 double standart_main(int n, int k, double noise, double erasure, int max_word_num, double max_word_error) {
     int error_count = 0;
-    double word_error = 0;
-    PolarCode code{n, k, erasure, noise};
+    PolarCode code{n, k, erasure};
     GausChannel channel(n, k, noise);
     Message a, b;
     SC decoder(code);

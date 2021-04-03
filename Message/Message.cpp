@@ -24,3 +24,13 @@ int compare(const Message &a, const Message &b) {
     }
     return ans;
 }
+
+int Message::getWeight() {
+    int ans = 0;
+    for (int i = 0; i < this->size(); i++) {
+        if ((*this)[i] == 1) {
+            ans++;
+        }
+    }
+    return ans;
+}

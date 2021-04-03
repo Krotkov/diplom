@@ -13,6 +13,8 @@ public:
     void print();
 
     friend int compare(const Message& a, const Message& b);
+
+    int getWeight();
 };
 
 int compare(const Message& a, const Message& b);

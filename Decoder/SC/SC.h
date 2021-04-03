@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-#include "Code/PolarCode.h"
+#include "Code/PolarCode/PolarCode.h"
 #include "Channel/Channel.h"
 
 class SC {

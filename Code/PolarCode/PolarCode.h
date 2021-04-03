@@ -6,7 +6,7 @@
 
 class PolarCode {
 public:
-    PolarCode(int n, int k, double err, double noise);
+    PolarCode(int n, int k, double err);
 
     void constructCode(int n, int k, double err);
 
@@ -30,6 +30,7 @@ private:
 
     int n_;
     int k_;
-    std::vector<bool> frozen_;
+protected:
     Matrix g_;
+    std::vector<bool> frozen_;
 };
