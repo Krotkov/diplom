@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Channel/Channel.h>
+#include <Decoder/Decoder.h>
 #include "Matrix/Matrix.h"
 
 struct Node {
@@ -10,11 +11,11 @@ struct Node {
     Symbol s_1;
 };
 
-class Viterbi {
+class Viterbi : public Decoder {
 public:
     explicit Viterbi(const Matrix& matrix);
 
-    Message decode(const Message& message, const Channel& channel);
+    Message decode(const Message& message, const Channel& channel) override;
 
 private:
     void build_grid();

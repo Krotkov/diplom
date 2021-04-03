@@ -1,14 +1,15 @@
 #pragma once
 
 #include <vector>
+#include <Decoder/Decoder.h>
 #include "Code/PolarCode/PolarCode.h"
 #include "Channel/Channel.h"
 
-class SC {
+class SC : public Decoder {
 public:
     SC(const PolarCode& code);
 
-    Message decode(const Message& message, const Channel& channel);
+    Message decode(const Message& message, const Channel& channel) override;
 
 private:
     double calculateL(const Message& y, const Message& u, const Channel& channel, int n, int i, int pref=0);
