@@ -182,7 +182,7 @@ Message Viterbi::decode(const Message &message, const Channel& channel) {
 
     for (int i = 0; i + 1 < dp.size(); i++) {
         for (int j = 0; j < dp[i].size(); j++) {
-            double value = channel.getLLR(message[i]);
+            double value = -channel.getLLR(message[i]);
             if (dp[i + 1][grid_[i][j].next_0].first <
                 dp[i][j].first + value * (grid_[i][j].s_0 == 1 ? 1 : -1)) {
                 dp[i + 1][grid_[i][j].next_0].first =

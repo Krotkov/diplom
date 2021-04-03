@@ -11,16 +11,30 @@
 
 int main() {
     int n = 8, k = 4;
-    double erasure = 0.5, noise = 1;
+    double erasure = 0.5, noise = 10;
     PolarCode code{n, k, erasure};
     Viterbi viterbi(code.getG());
+    PerfectGauss pChaneel;
     GausChannel channel(n, k, noise);
     int errorCount = 0;
-    for (int i = 0; i < 1000; i++) {
+    for (int i = 0; i < 1; i++) {
         std::cout << i << "\n";
         Message a = generateWord(k);
         auto b = code.encode(a);
         auto c = channel.runMessage(b);
+        auto c1 = pChaneel.runMessage(b);
+        b.print();
+        c.print();
+        for (int i = 0; i < b.size(); i++) {
+            std::cout << channel.getLLR(c[i]) << " ";
+        }
+        std::cout << "\n";
+        c1.print();
+        for (int i = 0; i < b.size(); i++) {
+            std::cout << pChaneel.getLLR(c1[i]) << " ";
+        }
+        std::cout << "\n";
+        std::cout << "\n";
         auto d = viterbi.decode(c, channel);
 
         auto frozen = code.getFrozen();

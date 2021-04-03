@@ -19,8 +19,8 @@ Message PerfectGauss::runMessage(const Message &message) const {
 
 double PerfectGauss::getLLR(const Symbol &symbol) const {
     if (symbol == 1) {
-        return std::log(0.01 / 0.99);
-    } else {
         return std::log(0.99 / 0.01);
+    } else {
+        return std::log(0.01 / 0.99);
     }
 }
