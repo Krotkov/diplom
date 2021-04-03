@@ -9,16 +9,11 @@
 SC::SC(const PolarCode &code) {
     frozen_ = code.getFrozen();
     n_ = code.getN();
-
-    int ln = getLog(n_);
-    l_.resize(ln+1);
-
-    for (int i = 0; i < ln+1; i++) {
-        l_[i].resize(n_);
-    }
 }
 
-double SC::calculateL(const Message &y, const Message &u, const Channel &channel, int n, int i, int pref) {
+double
+SC::calculateL(std::vector<std::vector<double>> &l_, const Message &y, const Message &u, const Channel &channel, int n,
+               int i, int pref) const {
     if (n == 0) {
         l_[n][pref + i] = channel.getLLR(y[0]);
         return l_[n][pref + i];
@@ -39,7 +34,7 @@ double SC::calculateL(const Message &y, const Message &u, const Channel &channel
         for (int j = 1; j < u.size(); j += 2) {
             new_u.add(u[j]);
         }
-        value1 = calculateL(new_y, new_u, channel, n - 1, (i) / 2, next_pref_1);
+        value1 = calculateL(l_, new_y, new_u, channel, n - 1, (i) / 2, next_pref_1);
     } else {
         value1 = l_[n - 1][next_pref_1 + (i) / 2];
     }
@@ -54,36 +49,37 @@ double SC::calculateL(const Message &y, const Message &u, const Channel &channel
                 new_u.add(u[j] + u[j + 1]);
             }
         }
-        value2 = calculateL(new_y, new_u, channel, n - 1, (i) / 2, next_pref_2);
+        value2 = calculateL(l_, new_y, new_u, channel, n - 1, (i) / 2, next_pref_2);
     } else {
         value2 = l_[n - 1][next_pref_2 + (i) / 2];
     }
     if (i % 2 == 0) {
         double value = std::min(std::abs(value1), std::abs(value2));
-        l_[n][pref+i] = (value1 * value2 > 0) ? value : -value;
+        l_[n][pref + i] = (value1 * value2 > 0) ? value : -value;
     } else {
         if (u[i - 1].get() == 0) {
-            l_[n][pref+i] = value1 + value2;
+            l_[n][pref + i] = value1 + value2;
         } else {
-            l_[n][pref+i] = value1 - value2;
+            l_[n][pref + i] = value1 - value2;
         }
     }
     return l_[n][pref + i];
 }
 
-Message SC::decode(const Message &message, const Channel& channel) {
-    int logN = getLog(n_);
-    for (int i = 0; i < logN + 1; i++) {
-        for (int j = 0; j < n_; j++) {
-            l_[i][j] = NAN;
-        }
+Message SC::decode(const Message &message, const Channel &channel) const {
+    int ln = getLog(n_);
+    std::vector<std::vector<double>> l_;
+    l_.resize(ln + 1);
+
+    for (int i = 0; i < ln + 1; i++) {
+        l_[i].resize(n_, NAN);
     }
     Message decoded;
     for (int i = 0; i < message.size(); i++) {
         if (frozen_[i]) {
             decoded.add(0);
         } else {
-            double value = calculateL(message, decoded, channel, logN, i);
+            double value = calculateL(l_, message, decoded, channel, ln, i);
             if (value > 0) {
                 decoded.add(0);
             } else {

@@ -2,7 +2,6 @@
 // Created by kranya on 23.03.2021.
 //
 
-#include <iostream>
 #include <Channel/Channel.h>
 #include "Viterbi.h"
 #include "utils/utils.h"
@@ -86,9 +85,8 @@ void Viterbi::build_grid() {
     //make grid shape
     int openedNum = 0;
     for (int i = 0; i < matrix_.getK(); i++) {
-        bool isOneRow = false;
         for (int j = 0; j < matrix_.getN(); j++) {
-            int first = getFirst(matrix_[j]), last = getLast(matrix_[j]);
+            int first = getFirst(matrix_[j]);
             if (first == i) {
                 openedNum++;
             }
@@ -171,7 +169,7 @@ Viterbi::Viterbi(const Matrix &matrix) {
     build_grid();
 }
 
-Message Viterbi::decode(const Message &message, const Channel& channel) {
+Message Viterbi::decode(const Message &message, const Channel& channel) const {
     std::vector<std::vector<std::pair<double, int>>> dp(grid_.size());
 
     for (int i = 0; i < dp.size(); i++) {

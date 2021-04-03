@@ -15,7 +15,7 @@ class Viterbi : public Decoder {
 public:
     explicit Viterbi(const Matrix& matrix);
 
-    Message decode(const Message& message, const Channel& channel) override;
+    Message decode(const Message& message, const Channel& channel) const override;
 
 private:
     void build_grid();
