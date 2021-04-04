@@ -32,7 +32,7 @@ add_executable(diplom main.cpp graphic.h)
 
 target_link_libraries(diplom polar_code)
 
-add_executable(viterbi viterbi.cpp graphic.h)
+add_executable(viterbi graphic.h)
 
 target_link_libraries(viterbi polar_code)
 
