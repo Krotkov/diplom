@@ -6,18 +6,25 @@
 #include <future>
 #include <Channel/Gaus/GausChannel.h>
 #include <iostream>
+#include <Decoder/SC/SC.h>
 
 double build_graphic_step(const Code &code, GausChannel channel, const Decoder &decoder, int calc_iter, double x) {
     double ans = 0;
     channel.setNoise(x);
     for (int i = 0; i < calc_iter; i++) {
-        auto a = generateWord(code.getN());
-        a = code.encode(a);
+        auto a = generateWord(code.getK());
+        auto a1 = code.encode(a);
 
-        auto b = channel.runMessage(a);
+        auto b = channel.runMessage(a1);
         b = decoder.decode(b, channel);
-        if (compare(a, b) > 0) {
-            ans += 1;
+        if (dynamic_cast<const SC*>(&decoder)) {
+            if (compare(a, b) > 0) {
+                ans += 1;
+            }
+        } else {
+            if (compare(a1, b) > 0) {
+                ans += 1;
+            }
         }
     }
     return ans / calc_iter;
