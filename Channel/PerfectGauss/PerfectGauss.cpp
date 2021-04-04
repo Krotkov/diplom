@@ -24,3 +24,5 @@ double PerfectGauss::getLLR(const Symbol &symbol) const {
         return std::log(0.01 / 0.99);
     }
 }
+
+PerfectGauss::PerfectGauss() : GausChannel(1, 1, 1) {}

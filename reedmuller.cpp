@@ -3,6 +3,7 @@
 #include <future>
 #include <Code/ReedMuller/ReedMullerCode.h>
 #include <Decoder/viterbi/Viterbi.h>
+#include <Decoder/Perebor/Perebor.h>
 #include "Channel/Gaus/GausChannel.h"
 #include "utils/utils.h"
 
@@ -26,38 +27,61 @@ double standart_main(int n, int k, int d, double noise, double erasure, int max_
 }
 
 int main(int argc, char *argv[]) {
-    int n = 32, k = 16, d = 8;
-    double noise = 1, erasure = 0.5;
-    int max_word_num = 100;
-    double max_word_error = 1;
+//    int n = 32, k = 16, d = 8;
+//    double noise = 1, erasure = 0.5;
+//    int max_word_num = 100;
+//    double max_word_error = 1;
+//
+//    std::vector<std::future<double>> results;
+//    std::vector<double> x;
+//    for (int i = 1; i < 41; i++) {
+//        x.push_back(i * 1. / 2);
+//        results.push_back(std::async(standart_main, n, k, d, i * 1. / 2, erasure, max_word_num, max_word_error));
+//    }
+//    for (int i = 0; i < results.size(); i++) {
+//        results[i].wait();
+//    }
+//    std::cout << "[";
+//    for (int i = 0; i < x.size(); i++) {
+//        std::cout << x[i];
+//        if (i + 1 != x.size()) {
+//            std::cout << ",";
+//        }
+//    }
+//    std::cout << "]\n";
+//    std::cout << "[";
+//    for (int i = 0; i < results.size(); i++) {
+//        std::cout << results[i].get();
+//        if (i + 1 != x.size()) {
+//            std::cout << ",";
+//        }
+//    }
+//    std::cout << "]";
 
-    std::vector<std::future<double>> results;
-    std::vector<double> x;
-    for (int i = 1; i < 41; i++) {
-        x.push_back(i * 1. / 2);
-        results.push_back(std::async(standart_main, n, k, d, i * 1. / 2, erasure, max_word_num, max_word_error));
-    }
-    for (int i = 0; i < results.size(); i++) {
-        results[i].wait();
-    }
-    std::cout << "[";
-    for (int i = 0; i < x.size(); i++) {
-        std::cout << x[i];
-        if (i + 1 != x.size()) {
-            std::cout << ",";
+    int n = 4;
+    int k = 2;
+    double noise = 1;
+    PolarCode code(n, k, 0.5);
+    GausChannel channel(n, k, noise);
+    Perebor decoder(code);
+    Viterbi viterbi(code.getG());
+    for (int i = 0; i < 100; i++) {
+        Message a = generateWord(k);
+        a = code.encode(a);
+        a.print();
+
+        Message b1 = channel.runMessage(a);
+        Message b2 = b1;
+
+        b1 = decoder.decode(b1, channel);
+        b2 = viterbi.decode(b2, channel);
+
+        if (compare(b1, b2) > 0) {
+            std::cout << "hui gavna\n";
+            b1.print();
+            b2.print();
+            return 0;
         }
     }
-    std::cout << "]\n";
-    std::cout << "[";
-    for (int i = 0; i < results.size(); i++) {
-        std::cout << results[i].get();
-        if (i + 1 != x.size()) {
-            std::cout << ",";
-        }
-    }
-    std::cout << "]";
-
-//    graph_values(n, k, noise, erasure, max_word_num, max_word_error);
-//    standart_main(n, k, noise, erasure, max_word_num, max_word_error);
     return 0;
 }
