@@ -15,7 +15,7 @@ public:
 
     std::vector<bool> getFrozen() const;
 
-    int getN() const;
+    int getN() const override;
     int getK() const;
 
     Matrix getG() const;

@@ -1,8 +1,8 @@
 #pragma once
 
-#include <Channel/Channel.h>
+#include <Channel/Gaus/GausChannel.h>
 
-class PerfectGauss : public Channel {
+class PerfectGauss : public GausChannel {
 public:
 
     Message runMessage(const Message& message) const override;

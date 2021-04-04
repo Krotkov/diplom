@@ -28,14 +28,14 @@ add_library(polar_code STATIC Message/Message.cpp
         Code/ReedMuller/ReedMullerCode.h
         Code/Code.h Decoder/Decoder.h)
 
-add_executable(diplom main.cpp)
+add_executable(diplom main.cpp graphic.h)
 
 target_link_libraries(diplom polar_code)
 
-add_executable(viterbi viterbi.cpp)
+add_executable(viterbi viterbi.cpp graphic.h)
 
 target_link_libraries(viterbi polar_code)
 
-add_executable(reedmuller reedmuller.cpp)
+add_executable(reedmuller reedmuller.cpp graphic.h)
 
 target_link_libraries(reedmuller polar_code)

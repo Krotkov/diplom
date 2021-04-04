@@ -88,12 +88,5 @@ Message SC::decode(const Message &message, const Channel &channel) const {
         }
     }
 
-    Message ans;
-    for (int i = 0; i < decoded.size(); i++) {
-        if (!frozen_[i]) {
-            ans.add(decoded[i]);
-        }
-    }
-
-    return ans;
+    return decoded;
 }
