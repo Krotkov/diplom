@@ -20,5 +20,5 @@ double GausChannel::getLLR(const Symbol &symbol) const {
 }
 
 void GausChannel::setNoise(double noise) {
-    sigma_ = 0.5 * std::pow(10, -noise / 10) / ((double) n_ / k_);
+    sigma_ = 0.5 * std::pow(10, -noise / 10) * ((double) n_ / k_);
 }

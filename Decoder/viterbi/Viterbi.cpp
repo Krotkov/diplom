@@ -169,7 +169,7 @@ Viterbi::Viterbi(const Matrix &matrix) {
     build_grid();
 }
 
-Message Viterbi::decode(const Message &message, const Channel& channel) const {
+Message Viterbi::decode(const Message &message, const Channel &channel) const {
     std::vector<std::vector<std::pair<double, int>>> dp(grid_.size());
 
     for (int i = 0; i < dp.size(); i++) {
@@ -181,16 +181,14 @@ Message Viterbi::decode(const Message &message, const Channel& channel) const {
     for (int i = 0; i + 1 < dp.size(); i++) {
         for (int j = 0; j < dp[i].size(); j++) {
             double value = -channel.getLLR(message[i]);
-            if (dp[i + 1][grid_[i][j].next_0].first <
-                dp[i][j].first + value * (grid_[i][j].s_0 == 1 ? 1 : -1)) {
-                dp[i + 1][grid_[i][j].next_0].first =
-                        dp[i][j].first + value * (grid_[i][j].s_0 == 1 ? 1 : -1);
+            double s0_value = value * (grid_[i][j].s_0 == 1 ? 1 : -1);
+            if (dp[i + 1][grid_[i][j].next_0].first < dp[i][j].first + s0_value) {
+                dp[i + 1][grid_[i][j].next_0].first = dp[i][j].first + s0_value;
                 dp[i + 1][grid_[i][j].next_0].second = j;
             }
-            if (grid_[i][j].next_1 != -1 && dp[i + 1][grid_[i][j].next_1].first <
-                                            dp[i][j].first + value * (grid_[i][j].s_1 == 1 ? 1 : -1)) {
-                dp[i + 1][grid_[i][j].next_1].first =
-                        dp[i][j].first + value * (grid_[i][j].s_1 == 1 ? 1 : -1);
+            double s1_value = value * (grid_[i][j].s_1 == 1 ? 1 : -1);
+            if (grid_[i][j].next_1 != -1 && dp[i + 1][grid_[i][j].next_1].first < dp[i][j].first + s1_value) {
+                dp[i + 1][grid_[i][j].next_1].first = dp[i][j].first + s1_value;
                 dp[i + 1][grid_[i][j].next_1].second = j;
             }
         }

@@ -111,5 +111,13 @@ int PolarCode::getK() const {
 }
 
 Matrix PolarCode::getG() const {
-    return g_;
+    Matrix ans(k_, n_);
+    int ind = 0;
+    for (int i = 0; i < n_; i++) {
+        if (!frozen_[i]) {
+            ans[ind] = g_[i];
+            ind++;
+        }
+    }
+    return ans;
 }
