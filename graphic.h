@@ -5,8 +5,9 @@
 #include <utils/utils.h>
 #include <future>
 #include <Channel/Gaus/GausChannel.h>
+#include <iostream>
 
-double build_graphic_step(const Code& code, GausChannel& channel, const Decoder& decoder, int calc_iter, double x) {
+double build_graphic_step(const Code &code, GausChannel &channel, const Decoder &decoder, int calc_iter, double x) {
     double ans = 0;
     channel.setNoise(x);
     for (int i = 0; i < calc_iter; i++) {
@@ -23,15 +24,22 @@ double build_graphic_step(const Code& code, GausChannel& channel, const Decoder&
 }
 
 std::vector<double> build_graphic(const Code &code, GausChannel &channel, const Decoder &decoder, int calc_iter,
-                                  const std::vector<double>& sn) {
+                                  const std::vector<double> &sn) {
     std::vector<std::future<double>> results;
     results.reserve(sn.size());
-    for (int i = 0; i < sn.size(); i++) {
-        results.push_back(std::async(build_graphic_step, std::cref(code), std::ref(channel), std::cref(decoder), calc_iter, sn[i]));
+    for (double i : sn) {
+        GausChannel channel1(channel);
+        results.push_back(
+                std::async(build_graphic_step, std::cref(code), std::ref(channel), std::cref(decoder), calc_iter, i));
     }
 
-    for (int i = 0; i < results.size(); i++) {
-        results[i].wait();
+    for (auto &result : results) {
+        result.wait();
     }
-//    return ans;
+    std::vector<double> ans;
+    ans.reserve(results.size());
+    for (auto &result : results) {
+        ans.push_back(result.get());
+    }
+    return ans;
 }

@@ -18,6 +18,12 @@ public:
         setNoise(e);
     };
 
+    GausChannel(const GausChannel& channel) : gen(rd()) {
+        n_ = channel.n_;
+        k_ = channel.k_;
+        sigma_ = channel.sigma_;
+    };
+
     Message runMessage(const Message& message) const override;
 
     double getLLR(const Symbol& symbol) const override;
