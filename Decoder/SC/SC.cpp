@@ -15,41 +15,33 @@ double
 SC::calculateL(std::vector<std::vector<double>> &l_, const Message &y, const Message &u, const Channel &channel, int n,
                int i, int pref) const {
     if (n == 0) {
-        l_[n][pref + i] = channel.getLLR(y[0]);
+        l_[n][pref + i] = channel.getLLR(y[pref+i]);
         return l_[n][pref + i];
     }
     if (!std::isnan(l_[n][pref + i])) {
         return l_[n][pref + i];
     }
-    int next_pref_1 = pref;
-    int next_pref_2 = pref + (1 << (n - 1));
+    int next_pref_1 = pref + (1 << (n - 1));
+    int next_pref_2 = pref;
     long double value1, value2;
 
     if (std::isnan(l_[n - 1][next_pref_1 + (i) / 2])) {
-        Message new_y;
-        for (int j = y.size() / 2; j < y.size(); j++) {
-            new_y.add(y[j]);
-        }
         Message new_u;
         for (int j = 1; j < u.size(); j += 2) {
             new_u.add(u[j]);
         }
-        value1 = calculateL(l_, new_y, new_u, channel, n - 1, (i) / 2, next_pref_1);
+        value1 = calculateL(l_, y, new_u, channel, n - 1, (i) / 2, next_pref_1);
     } else {
         value1 = l_[n - 1][next_pref_1 + (i) / 2];
     }
     if (std::isnan(l_[n - 1][next_pref_2 + (i) / 2])) {
-        Message new_y;
-        for (int j = 0; j < y.size() / 2; j++) {
-            new_y.add(y[j]);
-        }
         Message new_u;
         for (int j = 0; j < u.size(); j += 2) {
             if (j + 1 != u.size()) {
                 new_u.add(u[j] + u[j + 1]);
             }
         }
-        value2 = calculateL(l_, new_y, new_u, channel, n - 1, (i) / 2, next_pref_2);
+        value2 = calculateL(l_, y, new_u, channel, n - 1, (i) / 2, next_pref_2);
     } else {
         value2 = l_[n - 1][next_pref_2 + (i) / 2];
     }
