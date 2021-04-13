@@ -1,9 +1,9 @@
-cmake_minimum_required(VERSION 3.17)
+cmake_minimum_required(VERSION 2.9)
 project(diplom)
 
 set(CMAKE_CXX_STANDARD 20)
 
-set(CMAKE_CXX_FLAGS "-pthread")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 include_directories(${CMAKE_SOURCE_DIR})
 
 add_library(polar_code STATIC Message/Message.cpp
@@ -26,7 +26,11 @@ add_library(polar_code STATIC Message/Message.cpp
         Channel/PerfectGauss/PerfectGauss.cpp
         Channel/PerfectGauss/PerfectGauss.h
         Code/ReedMuller/ReedMullerCode.h
-        Code/Code.h Decoder/Decoder.h Decoder/Perebor/Perebor.cpp Decoder/Perebor/Perebor.h)
+        Code/Code.h Decoder/Decoder.h
+        Decoder/Perebor/Perebor.cpp
+        Decoder/Perebor/Perebor.h
+        Polynom/Polynom.h
+        )
 
 add_executable(diplom main.cpp graphic.h)
 
@@ -39,3 +43,7 @@ target_link_libraries(viterbi polar_code)
 add_executable(reedmuller reedmuller.cpp graphic.h)
 
 target_link_libraries(reedmuller polar_code)
+
+add_executable(bch bch.cpp)
+
+target_link_libraries(bch polar_code)
