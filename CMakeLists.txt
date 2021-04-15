@@ -30,6 +30,8 @@ add_library(polar_code STATIC Message/Message.cpp
         Decoder/Perebor/Perebor.cpp
         Decoder/Perebor/Perebor.h
         Polynom/Polynom.h
+        BCH/BchKernel.h
+        BCH/BchKernel.cpp
         )
 
 add_executable(diplom main.cpp graphic.h)

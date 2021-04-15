@@ -1,6 +1,7 @@
 #include <Matrix/Matrix.h>
 #include <iostream>
 #include <Polynom/Polynom.h>
+#include <BCH/BchKernel.h>
 
 Matrix shortering(const Matrix &a) {
     Matrix ans(a.getN() - 1, a.getK() - 1);
@@ -34,18 +35,7 @@ Matrix shortering(const Matrix &a) {
 }
 
 int main() {
-    Polynom<int> pol(4);
-    pol[0] = 1;
-    pol[1] = 1;
-    pol[4] = 1;
-
-    Polynom<int> a = Polynom<int>::getPol(1);
-
-    for (int i = 0; i < 16; i++) {
-        a.print();
-        Polynom prom = a * Polynom<int>::getPol(1);
-//        std::cout << "prom= ";
-//        prom.print();
-        a = (prom) % pol;
-    }
+//    createField(16);
+    createExtendedBchKernel(16);
+    return 0;
 }
