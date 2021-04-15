@@ -63,10 +63,6 @@ std::vector<Polynom<int>> createField(int n) {
         a = (prom) % px;
     }
 
-    for (int i = 0; i < n; i++) {
-        ans[i].print();
-    }
-    std::cout << "\n";
     return ans;
 }
 
@@ -134,8 +130,6 @@ Polynom<int> getGx(int n, int d, const std::vector<Polynom<int>>& field, const s
         ans2 += Polynom<int>::getPol(i) * cur_pol;
     }
 
-    ans2.print();
-
     return ans2;
 }
 
@@ -145,7 +139,44 @@ Matrix createExtendedBchKernel(int n) {
 
     auto cyclotomic = buildCyclotomicClasses(n);
 
-    getGx(n, 15, field, cyclotomic);
+    std::vector<Polynom<int>> bchs;
 
-    return Matrix();
+    for (int i = 1; i < cyclotomic.size(); i++) {
+        bchs.emplace_back(getGx(n, (*cyclotomic[i].begin()), field, cyclotomic));
+    }
+    bchs.emplace_back(getGx(n, n-1, field, cyclotomic));
+
+    for (int i = 0; i < bchs.size(); i++) {
+        bchs[i].print();
+    }
+
+    int ind = 1;
+
+    Matrix ans(n, n);
+
+    for (int i = 0; i < bchs.size(); i++) {
+        while (ind < n && (i+1 == bchs.size() || bchs[i+1].maxStep() != ind - 1)) {
+            for (int j = 1; j < n; j++) {
+                if (j-1 < bchs[i].data_.size()) {
+                    ans[ind][j] = bchs[i].data_[j-1];
+                } else {
+                    ans[ind][j] = 0;
+                }
+            }
+            ind++;
+            bchs[i] *= Polynom<int>::getPol(1);
+        }
+    }
+
+    ans[0][0] = 1;
+
+    for (int i = 1; i < n; i++) {
+        int sum = 0;
+        for (int j = 1; j < n; j++) {
+            sum += ans[i][j].get();
+        }
+        ans[i][0] = sum % 2;
+    }
+
+    return ans;
 }

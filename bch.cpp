@@ -36,6 +36,6 @@ Matrix shortering(const Matrix &a) {
 
 int main() {
 //    createField(16);
-    createExtendedBchKernel(16);
+    createExtendedBchKernel(32);
     return 0;
 }
