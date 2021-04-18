@@ -13,25 +13,7 @@ public:
 
     Message encode(const Message& message) const override;
 
-    std::vector<bool> getFrozen() const;
-
-    int getN() const override;
-    int getK() const override;
-
-    Matrix getG() const;
-
-private:
+protected:
 
     double calculateZ(int n, int i, double err) const;
-
-    Matrix calcR(const Matrix &a) const;
-
-    Matrix calcBn(int n) const;
-
-
-    int n_;
-    int k_;
-protected:
-    Matrix g_;
-    std::vector<bool> frozen_;
 };

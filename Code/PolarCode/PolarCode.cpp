@@ -3,7 +3,6 @@
 //
 
 #include <cmath>
-#include <iostream>
 #include "PolarCode.h"
 #include "utils/utils.h"
 
@@ -46,36 +45,6 @@ double PolarCode::calculateZ(int n, int i, double err) const {
     }
 }
 
-Matrix PolarCode::calcR(const Matrix &a) const {
-    Matrix ans(a.getN(), a.getK());
-
-    for (int i = 0; i < a.getN(); i++) {
-        int ind = 0;
-        for (int j = 0; j < a.getK(); j += 2) {
-            ans[i][ind] = a[i][j];
-            ind++;
-        }
-        for (int j = 1; j < a.getK(); j += 2) {
-            ans[i][ind] = a[i][j];
-            ind++;
-        }
-    }
-    return ans;
-}
-
-Matrix PolarCode::calcBn(int n) const {
-    assert(checkIfPowerOfTwo(n));
-
-    Matrix idMatrix = getIdMatrix(2);
-    Matrix b = idMatrix;
-
-    for (int i = 4; i <= n; i *= 2) {
-        b = calcR(kronMul(idMatrix, b));
-    }
-
-    return b;
-}
-
 PolarCode::PolarCode(int n, int k, double err) {
     constructCode(n, k, err);
 }
@@ -96,28 +65,4 @@ Message PolarCode::encode(const Message &message) const {
     }
 
     return dot(Matrix(expanded), g_).getRow(0);
-}
-
-std::vector<bool> PolarCode::getFrozen() const {
-    return frozen_;
-}
-
-int PolarCode::getN() const {
-    return n_;
-}
-
-int PolarCode::getK() const {
-    return k_;
-}
-
-Matrix PolarCode::getG() const {
-    Matrix ans(k_, n_);
-    int ind = 0;
-    for (int i = 0; i < n_; i++) {
-        if (!frozen_[i]) {
-            ans[ind] = g_[i];
-            ind++;
-        }
-    }
-    return ans;
 }
