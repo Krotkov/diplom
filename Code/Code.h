@@ -6,7 +6,24 @@
 
 class Code {
 public:
-    virtual Message encode(const Message& message) const = 0;
+    virtual Message encode(const Message& message) const {
+        assert(message.size() == k_);
+
+        Message expanded;
+
+        int ind = 0;
+        for (int i = 0; i < n_; i++) {
+            if (frozen_[i]) {
+                expanded.add(0);
+            } else {
+                expanded.add(message[ind]);
+                ind++;
+            }
+        }
+
+        return dot(Matrix(expanded), g_).getRow(0);
+    }
+
     virtual int getN() const {
         return n_;
     }
@@ -34,6 +51,9 @@ public:
         return frozen_;
     }
 
+    virtual  Matrix getKernel() const {
+        return kernel_;
+    }
 
     virtual ~Code() = default;
 
@@ -73,4 +93,5 @@ protected:
     int k_;
     Matrix g_;
     std::vector<bool> frozen_;
+    Matrix kernel_;
 };

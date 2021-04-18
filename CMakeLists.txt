@@ -32,6 +32,10 @@ add_library(polar_code STATIC Message/Message.cpp
         Polynom/Polynom.h
         BCH/BchKernel.h
         BCH/BchKernel.cpp
+        Code/PolarCodeWithLargeKernel/PolarCodeWithLargeKernel.h
+        Code/PolarCodeWithLargeKernel/PolarCodeWithLargeKernel.cpp
+        Decoder/SCViterbi/SCViterbi.h
+        Decoder/SCViterbi/SCViterbi.cpp
         )
 
 add_executable(diplom main.cpp graphic.h)

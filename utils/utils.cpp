@@ -8,11 +8,11 @@ bool checkIfPowerOfTwo(int n) {
     return a == n;
 }
 
-int getLog(int n) {
+int getLog(int n, int base) {
     int a = 1;
     int ans = 0;
     while (a < n) {
-        a *= 2;
+        a *= base;
         ans++;
     }
     return ans;

@@ -3,7 +3,7 @@
 #include <Message/Message.h>
 
 bool checkIfPowerOfTwo(int n);
-int getLog(int n);
+int getLog(int n, int base=2);
 
 Message generateWord(int n);
 

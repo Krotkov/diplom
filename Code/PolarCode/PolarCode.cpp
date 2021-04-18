@@ -22,14 +22,14 @@ void PolarCode::constructCode(int n, int k, double err) {
         frozen_[zz[i].second] = true;
     }
 
-    Matrix f = Matrix(2, 2);
-    f[0][0] = 1;
-    f[0][1] = 0;
-    f[1][0] = 1;
-    f[1][1] = 1;
+    kernel_ = Matrix(2, 2);
+    kernel_[0][0] = 1;
+    kernel_[0][1] = 0;
+    kernel_[1][0] = 1;
+    kernel_[1][1] = 1;
 
     auto b = calcBn(n);
-    g_ = dot(calcBn(n), kronPower(f, getLog(n)));
+    g_ = dot(calcBn(n), kronPower(kernel_, getLog(n)));
 }
 
 double PolarCode::calculateZ(int n, int i, double err) const {
@@ -47,22 +47,4 @@ double PolarCode::calculateZ(int n, int i, double err) const {
 
 PolarCode::PolarCode(int n, int k, double err) {
     constructCode(n, k, err);
-}
-
-Message PolarCode::encode(const Message &message) const {
-    assert(message.size() == k_);
-
-    Message expanded;
-
-    int ind = 0;
-    for (int i = 0; i < n_; i++) {
-        if (frozen_[i]) {
-            expanded.add(0);
-        } else {
-            expanded.add(message[ind]);
-            ind++;
-        }
-    }
-
-    return dot(Matrix(expanded), g_).getRow(0);
 }

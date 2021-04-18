@@ -11,8 +11,6 @@ public:
 
     void constructCode(int n, int k, double err);
 
-    Message encode(const Message& message) const override;
-
 protected:
 
     double calculateZ(int n, int i, double err) const;

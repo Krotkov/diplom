@@ -146,10 +146,6 @@ Matrix createExtendedBchKernel(int n) {
     }
     bchs.emplace_back(getGx(n, n-1, field, cyclotomic));
 
-    for (int i = 0; i < bchs.size(); i++) {
-        bchs[i].print();
-    }
-
     int ind = 1;
 
     Matrix ans(n, n);

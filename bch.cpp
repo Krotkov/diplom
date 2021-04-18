@@ -2,6 +2,7 @@
 #include <iostream>
 #include <Polynom/Polynom.h>
 #include <BCH/BchKernel.h>
+#include <Code/PolarCodeWithLargeKernel/PolarCodeWithLargeKernel.h>
 
 Matrix shortering(const Matrix &a) {
     Matrix ans(a.getN() - 1, a.getK() - 1);
@@ -36,6 +37,8 @@ Matrix shortering(const Matrix &a) {
 
 int main() {
 //    createField(16);
-    createExtendedBchKernel(32);
+    auto kernel = createExtendedBchKernel(4);
+    kernel.print();
+    PolarCodeWithLargeKernel code(16, 4, 0.5, kernel);
     return 0;
 }
