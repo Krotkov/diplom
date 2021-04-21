@@ -12,9 +12,15 @@ public:
 
     void print();
 
-    friend int compare(const Message& a, const Message& b);
+    friend int compare(const Message &a, const Message &b);
+
+    friend Message operator+(const Message &a, const Message &b);
+
+    Message &operator+=(const Message &other);
 
     int getWeight();
 };
 
-int compare(const Message& a, const Message& b);
+int compare(const Message &a, const Message &b);
+
+Message operator+(const Message &a, const Message &b);

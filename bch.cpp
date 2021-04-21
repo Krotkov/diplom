@@ -3,42 +3,24 @@
 #include <Polynom/Polynom.h>
 #include <BCH/BchKernel.h>
 #include <Code/PolarCodeWithLargeKernel/PolarCodeWithLargeKernel.h>
-
-Matrix shortering(const Matrix &a) {
-    Matrix ans(a.getN() - 1, a.getK() - 1);
-    int max_column = -1, max_last_1 = int(1e9);
-    for (int j = 0; j < a.getK(); j++) {
-        int last_1 = -1;
-        for (int i = 0; i < a.getN(); i++) {
-            if (a[i][j] == 1) {
-                last_1 = i;
-            }
-        }
-        if (max_last_1 > last_1) {
-            max_column = j;
-            max_last_1 = last_1;
-        }
-    }
-    for (int i = 0; i < a.getN(); i++) {
-        for (int j = 0; j < a.getK(); j++) {
-            if (j != max_column && i != max_last_1) {
-                int curi = i < max_last_1 ? i : i - 1;
-                int curj = j < max_column ? j : j - 1;
-                if (a[i][max_column] == 1) {
-                    ans[curi][curj] = a[i][j] + a[max_last_1][j];
-                } else {
-                    ans[curi][curj] = a[i][j];
-                }
-            }
-        }
-    }
-    return ans;
-}
+#include <Decoder/SCViterbi/SCViterbi.h>
+#include <Channel/PerfectGauss/PerfectGauss.h>
 
 int main() {
-//    createField(16);
+    int n = 64;
     auto kernel = createExtendedBchKernel(4);
-    kernel.print();
-    PolarCodeWithLargeKernel code(16, 4, 0.5, kernel);
+
+    PolarCodeWithLargeKernel code(n, n, 0.5, kernel);
+    SCViterbi decoder(code);
+    PerfectGauss channel;
+
+    Message a = generateWord(n);
+    Message b = code.encode(a);
+    std::cout << "coded= ";
+    b.print();
+    b = channel.runMessage(b);
+    b = decoder.decode(b, channel);
+    a.print();
+    b.print();
     return 0;
 }

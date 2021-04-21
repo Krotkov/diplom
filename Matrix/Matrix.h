@@ -30,6 +30,8 @@ public:
         (*this)[0] = message;
     }
 
+    void removeRow(int ind);
+
     Message getRow(int ind) const;
 
     Message getColumn(int ind) const;

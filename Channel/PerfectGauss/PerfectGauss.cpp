@@ -20,6 +20,9 @@ Message PerfectGauss::runMessage(const Message &message) const {
 double PerfectGauss::getLLR(const Symbol &symbol) const {
     if (symbol == 1) {
         return std::log(0.99 / 0.01);
+    } if (symbol == 0) {
+        //special for scviterbi
+        return 0;
     } else {
         return std::log(0.01 / 0.99);
     }

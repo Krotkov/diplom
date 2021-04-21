@@ -122,3 +122,16 @@ Message Matrix::getColumn(int ind) const {
 
     return ans;
 }
+
+void Matrix::removeRow(int ind) {
+    Matrix ans(n_ - 1, k_);
+
+    int cur_ind = 0;
+    for (int i = 0; i < n_; i++) {
+        if (i != ind) {
+            ans[cur_ind] = (*this)[i];
+            cur_ind++;
+        }
+    }
+    (*this) = ans;
+}

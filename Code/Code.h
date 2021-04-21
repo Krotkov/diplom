@@ -3,6 +3,7 @@
 #include <Message/Message.h>
 #include <Matrix/Matrix.h>
 #include <utils/utils.h>
+#include <iostream>
 
 class Code {
 public:
@@ -58,34 +59,28 @@ public:
     virtual ~Code() = default;
 
 protected:
-    virtual Matrix calcR(const Matrix &a) const {
+    virtual Matrix calcR(const Matrix &a, int n) const {
         Matrix ans(a.getN(), a.getK());
 
         for (int i = 0; i < a.getN(); i++) {
             int ind = 0;
-            for (int j = 0; j < a.getK(); j += 2) {
-                ans[i][ind] = a[i][j];
-                ind++;
-            }
-            for (int j = 1; j < a.getK(); j += 2) {
-                ans[i][ind] = a[i][j];
-                ind++;
+            for (int j = 0; j < n; j++) {
+                for (int q = j; q < a.getK(); q += n) {
+                    ans[i][ind] = a[i][q];
+                    ind++;
+                }
             }
         }
         return ans;
     }
 
 
-    virtual Matrix calcBn(int n) const {
-        assert(checkIfPowerOfTwo(n));
-
-        Matrix idMatrix = getIdMatrix(2);
+    virtual Matrix calcBn(int n, int base) const {
+        Matrix idMatrix = getIdMatrix(base);
         Matrix b = idMatrix;
-
-        for (int i = 4; i <= n; i *= 2) {
-            b = calcR(kronMul(idMatrix, b));
+        for (int i = base*base; i <= n; i *= base) {
+            b = calcR(kronMul(idMatrix, b), base);
         }
-
         return b;
     }
 

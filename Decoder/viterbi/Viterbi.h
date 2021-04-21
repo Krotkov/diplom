@@ -13,11 +13,23 @@ struct Node {
 
 class Viterbi : public Decoder {
 public:
+    Viterbi() = default;
+
     explicit Viterbi(const Matrix& matrix);
+
+    Viterbi(const Viterbi& viterbi);
+
+    Viterbi& operator=(const Viterbi& other);
+
+    Viterbi &operator=(Viterbi &&other) noexcept;
 
     Message decode(const Message& message, const Channel& channel) const override;
 
+    double calcLLr(const Message& message, const Channel& channel, int ind) const;
+
 private:
+    std::vector<std::vector<std::pair<double, int>>> count_dp(const Message& message, const Channel& channel) const;
+
     void build_grid();
 
     std::vector<std::vector<Node>> grid_;

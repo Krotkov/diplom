@@ -3,6 +3,7 @@
 //
 
 #include <cmath>
+#include <iostream>
 #include "PolarCode.h"
 #include "utils/utils.h"
 
@@ -28,8 +29,8 @@ void PolarCode::constructCode(int n, int k, double err) {
     kernel_[1][0] = 1;
     kernel_[1][1] = 1;
 
-    auto b = calcBn(n);
-    g_ = dot(calcBn(n), kronPower(kernel_, getLog(n)));
+    auto b = calcBn(n, 2);
+    g_ = dot(calcBn(n, 2), kronPower(kernel_, getLog(n)));
 }
 
 double PolarCode::calculateZ(int n, int i, double err) const {

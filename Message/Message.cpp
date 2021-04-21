@@ -34,3 +34,19 @@ int Message::getWeight() {
     }
     return ans;
 }
+
+Message &Message::operator+=(const Message& other) {
+    if (this->size() < other.size()) {
+        this->resize(other.size(), 0);
+    }
+    for (int i = 0; i < other.size(); i++) {
+        (*this)[i] += other[i];
+    }
+    return (*this);
+}
+
+Message operator+(const Message &a, const Message &b) {
+    Message ans(a);
+    ans += b;
+    return ans;
+}

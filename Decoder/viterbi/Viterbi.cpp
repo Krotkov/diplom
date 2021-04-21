@@ -170,6 +170,45 @@ Viterbi::Viterbi(const Matrix &matrix) {
 }
 
 Message Viterbi::decode(const Message &message, const Channel &channel) const {
+
+    auto dp = count_dp(message, channel);
+
+    Message ans;
+    int indJ = 0, indI = dp.size() - 1;
+    if (dp.back().size() > 1 && dp.back()[1].first > dp.back()[0].first) {
+        indJ = 1;
+    }
+    for (int i = 1; i < dp.size(); i++) {
+        int newIndJ = dp[indI][indJ].second;
+        indI--;
+        if (grid_[indI][newIndJ].next_0 == indJ) {
+            ans.add(grid_[indI][newIndJ].s_0);
+        } else {
+            ans.add(grid_[indI][newIndJ].s_1);
+        }
+        indJ = newIndJ;
+    }
+
+    std::reverse(ans.begin(), ans.end());
+    return ans;
+}
+
+Viterbi &Viterbi::operator=(const Viterbi &other) {
+    this->grid_ = other.grid_;
+    this->matrix_ = other.matrix_;
+
+    return (*this);
+}
+
+Viterbi &Viterbi::operator=(Viterbi &&other) noexcept {
+    this->grid_ = other.grid_;
+    this->matrix_ = other.matrix_;
+
+    return (*this);
+}
+
+std::vector<std::vector<std::pair<double, int>>>
+Viterbi::count_dp(const Message &message, const Channel &channel) const {
     std::vector<std::vector<std::pair<double, int>>> dp(grid_.size());
 
     for (int i = 0; i < dp.size(); i++) {
@@ -193,22 +232,46 @@ Message Viterbi::decode(const Message &message, const Channel &channel) const {
             }
         }
     }
-    Message ans;
-    int indJ = 0, indI = dp.size() - 1;
-    if (dp.back().size() > 1 && dp.back()[1].first > dp.back()[0].first) {
-        indJ = 1;
-    }
-    for (int i = 1; i < dp.size(); i++) {
-        int newIndJ = dp[indI][indJ].second;
-        indI--;
-        if (grid_[indI][newIndJ].next_0 == indJ) {
-            ans.add(grid_[indI][newIndJ].s_0);
-        } else {
-            ans.add(grid_[indI][newIndJ].s_1);
-        }
-        indJ = newIndJ;
+    return dp;
+}
+
+double Viterbi::calcLLr(const Message &message, const Channel &channel, int ind) const {
+    std::vector<std::vector<std::pair<double, int>>> dp(grid_.size());
+
+    for (int i = 0; i < dp.size(); i++) {
+        dp[i].resize(grid_[i].size(), {-1e9, -1});
     }
 
-    std::reverse(ans.begin(), ans.end());
-    return ans;
+    for (int j = 0; j < dp[ind].size(); j++) {
+        dp[ind][j].first = 0;
+    }
+
+    for (int i = ind; i + 1 < dp.size(); i++) {
+        for (int j = 0; j < dp[i].size(); j++) {
+            double value = message[i].get();
+            double s0_value = value * (grid_[i][j].s_0 == 1 ? -1 : 1);
+            if (s0_value > 0) {
+                s0_value = 0;
+            }
+            if (dp[i + 1][grid_[i][j].next_0].first < dp[i][j].first + s0_value) {
+                dp[i + 1][grid_[i][j].next_0].first = dp[i][j].first + s0_value;
+                dp[i + 1][grid_[i][j].next_0].second = j;
+            }
+            double s1_value = value * (grid_[i][j].s_1 == 1 ? -1 : 1);
+            if (s1_value > 0) {
+                s1_value = 0;
+            }
+            if (grid_[i][j].next_1 != -1 && dp[i + 1][grid_[i][j].next_1].first < dp[i][j].first + s1_value) {
+                dp[i + 1][grid_[i][j].next_1].first = dp[i][j].first + s1_value;
+                dp[i + 1][grid_[i][j].next_1].second = j;
+            }
+        }
+    }
+
+    return dp.back()[0].first - dp.back()[1].first;
+}
+
+Viterbi::Viterbi(const Viterbi &viterbi) {
+    this->grid_ = viterbi.grid_;
+    this->matrix_ = viterbi.matrix_;
 }
