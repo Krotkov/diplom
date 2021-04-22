@@ -135,6 +135,15 @@ Polynom<int> getGx(int n, int d, const std::vector<Polynom<int>>& field, const s
 
 Matrix createExtendedBchKernel(int n) {
 
+    if (n == 2) {
+        Matrix ans(2, 2);
+        ans[0][0] = 1;
+        ans[0][1] = 0;
+        ans[1][0] = 1;
+        ans[1][1] = 1;
+        return ans;
+    }
+
     auto field = createField(n);
 
     auto cyclotomic = buildCyclotomicClasses(n);

@@ -25,7 +25,7 @@ int compare(const Message &a, const Message &b) {
     return ans;
 }
 
-int Message::getWeight() {
+int Message::getWeight() const {
     int ans = 0;
     for (int i = 0; i < this->size(); i++) {
         if ((*this)[i] == 1) {

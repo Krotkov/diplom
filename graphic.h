@@ -7,6 +7,7 @@
 #include <Channel/Gaus/GausChannel.h>
 #include <iostream>
 #include <Decoder/SC/SC.h>
+#include <Decoder/viterbi/Viterbi.h>
 
 double build_graphic_step(const Code &code, GausChannel channel, const Decoder &decoder, int calc_iter, double x) {
     double ans = 0;
@@ -17,12 +18,12 @@ double build_graphic_step(const Code &code, GausChannel channel, const Decoder &
 
         auto b = channel.runMessage(a1);
         b = decoder.decode(b, channel);
-        if (dynamic_cast<const SC*>(&decoder)) {
-            if (compare(a, b) > 0) {
+        if (dynamic_cast<const Viterbi*>(&decoder)) {
+            if (compare(a1, b) > 0) {
                 ans += 1;
             }
         } else {
-            if (compare(a1, b) > 0) {
+            if (compare(a, b) > 0) {
                 ans += 1;
             }
         }

@@ -41,3 +41,7 @@ double Symbol::get() const {
 bool operator!=(const Symbol &a, const Symbol &b) {
     return !(a == b);
 }
+
+bool Symbol::operator<(const Symbol &other) const {
+    return value_ < other.value_;
+}

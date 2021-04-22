@@ -1,6 +1,9 @@
 #include <iostream>
 #include <graphic.h>
 #include <getopt.h>
+#include <BCH/BchKernel.h>
+#include <Code/PolarCodeWithLargeKernel/PolarCodeWithLargeKernel.h>
+#include <Decoder/SCViterbi/SCViterbi.h>
 #include "Channel/Gaus/GausChannel.h"
 #include "Code/PolarCode/PolarCode.h"
 #include "utils/utils.h"
@@ -48,9 +51,16 @@ int main(int argc, char *argv[]) {
     GausChannel channel(n, k, noise);
     SC decoder(code);
 
+    auto kernel = createExtendedBchKernel(2);
+
+    PolarCodeWithLargeKernel code1(n, k, 0.5, kernel);
+    SCViterbi decoder1(code1);
+
     auto results = build_graphic(code, channel, decoder, max_word_num, x);
+    auto results1 = build_graphic(code1, channel, decoder1, max_word_num, x);
 
     print_for_python(x);
     print_for_python(results);
+    print_for_python(results1);
     return 0;
 }

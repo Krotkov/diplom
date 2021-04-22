@@ -18,7 +18,7 @@ public:
 
     Message &operator+=(const Message &other);
 
-    int getWeight();
+    int getWeight() const;
 };
 
 int compare(const Message &a, const Message &b);

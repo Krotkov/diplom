@@ -14,6 +14,8 @@ public:
 
     friend bool operator!=(const Symbol& a, const Symbol& b);
 
+    bool operator<(const Symbol& other) const;
+
     Symbol& operator+=(const Symbol& other);
 
     Symbol& operator*=(const Symbol& other);
