@@ -2,6 +2,7 @@
 // Created by kranya on 13.03.2021.
 //
 
+#include <cmath>
 #include "Symbol.h"
 
 Symbol operator+(const Symbol &a, const Symbol &b) {

@@ -39,7 +39,7 @@ Message SCViterbi::decode(const Message &message, const Channel &channel) const 
     return ans;
 }
 
-SCViterbi::SCViterbi(const PolarCodeWithLargeKernel &code) {
+SCViterbi::SCViterbi(const Code &code) {
     n_ = code.getN();
     frozen_ = code.getFrozen();
     kernel_ = code.getKernel();
@@ -111,21 +111,48 @@ SCViterbi::calculateL(std::vector<std::vector<double>> &l_, const Message &y, co
 
     l_[n][pref + i] = viterbiVect_[(pref + i) % m].calcLLr(cur_ys, channel, (pref + i) % m);
 
-//    for (int j = (pref + i) % m; j < m; j++) {
-//        int ind = (pref + i) - ((pref + i) % m) + j;
-//        l_[n][ind] = viterbiVect_[j].calcLLr(cur_ys, channel, j);
-//        Symbol val;
-//        if (l_[n][ind] > 0) {
-//            val = 0;
-//        } else {
-//            val = 1;
-//        }
-//        auto w = Message();
-//        w.add(val);
-//        a += w * kernel_.getRow(j);
-//        for (int q = 0; q + 1 < ys.size(); q++) {
-//            cur_ys[q] = ys[q].get() * (a[q] == 1 ? -1 : 1);
-//        }
-//    }
     return l_[n][pref + i];
+}
+
+std::vector<double> SCViterbi::calcZ(const Channel& channel, int iters) const {
+    int ln = getLog(n_, kernel_.size());
+    std::vector<std::vector<double>> l_;
+    l_.resize(ln + 1);
+
+    for (int i = 0; i < ln + 1; i++) {
+        l_[i].resize(n_, NAN);
+    }
+
+    std::vector<double> ans(n_);
+    Message coded;
+    for (int i = 0; i < n_; i++) {
+        coded.add(0);
+    }
+
+    for (int j = 0; j < iters; j++) {
+        if (j % 1000 == 0) {
+            std::cout << j << "\n";
+        }
+        auto message = channel.runMessage(coded);
+        Message decoded;
+        for (int i = 0; i < n_; i++) {
+            double value = calculateL(l_, message, decoded, channel, ln, i);
+            decoded.add(0);
+            if (value > 0) {
+                continue;
+            } else {
+                ans[i] += 1;
+            }
+        }
+        for (int i = 0; i < ln+1; i++) {
+            for (int q = 0; q < n_; q++) {
+                l_[i][q] = NAN;
+            }
+        }
+    }
+    for (int j = 0; j < n_; j++) {
+        ans[j] /= iters;
+    }
+
+    return ans;
 }

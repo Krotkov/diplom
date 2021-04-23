@@ -2,15 +2,17 @@
 
 #include <Message/Message.h>
 #include <Channel/Channel.h>
-#include <Code/PolarCodeWithLargeKernel/PolarCodeWithLargeKernel.h>
+#include <Code/Code.h>
 #include <Decoder/Decoder.h>
 #include <Decoder/viterbi/Viterbi.h>
 
 class SCViterbi : public Decoder {
 public:
-    explicit SCViterbi(const PolarCodeWithLargeKernel& code);
+    explicit SCViterbi(const Code& code);
 
     Message decode(const Message& message, const Channel& channel) const override;
+
+    [[nodiscard]] std::vector<double> calcZ(const Channel& channel, int iters=100000) const;
 
     double
     calculateL(std::vector<std::vector<double>> &l_, const Message &y, const Message &u, const Channel &channel, int n,
