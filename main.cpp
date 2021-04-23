@@ -4,6 +4,7 @@
 #include <BCH/BchKernel.h>
 #include <Code/PolarCodeWithLargeKernel/PolarCodeWithLargeKernel.h>
 #include <Decoder/SCViterbi/SCViterbi.h>
+#include <Channel/PerfectGauss/PerfectGauss.h>
 #include "Channel/Gaus/GausChannel.h"
 #include "Code/PolarCode/PolarCode.h"
 #include "utils/utils.h"
@@ -51,7 +52,7 @@ int main(int argc, char *argv[]) {
     GausChannel channel(n, k, noise);
     SC decoder(code);
 
-    auto kernel = createExtendedBchKernel(2);
+    auto kernel = createExtendedBchKernel(16);
 
     PolarCodeWithLargeKernel code1(n, k, 0.5, kernel);
     SCViterbi decoder1(code1);

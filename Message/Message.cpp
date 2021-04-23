@@ -50,3 +50,32 @@ Message operator+(const Message &a, const Message &b) {
     ans += b;
     return ans;
 }
+
+Message &Message::operator*=(const Message &other) {
+    if (this->size() < other.size()) {
+        this->resize(other.size(), 0);
+    }
+    for (int i = 0; i < other.size(); i++) {
+        (*this)[i] *= other[i];
+    }
+    return (*this);;
+}
+
+Message operator*(const Message &a, const Message &b) {
+    Message ans(a);
+    ans *= b;
+    return ans;
+}
+
+Message &Message::operator*=(double val) {
+    for (int i = 0; i < size(); i++) {
+        (*this)[i] = (*this)[i].get() * val;
+    }
+    return (*this);
+}
+
+Message operator*(const Message &a, double val) {
+    Message ans(a);
+    ans *= val;
+    return ans;
+}

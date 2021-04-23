@@ -242,11 +242,9 @@ double Viterbi::calcLLr(const Message &message, const Channel &channel, int ind)
         dp[i].resize(grid_[i].size(), {-1e9, -1});
     }
 
-    for (int j = 0; j < dp[ind].size(); j++) {
-        dp[ind][j].first = 0;
-    }
+    dp[0][0].first = 0;
 
-    for (int i = ind; i + 1 < dp.size(); i++) {
+    for (int i = 0; i + 1 < dp.size(); i++) {
         for (int j = 0; j < dp[i].size(); j++) {
             double value = message[i].get();
             double s0_value = value * (grid_[i][j].s_0 == 1 ? -1 : 1);

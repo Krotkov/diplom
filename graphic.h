@@ -13,6 +13,9 @@ double build_graphic_step(const Code &code, GausChannel channel, const Decoder &
     double ans = 0;
     channel.setNoise(x);
     for (int i = 0; i < calc_iter; i++) {
+        if (i % 1000 == 0) {
+            std::cout << x << " " << i << std::endl;
+        }
         auto a = generateWord(code.getK());
         auto a1 = code.encode(a);
 

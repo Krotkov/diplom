@@ -53,16 +53,6 @@ void PolarCodeWithLargeKernel::constructCode(int n, int k, double err, const Mat
         return a.second < b.second;
     });
 
-    for (int i = 0; i < n_; i++) {
-        std::cout << id[i] << " ";
-    }
-    std::cout << "\n";
-
-    for (int i = 0; i < n; i++) {
-        std::cout << zz[i].first << " ";
-    }
-    std::cout << "\n";
-
     std::sort(zz.begin(), zz.end());
     std::reverse(zz.begin(), zz.end());
 

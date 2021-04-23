@@ -21,6 +21,7 @@ int getLog(int n, int base) {
 
 Message generateWord(int n) {
     Message ans;
+//    srand(time(0));
     for (int i = 0; i < n; i++) {
         ans.add(rand() % 2);
     }

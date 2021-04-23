@@ -16,7 +16,15 @@ public:
 
     friend Message operator+(const Message &a, const Message &b);
 
+    friend Message operator*(const Message &a, const Message &b);
+
+    friend Message operator*(const Message &a, double val);
+
     Message &operator+=(const Message &other);
+
+    Message &operator*=(const Message &other);
+
+    Message &operator*=(double val);
 
     int getWeight() const;
 };
@@ -24,3 +32,7 @@ public:
 int compare(const Message &a, const Message &b);
 
 Message operator+(const Message &a, const Message &b);
+
+Message operator*(const Message &a, const Message &b);
+
+Message operator*(const Message &a, double val);
