@@ -25,7 +25,7 @@ public:
 
     Message decode(const Message& message, const Channel& channel) const override;
 
-    double calcLLr(const Message& message, const Channel& channel, int ind) const;
+    double calcLLr(const Message& message, const Channel& channel) const;
 
 private:
     std::vector<std::vector<std::pair<double, int>>> count_dp(const Message& message, const Channel& channel) const;

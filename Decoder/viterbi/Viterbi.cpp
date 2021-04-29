@@ -84,21 +84,23 @@ void Viterbi::build_grid() {
 
     //make grid shape
     int openedNum = 0;
+    bool hasOneSymbolStr = false;
     for (int i = 0; i < matrix_.getK(); i++) {
         for (int j = 0; j < matrix_.getN(); j++) {
             int first = getFirst(matrix_[j]);
             if (first == i) {
                 openedNum++;
             }
-        }
-        int layout_size = pow(2, openedNum);
-        grid_[i + 1].resize(layout_size);
-        for (int j = 0; j < matrix_.getN(); j++) {
             int last = getLast(matrix_[j]);
             if (last == i) {
                 openedNum--;
             }
+            if (first == last) {
+                hasOneSymbolStr = true;
+            }
         }
+        int layout_size = pow(2, openedNum + (hasOneSymbolStr ? 1 : 0));
+        grid_[i + 1].resize(layout_size);
     }
 
     std::vector<bool> opened(matrix_.getN(), false);
@@ -108,7 +110,7 @@ void Viterbi::build_grid() {
             if (getFirst(matrix_[j]) == i) {
                 openOnNext = j;
             }
-            if (getLast(matrix_[j]) == i - 1) {
+            if (getLast(matrix_[j]) == i) {
                 closeOnNext = j;
             }
         }
@@ -118,11 +120,14 @@ void Viterbi::build_grid() {
             int newIndexTemplate = 0;
             int ind = 0;
             int curIndex = j;
+            int closedBit = 0;
             for (int q = 0; q < matrix_.getN(); q++) {
                 if (opened[q]) {
                     if (closeOnNext != q) {
                         newIndexTemplate += ((curIndex & 1) << ind);
                         ind++;
+                    } else {
+                        closedBit = (curIndex & 1);
                     }
                     curIndex >>= 1;
                 }
@@ -142,14 +147,14 @@ void Viterbi::build_grid() {
 
             if (openOnNext != -1) {
                 grid_[i][j].next_0 = newIndexTemplate + (0 << ind);
-                grid_[i][j].s_0 = sumMessage(gridColumn, column);
+                grid_[i][j].s_0 = sumMessage(gridColumn, column) + closedBit;
 
                 gridColumn[openOnNext] = Symbol(1);
                 grid_[i][j].next_1 = newIndexTemplate + (1 << ind);
-                grid_[i][j].s_1 = sumMessage(gridColumn, column);
+                grid_[i][j].s_1 = sumMessage(gridColumn, column) + closedBit;
             } else {
                 grid_[i][j].next_0 = newIndexTemplate;
-                grid_[i][j].s_0 = sumMessage(gridColumn, column);
+                grid_[i][j].s_0 = sumMessage(gridColumn, column) + closedBit;
             }
         }
 
@@ -219,33 +224,6 @@ Viterbi::count_dp(const Message &message, const Channel &channel) const {
 
     for (int i = 0; i + 1 < dp.size(); i++) {
         for (int j = 0; j < dp[i].size(); j++) {
-            double value = -channel.getLLR(message[i]);
-            double s0_value = value * (grid_[i][j].s_0 == 1 ? 1 : -1);
-            if (dp[i + 1][grid_[i][j].next_0].first < dp[i][j].first + s0_value) {
-                dp[i + 1][grid_[i][j].next_0].first = dp[i][j].first + s0_value;
-                dp[i + 1][grid_[i][j].next_0].second = j;
-            }
-            double s1_value = value * (grid_[i][j].s_1 == 1 ? 1 : -1);
-            if (grid_[i][j].next_1 != -1 && dp[i + 1][grid_[i][j].next_1].first < dp[i][j].first + s1_value) {
-                dp[i + 1][grid_[i][j].next_1].first = dp[i][j].first + s1_value;
-                dp[i + 1][grid_[i][j].next_1].second = j;
-            }
-        }
-    }
-    return dp;
-}
-
-double Viterbi::calcLLr(const Message &message, const Channel &channel, int ind) const {
-    std::vector<std::vector<std::pair<double, int>>> dp(grid_.size());
-
-    for (int i = 0; i < dp.size(); i++) {
-        dp[i].resize(grid_[i].size(), {-1e9, -1});
-    }
-
-    dp[0][0].first = 0;
-
-    for (int i = 0; i + 1 < dp.size(); i++) {
-        for (int j = 0; j < dp[i].size(); j++) {
             double value = message[i].get();
             double s0_value = value * (grid_[i][j].s_0 == 1 ? -1 : 1);
             if (s0_value > 0) {
@@ -265,8 +243,17 @@ double Viterbi::calcLLr(const Message &message, const Channel &channel, int ind)
             }
         }
     }
+    return dp;
+}
 
-    return dp.back()[0].first - dp.back()[1].first;
+double Viterbi::calcLLr(const Message &message, const Channel &channel) const {
+    auto dp = count_dp(message, channel);
+
+    if (dp.back().size() > 1) {
+        return dp.back()[0].first - dp.back()[1].first;
+    } else {
+        return (*(dp.end() - 2))[0].first - (*(dp.end() - 2))[1].first;
+    }
 }
 
 Viterbi::Viterbi(const Viterbi &viterbi) {

@@ -109,12 +109,12 @@ SCViterbi::calculateL(std::vector<std::vector<double>> &l_, const Message &y, co
         cur_ys[j] = ys[j].get() * (a[j] == 1 ? -1 : 1);
     }
 
-    l_[n][pref + i] = viterbiVect_[(pref + i) % m].calcLLr(cur_ys, channel, (pref + i) % m);
+    l_[n][pref + i] = viterbiVect_[(pref + i) % m].calcLLr(cur_ys, channel);
 
     return l_[n][pref + i];
 }
 
-std::vector<double> SCViterbi::calcZ(const Channel& channel, int iters) const {
+std::vector<double> SCViterbi::calcZ(const Channel &channel, int iters) const {
     int ln = getLog(n_, kernel_.size());
     std::vector<std::vector<double>> l_;
     l_.resize(ln + 1);
@@ -130,9 +130,7 @@ std::vector<double> SCViterbi::calcZ(const Channel& channel, int iters) const {
     }
 
     for (int j = 0; j < iters; j++) {
-        if (j % 1000 == 0) {
-            std::cout << j << "\n";
-        }
+        std::cout << j << "\n";
         auto message = channel.runMessage(coded);
         Message decoded;
         for (int i = 0; i < n_; i++) {
@@ -144,7 +142,7 @@ std::vector<double> SCViterbi::calcZ(const Channel& channel, int iters) const {
                 ans[i] += 1;
             }
         }
-        for (int i = 0; i < ln+1; i++) {
+        for (int i = 0; i < ln + 1; i++) {
             for (int q = 0; q < n_; q++) {
                 l_[i][q] = NAN;
             }
