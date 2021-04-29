@@ -52,7 +52,10 @@ int main(int argc, char *argv[]) {
     GausChannel channel(n, k, noise);
     SC decoder(code);
 
-    auto kernel = createExtendedBchKernel(16);
+//    auto kernel = createExtendedBchKernel(16);
+    std::ifstream in("../kernels/32-1.txt", std::ifstream::in);
+    auto kernel = Matrix(in);
+
 
     PolarCodeWithLargeKernel code1(n, k, 0.5, kernel);
     SCViterbi decoder1(code1);

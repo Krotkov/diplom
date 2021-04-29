@@ -3,6 +3,8 @@
 #include <vector>
 #include <cassert>
 #include <Message/Message.h>
+#include <fstream>
+#include <iostream>
 #include "Symbol/Symbol.h"
 
 
@@ -22,6 +24,22 @@ public:
         this->n_ = other.n_;
         this->k_ = other.k_;
     };
+
+    Matrix(std::ifstream& in) {
+        int n = 0;
+        in >> n;
+        this->n_ = n;
+        this->k_ = n;
+        this->resize(n);
+        for (int i = 0; i < n; i++) {
+            (*this)[i].resize(n);
+            for (int j = 0; j < n; j++) {
+                int s;
+                in >> s;
+                (*this)[i][j] = s;
+            }
+        }
+    }
 
     Matrix(const Message &message) {
         this->n_ = 1;
