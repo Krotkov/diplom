@@ -26,7 +26,9 @@ add_library(polar_code STATIC Message/Message.cpp
         Channel/PerfectGauss/PerfectGauss.cpp
         Channel/PerfectGauss/PerfectGauss.h
         Code/ReedMuller/ReedMullerCode.h
-        Code/PolarCode.h Decoder/Decoder.h
+        Code/PolarCode.h
+        Code/PolarCode.cpp
+        Decoder/Decoder.h
         Decoder/Perebor/Perebor.cpp
         Decoder/Perebor/Perebor.h
         Polynom/Polynom.h

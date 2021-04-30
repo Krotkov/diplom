@@ -3,8 +3,6 @@
 //
 
 #include <Decoder/viterbi/Viterbi.h>
-#include <iostream>
-#include <cmath>
 #include "SCViterbi.h"
 
 SCViterbi::SCViterbi(const PolarCode &code) {

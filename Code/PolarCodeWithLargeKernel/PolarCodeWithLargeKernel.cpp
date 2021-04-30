@@ -6,6 +6,7 @@
 #include <Channel/Gaus/GausChannel.h>
 #include <Decoder/SCs/SCViterbi/SCViterbi.h>
 #include "PolarCodeWithLargeKernel.h"
+#include <utils/utils.h>
 
 PolarCodeWithLargeKernel::PolarCodeWithLargeKernel(int n, int k, double err, const Matrix &kernel) {
     constructCode(n, k, err, kernel);
