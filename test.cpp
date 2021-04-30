@@ -6,9 +6,10 @@
 #include <Channel/PerfectGauss/PerfectGauss.h>
 #include <Code/PolarCode/PolarCodeWithArikan.h>
 #include <Decoder/SCs/SC/SC.h>
+#include "graphic.h"
 
 int main() {
-   int n = 8;
+    int n = 8;
     int k = 4;
     auto kernel = createExtendedBchKernel(2);
 
@@ -30,8 +31,6 @@ int main() {
     b = decoder.decode(b, channel);
     a.print();
     b.print();
-
-
 
     b = code1.encode(a);
     b = channel.runMessage(b);

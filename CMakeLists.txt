@@ -46,14 +46,6 @@ add_executable(diplom main.cpp graphic.h)
 
 target_link_libraries(diplom polar_code)
 
-add_executable(viterbi graphic.h)
+add_executable(test test.cpp)
 
-target_link_libraries(viterbi polar_code)
-
-add_executable(reedmuller reedmuller.cpp graphic.h)
-
-target_link_libraries(reedmuller polar_code)
-
-add_executable(bch bch.cpp)
-
-target_link_libraries(bch polar_code)
+target_link_libraries(test polar_code)

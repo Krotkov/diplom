@@ -3,7 +3,6 @@
 //
 
 #include <cmath>
-#include <iostream>
 #include "PolarCodeWithArikan.h"
 #include "utils/utils.h"
 
