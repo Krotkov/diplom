@@ -1,39 +1,17 @@
-#include <Matrix/Matrix.h>
 #include <iostream>
-#include <BCH/BchKernel.h>
-#include <Code/PolarCodeWithLargeKernel/PolarCodeWithLargeKernel.h>
-#include <Decoder/SCs/SCViterbi/SCViterbi.h>
-#include <Channel/PerfectGauss/PerfectGauss.h>
-#include <Code/PolarCode/PolarCodeWithArikan.h>
-#include <Decoder/SCs/SC/SC.h>
-#include "graphic.h"
+#include <Code/CRC/CrcPolarCode.h>
 
 int main() {
-    int n = 8;
-    int k = 4;
-    auto kernel = createExtendedBchKernel(2);
+    int n = 64;
+    int k = 32;
+    CrcPolarCode code(n, k);
 
-    kernel.print();
-
-    PolarCodeWithLargeKernel code(n, k, 0.5, kernel);
-
-    PolarCodeWithArikan code1(n, k, 0.5);
-    SC decoder1(code1);
-
-    SCViterbi decoder(code);
-    PerfectGauss channel;
-
-    Message a = generateWord(k);
-    Message b = code.encode(a);
-    std::cout << "coded= ";
-    b.print();
-    b = channel.runMessage(b);
-    b = decoder.decode(b, channel);
-    a.print();
-    b.print();
-
-    b = code1.encode(a);
-    b = channel.runMessage(b);
-    b = decoder1.decode(b, channel);
+    Message a;
+    for (int i = 0; i < 32; i++) {
+        a.add(0);
+    }
+    a[16] = 1;
+    a[15] = 1;
+    code.encode(a);
     return 0;
 }

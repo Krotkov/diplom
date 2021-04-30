@@ -2,22 +2,23 @@
 
 #include <Message/Message.h>
 #include <Matrix/Matrix.h>
+#include "Code.h"
 
-class PolarCode {
+class PolarCode : public Code {
 public:
-    virtual Message encode(const Message& message) const;
+    Message encode(const Message &message) const override;
 
-    virtual int getN() const;
+    int getN() const override;
 
-    virtual int getK() const;
+    int getK() const override;
 
-    virtual Matrix getG() const;
+    Matrix getG() const override;
 
     virtual Matrix getFullG() const;
 
     virtual std::vector<bool> getFrozen() const;
 
-    virtual  Matrix getKernel() const;
+    virtual Matrix getKernel() const;
 
     virtual ~PolarCode() = default;
 

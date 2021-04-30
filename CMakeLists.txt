@@ -40,9 +40,12 @@ add_library(polar_code STATIC Message/Message.cpp
         Decoder/SCs/SCViterbi/SCViterbi.cpp
         Decoder/SCs/SCBase.h
         Decoder/SCs/SCBase.cpp
-        )
+        Code/CRC/CrcPolarCode.h
+        Code/CRC/CrcPolarCode.cpp
+        Code/Code.h
+        Polynom/Polynom.cpp)
 
-add_executable(diplom main.cpp graphic.h)
+add_executable(diplom main.cpp graphic.h Polynom/Polynom.cpp)
 
 target_link_libraries(diplom polar_code)
 

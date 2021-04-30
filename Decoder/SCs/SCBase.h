@@ -18,6 +18,8 @@ public:
     [[nodiscard]] virtual std::vector<double> calcZ(const Channel& channel, int iters=100000) const;
 
     Message decode(const Message& message, const Channel& channel) const override;
+
+    virtual ~SCBase() = default;
 protected:
     int n_;
     std::vector<bool> frozen_;
