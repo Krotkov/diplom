@@ -1,15 +1,10 @@
 #pragma once
 
-#include <Code/Code.h>
+#include <Code/PolarCode.h>
 
-class PolarCodeWithLargeKernel : public Code {
+class PolarCodeWithLargeKernel : public PolarCode {
 public:
     PolarCodeWithLargeKernel(int n, int k, double err, const Matrix& kernel);
 
     void constructCode(int n, int k, double err, const Matrix& kernel);
-
-private:
-
-    std::vector<std::vector<int>> a_;
-    std::vector<int> d_;
 };

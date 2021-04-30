@@ -1,11 +1,11 @@
 #pragma once
 
-#include <Code/Code.h>
+#include <Code/PolarCode.h>
 #include <Decoder/Decoder.h>
 
 class Perebor : public Decoder {
 public:
-    explicit Perebor(const Code& code);
+    explicit Perebor(const PolarCode& code);
     Message decode(const Message& message, const Channel& channel) const override;
 private:
     std::vector<Message> codeWords_;

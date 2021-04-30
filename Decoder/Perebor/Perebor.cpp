@@ -4,7 +4,7 @@
 
 #include "Perebor.h"
 
-Perebor::Perebor(const Code &code) {
+Perebor::Perebor(const PolarCode &code) {
     int k = code.getK();
     for (int i = 0; i < (1 << k); i++) {
         Message a;

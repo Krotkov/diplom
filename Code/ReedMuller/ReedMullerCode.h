@@ -1,12 +1,12 @@
 #pragma once
 
-#include <Code/PolarCode/PolarCode.h>
+#include <Code/PolarCode/PolarCodeWithArikan.h>
 #include <utils/utils.h>
 #include <iostream>
 
-class ReedMullerCode : public PolarCode {
+class ReedMullerCode : public PolarCodeWithArikan {
 public:
-    ReedMullerCode(int n, int k, int d) : PolarCode(n, k, 0.5) {
+    ReedMullerCode(int n, int k, int d) : PolarCodeWithArikan(n, k, 0.5) {
         for (auto && i : frozen_) {
             i = false;
         }

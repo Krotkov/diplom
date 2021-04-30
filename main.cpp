@@ -3,12 +3,11 @@
 #include <getopt.h>
 #include <BCH/BchKernel.h>
 #include <Code/PolarCodeWithLargeKernel/PolarCodeWithLargeKernel.h>
-#include <Decoder/SCViterbi/SCViterbi.h>
-#include <Channel/PerfectGauss/PerfectGauss.h>
+#include <Decoder/SCs/SCViterbi/SCViterbi.h>
 #include "Channel/Gaus/GausChannel.h"
-#include "Code/PolarCode/PolarCode.h"
+#include "Code/PolarCode/PolarCodeWithArikan.h"
 #include "utils/utils.h"
-#include "Decoder/SC/SC.h"
+#include "Decoder/SCs/SC/SC.h"
 
 int main(int argc, char *argv[]) {
     int n = 8, k = 4;
@@ -48,12 +47,12 @@ int main(int argc, char *argv[]) {
         x.push_back((i + 1) * 1.0 / 4);
     }
 
-    PolarCode code{n, k, erasure};
+    PolarCodeWithArikan code{n, k, erasure};
     GausChannel channel(n, k, noise);
     SC decoder(code);
 
 //    auto kernel = createExtendedBchKernel(16);
-    std::ifstream in("../kernels/32-1.txt", std::ifstream::in);
+    std::ifstream in("../kernels/16-1.txt", std::ifstream::in);
     auto kernel = Matrix(in);
 
 

@@ -5,7 +5,7 @@
 #include <utils/utils.h>
 #include <iostream>
 
-class Code {
+class PolarCode {
 public:
     virtual Message encode(const Message& message) const {
         assert(message.size() == k_);
@@ -56,7 +56,7 @@ public:
         return kernel_;
     }
 
-    virtual ~Code() = default;
+    virtual ~PolarCode() = default;
 
 protected:
     virtual Matrix calcR(const Matrix &a, int n) const {

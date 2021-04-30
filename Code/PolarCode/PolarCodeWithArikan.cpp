@@ -4,10 +4,10 @@
 
 #include <cmath>
 #include <iostream>
-#include "PolarCode.h"
+#include "PolarCodeWithArikan.h"
 #include "utils/utils.h"
 
-void PolarCode::constructCode(int n, int k, double err) {
+void PolarCodeWithArikan::constructCode(int n, int k, double err) {
     n_ = n;
     k_ = k;
 
@@ -33,7 +33,7 @@ void PolarCode::constructCode(int n, int k, double err) {
     g_ = dot(calcBn(n, 2), kronPower(kernel_, getLog(n)));
 }
 
-double PolarCode::calculateZ(int n, int i, double err) const {
+double PolarCodeWithArikan::calculateZ(int n, int i, double err) const {
     if (n == 1 && i == 1) {
         return err;
     }
@@ -46,6 +46,6 @@ double PolarCode::calculateZ(int n, int i, double err) const {
     }
 }
 
-PolarCode::PolarCode(int n, int k, double err) {
+PolarCodeWithArikan::PolarCodeWithArikan(int n, int k, double err) {
     constructCode(n, k, err);
 }

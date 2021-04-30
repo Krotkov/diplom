@@ -1,15 +1,15 @@
 #pragma once
 
-#include <Code/Code.h>
+#include <Code/PolarCode.h>
 #include <Decoder/Decoder.h>
 #include <utils/utils.h>
 #include <future>
 #include <Channel/Gaus/GausChannel.h>
 #include <iostream>
-#include <Decoder/SC/SC.h>
+#include <Decoder/SCs/SC/SC.h>
 #include <Decoder/viterbi/Viterbi.h>
 
-double build_graphic_step(const Code &code, GausChannel channel, const Decoder &decoder, int calc_iter, double x) {
+double build_graphic_step(const PolarCode &code, GausChannel channel, const Decoder &decoder, int calc_iter, double x) {
     double ans = 0;
     channel.setNoise(x);
     for (int i = 0; i < calc_iter; i++) {
@@ -34,7 +34,7 @@ double build_graphic_step(const Code &code, GausChannel channel, const Decoder &
     return ans / calc_iter;
 }
 
-std::vector<double> build_graphic(const Code &code, GausChannel &channel, const Decoder &decoder, int calc_iter,
+std::vector<double> build_graphic(const PolarCode &code, GausChannel &channel, const Decoder &decoder, int calc_iter,
                                   const std::vector<double> &sn) {
     std::vector<std::future<double>> results;
     results.reserve(sn.size());

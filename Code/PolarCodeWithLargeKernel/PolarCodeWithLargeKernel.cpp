@@ -4,7 +4,7 @@
 
 #include <set>
 #include <Channel/Gaus/GausChannel.h>
-#include <Decoder/SCViterbi/SCViterbi.h>
+#include <Decoder/SCs/SCViterbi/SCViterbi.h>
 #include "PolarCodeWithLargeKernel.h"
 
 PolarCodeWithLargeKernel::PolarCodeWithLargeKernel(int n, int k, double err, const Matrix &kernel) {
