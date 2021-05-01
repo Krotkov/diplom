@@ -52,7 +52,7 @@ int main(int argc, char *argv[]) {
     SC decoder(code);
 
 //    auto kernel = createExtendedBchKernel(16);
-//    std::ifstream in("../kernels/16-1.txt", std::ifstream::in);
+//    std::ifstream in("../kernels/32-1.txt", std::ifstream::in);
 //    auto kernel = Matrix(in);
 //    PolarCode code1(n, k, kernel);
 //    SCViterbi decoder1(code1);
@@ -61,10 +61,10 @@ int main(int argc, char *argv[]) {
     SCFlipArikan decoder1{code1, 10};
 
     auto results = build_graphic(code, channel, decoder, max_word_num, x);
-    auto results1 = build_graphic(code1, channel, decoder1, max_word_num, x);
+//    auto results1 = build_graphic(code1, channel, decoder1, max_word_num, x);
 
     print_for_python(x);
     print_for_python(results);
-    print_for_python(results1);
+//    print_for_python(results1);
     return 0;
 }
