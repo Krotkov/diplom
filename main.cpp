@@ -58,7 +58,7 @@ int main(int argc, char *argv[]) {
 //    SCViterbi decoder1(code1);
 
     CrcPolarCode code1{n, k, 16};
-    SCFlipArikan decoder1{code1, 50};
+    SCFlipArikan decoder1{code1, 10};
 
     auto results = build_graphic(code, channel, decoder, max_word_num, x);
     auto results1 = build_graphic(code1, channel, decoder1, max_word_num, x);

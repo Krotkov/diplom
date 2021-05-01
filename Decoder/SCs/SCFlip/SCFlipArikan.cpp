@@ -36,9 +36,9 @@ Message SCFlipArikan::decode(const Message &message, const Channel &channel) con
             double ma = calcMa(firstTry.second, flip);
             if (flips.size() < iters_) {
                 flips.insert({ma, flip});
-            } else if (flips.cbegin()->first < ma) {
+            } else if (-flips.cbegin()->first > ma) {
                 flips.erase(flips.cbegin());
-                flips.insert({ma, flip});
+                flips.insert({-ma, flip});
             }
         }
     }
@@ -58,9 +58,9 @@ Message SCFlipArikan::decode(const Message &message, const Channel &channel) con
             if (!frozen_[j]) {
                 flip.back() = j;
                 double ma = calcMa(decodedRes.second, flip);
-                if (flips.cbegin()->first < ma) {
+                if (-flips.cbegin()->first > ma) {
                     flips.erase(flips.cbegin());
-                    flips.insert({ma, flip});
+                    flips.insert({-ma, flip});
                 }
             }
         }
