@@ -14,6 +14,8 @@ public:
 
     Message encode(const Message &message) const override;
 
+    void recursiveEncode(Message &message, int begin, int end) const;
+
     int getN() const override;
 
     int getK() const override;

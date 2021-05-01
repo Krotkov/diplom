@@ -5,20 +5,22 @@
 #include <utils/utils.h>
 
 int main() {
-    int n = 1024;
-    int k = 512;
+    int n = 8;
+    int k = 4;
     PolarCode code(n, k, 0.5);
     SC decoder(code);
 
     PerfectGauss channel;
 
-    for (int i = 0; i < 10000; i++) {
-        Message a = generateWord(k);
-        a.print();
-        Message b = code.encode(a);
-        b = channel.runMessage(b);
-        b = decoder.decode(b, channel);
-        b.print();
-    }
+    Message a = generateWord(k);
+    a[0] = 1;
+    a[1] = 0;
+    a[2] = 0;
+    a[3] = 0;
+    a.print();
+    Message b = code.encode(a);
+    b = channel.runMessage(b);
+    b = decoder.decode(b, channel);
+    b.print();
     return 0;
 }

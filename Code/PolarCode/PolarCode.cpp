@@ -18,7 +18,41 @@ Message PolarCode::encode(const Message &message) const {
         }
     }
 
-    return dot(Matrix(expanded), g_).getRow(0);
+    recursiveEncode(expanded, 0, n_);
+    return expanded;
+}
+
+void PolarCode::recursiveEncode(Message &message, int begin, int end) const {
+    for (int i = begin; i < end; i += kernel_.size()) {
+        Message cur;
+        for (int q = i; q < i + kernel_.getN(); q++) {
+            cur.add(message[q]);
+        }
+        cur = dot(Matrix(cur), kernel_).getRow(0);
+        for (int q = i; q < i + kernel_.getN(); q++) {
+            message[q] = cur[q - i];
+        }
+    }
+    Message newMessage;
+    newMessage.resize(end - begin);
+
+    int ind = 0;
+    for (int i = 0; i < kernel_.getN(); i++) {
+        for (int j = begin + i; j < end; j += kernel_.getN()) {
+            newMessage[ind] = message[j];
+            ind++;
+        }
+    }
+    for (int i = begin; i < end; i++) {
+        message[i] = newMessage[i - begin];
+    }
+
+    if (end - begin > kernel_.getN()) {
+        int size = (end - begin) / kernel_.getN();
+        for (int i = 0; i < kernel_.getN(); i++) {
+            recursiveEncode(message, begin + (i * size), begin + (i + 1) * size);
+        }
+    }
 }
 
 int PolarCode::getN() const {
