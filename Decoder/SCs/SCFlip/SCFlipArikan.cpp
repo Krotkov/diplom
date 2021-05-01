@@ -35,7 +35,7 @@ Message SCFlipArikan::decode(const Message &message, const Channel &channel) con
             flip.push_back(i);
             double ma = calcMa(firstTry.second, flip);
             if (flips.size() < iters_) {
-                flips.insert({ma, flip});
+                flips.insert({-ma, flip});
             } else if (-flips.cbegin()->first > ma) {
                 flips.erase(flips.cbegin());
                 flips.insert({-ma, flip});
@@ -125,6 +125,7 @@ double SCFlipArikan::calcMa(const std::vector<double> &l, const std::vector<int>
             ans2 += std::log(1 + std::exp(-a_ * std::abs(l[i])));
         }
     }
+    std::cout << ans2 << "\n";
     ans2 /= a_;
     return ans + ans2;
 }
