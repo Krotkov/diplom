@@ -79,6 +79,15 @@ SCFlipArikan::decodeStep(const Message &message, const Channel &channel, std::ve
             l_[i][j] = NAN;
         }
     }
+
+    std::vector<std::vector<Message>> u_s;
+    u_s.resize(ln + 1);
+    int a = 1;
+    for (int i = ln; i >= 0; i--) {
+        u_s[i].resize(a);
+        a *= kernel_.getN();
+    }
+
     Message decoded;
     std::vector<double> ls;
     int ind = 0;
@@ -87,7 +96,7 @@ SCFlipArikan::decodeStep(const Message &message, const Channel &channel, std::ve
             decoded.add(0);
             ls.push_back(0);
         } else {
-            double value = calculateL(l_, message, decoded, channel, ln, i);
+            double value = calculateL(l_, u_s, message, channel, ln, i);
             ls.push_back(value);
             if (value > 0) {
                 decoded.add(0);
@@ -100,6 +109,8 @@ SCFlipArikan::decodeStep(const Message &message, const Channel &channel, std::ve
                 decoded.back() += 1;
                 ind++;
             }
+
+            updateU(u_s, decoded.back(), ln, 0, (int) decoded.size() - 1);
         }
     }
 

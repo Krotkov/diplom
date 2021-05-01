@@ -7,8 +7,8 @@
 #include "SCBase.h"
 
 double
-SCBase::calculateL(std::vector<std::vector<double>> &l_, const Message &y, const Message &u, const Channel &channel,
-                   int n, int i, int pref) const {
+SCBase::calculateL(std::vector<std::vector<double>> &l_, const std::vector<std::vector<Message>> &u_s, const Message &y,
+                   const Channel &channel, int n, int i, int pref, int u_s_ind) const {
     if (n == 0) {
         l_[n][pref + i] = channel.getLLR(y[pref + i]);
         return l_[n][pref + i];
@@ -19,12 +19,8 @@ SCBase::calculateL(std::vector<std::vector<double>> &l_, const Message &y, const
 
     int m = kernel_.getN();
 
-    std::vector<Message> subU(m);
     std::vector<int> prefs(m);
 
-    for (int j = 0; j < u.size(); j++) {
-        subU[j % m].add(u[j]);
-    }
     for (int j = 0; j < m; j++) {
         prefs[j] = pref + j * pow(m, n - 1);
     }
@@ -33,17 +29,12 @@ SCBase::calculateL(std::vector<std::vector<double>> &l_, const Message &y, const
     for (int j = 0; j < m; j++) {
         if (std::isnan(l_[n - 1][prefs[j] + i / m])) {
             Message new_u;
-            for (int q = 0; q < m; q++) {
-                if (kernel_[q][j] == 1) {
-                    new_u += subU[q];
-                }
-            }
-            ys.add(calculateL(l_, y, new_u, channel, n - 1, i / m, prefs[j]));
+            ys.add(calculateL(l_, u_s, y, channel, n - 1, i / m, prefs[j], (u_s_ind) * kernel_.getN() + j));
         } else {
             ys.add(l_[n - 1][prefs[j] + i / m]);
         }
     }
-    calculateLStep(l_, ys, u, channel, n, i, pref);
+    calculateLStep(l_, ys, u_s[n][u_s_ind], channel, n, i, pref);
     return l_[n][pref + i];
 }
 
@@ -54,6 +45,14 @@ std::vector<double> SCBase::calcZ(const Channel &channel, int iters) const {
 
     for (int i = 0; i < ln + 1; i++) {
         l_[i].resize(n_, NAN);
+    }
+
+    std::vector<std::vector<Message>> u_s;
+    u_s.resize(ln + 1);
+    int a = 1;
+    for (int i = ln; i >= 0; i--) {
+        u_s[i].resize(a);
+        a *= kernel_.getN();
     }
 
     std::vector<double> ans(n_);
@@ -69,8 +68,9 @@ std::vector<double> SCBase::calcZ(const Channel &channel, int iters) const {
         auto message = channel.runMessage(coded);
         Message decoded;
         for (int i = 0; i < n_; i++) {
-            double value = calculateL(l_, message, decoded, channel, ln, i);
+            double value = calculateL(l_, u_s, message, channel, ln, i);
             decoded.add(0);
+            updateU(u_s, decoded.back(), ln, 0, (int) decoded.size() - 1);
             if (value > 0) {
                 continue;
             } else {
@@ -98,18 +98,28 @@ Message SCBase::decode(const Message &message, const Channel &channel) const {
     for (int i = 0; i < ln + 1; i++) {
         l_[i].resize(n_, NAN);
     }
+
+    std::vector<std::vector<Message>> u_s;
+    u_s.resize(ln + 1);
+    int a = 1;
+    for (int i = ln; i >= 0; i--) {
+        u_s[i].resize(a);
+        a *= kernel_.getN();
+    }
+
     Message decoded;
     for (int i = 0; i < message.size(); i++) {
         if (frozen_[i]) {
             decoded.add(0);
         } else {
-            double value = calculateL(l_, message, decoded, channel, ln, i);
+            double value = calculateL(l_, u_s, message, channel, ln, i);
             if (value > 0) {
                 decoded.add(0);
             } else {
                 decoded.add(1);
             }
         }
+        updateU(u_s, decoded.back(), ln, 0, (int) decoded.size() - 1);
     }
 
     Message ans;
@@ -119,4 +129,24 @@ Message SCBase::decode(const Message &message, const Channel &channel) const {
         }
     }
     return ans;
+}
+
+void SCBase::updateU(std::vector<std::vector<Message>> &u_s, const Symbol &s, int n, int i, int pos) const {
+    if (pos >= u_s[n][i].size()) {
+        u_s[n][i].add(s);
+    } else {
+        u_s[n][i][pos] += s;
+    }
+
+    if (n == 0) {
+        return;
+    }
+
+    int row = pos % kernel_.getN();
+
+    for (int j = 0; j < kernel_.getN(); j++) {
+        if (kernel_[row][j] == 1) {
+            updateU(u_s, s, n - 1, kernel_.getN() * (i) + j, pos / kernel_.getN());
+        }
+    }
 }

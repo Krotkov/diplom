@@ -1,20 +1,24 @@
 #include <iostream>
 #include <Code/CRC/CrcPolarCode.h>
 #include <Decoder/SCs/SCFlip/SCFlipArikan.h>
+#include <Channel/PerfectGauss/PerfectGauss.h>
+#include <utils/utils.h>
 
 int main() {
-    int n = 64;
-    int k = 32;
-    CrcPolarCode code(n, k);
+    int n = 1024;
+    int k = 512;
+    PolarCode code(n, k, 0.5);
+    SC decoder(code);
 
-    Message a;
-    for (int i = 0; i < 32; i++) {
-        a.add(0);
+    PerfectGauss channel;
+
+    for (int i = 0; i < 10000; i++) {
+        Message a = generateWord(k);
+        a.print();
+        Message b = code.encode(a);
+        b = channel.runMessage(b);
+        b = decoder.decode(b, channel);
+        b.print();
     }
-    a[16] = 1;
-    a[15] = 1;
-    code.encode(a);
-
-    SCFlipArikan decoder(code);
     return 0;
 }
