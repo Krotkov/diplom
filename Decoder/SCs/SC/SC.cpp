@@ -3,10 +3,11 @@
 //
 
 #include <cmath>
+#include <Code/PolarCode/PolarCode.h>
 #include "SC.h"
 #include "utils/utils.h"
 
-SC::SC(const PolarCodeWithArikan &code) {
+SC::SC(const PolarCode &code) {
     frozen_ = code.getFrozen();
     n_ = code.getN();
     kernel_ = code.getKernel();

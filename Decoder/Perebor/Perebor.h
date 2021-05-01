@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Code/PolarCode.h>
+#include <Code/PolarCode/PolarCode.h>
 #include <Decoder/Decoder.h>
 
 class Perebor : public Decoder {

@@ -2,7 +2,7 @@
 
 #include <Message/Message.h>
 #include <Channel/Channel.h>
-#include <Code/PolarCode.h>
+#include <Code/PolarCode/PolarCode.h>
 #include <Decoder/Decoder.h>
 #include <Decoder/viterbi/Viterbi.h>
 #include <Decoder/SCs/SCBase.h>

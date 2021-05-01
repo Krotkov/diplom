@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Code/PolarCode.h>
+#include <Code/PolarCode/PolarCode.h>
 #include <Polynom/Polynom.h>
 
 class CrcPolarCode : public Code {

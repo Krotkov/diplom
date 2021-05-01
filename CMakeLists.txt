@@ -13,8 +13,6 @@ add_library(polar_code STATIC Message/Message.cpp
         Matrix/Matrix.cpp
         Matrix/Matrix.h
         utils/utils.h
-        Code/PolarCode/PolarCodeWithArikan.cpp
-        Code/PolarCode/PolarCodeWithArikan.h
         Symbol/Symbol.cpp
         Symbol/Symbol.h
         utils/utils.cpp
@@ -26,16 +24,14 @@ add_library(polar_code STATIC Message/Message.cpp
         Channel/PerfectGauss/PerfectGauss.cpp
         Channel/PerfectGauss/PerfectGauss.h
         Code/ReedMuller/ReedMullerCode.h
-        Code/PolarCode.h
-        Code/PolarCode.cpp
+        Code/PolarCode/PolarCode.h
+        Code/PolarCode/PolarCode.cpp
         Decoder/Decoder.h
         Decoder/Perebor/Perebor.cpp
         Decoder/Perebor/Perebor.h
         Polynom/Polynom.h
         BCH/BchKernel.h
         BCH/BchKernel.cpp
-        Code/PolarCodeWithLargeKernel/PolarCodeWithLargeKernel.h
-        Code/PolarCodeWithLargeKernel/PolarCodeWithLargeKernel.cpp
         Decoder/SCs/SCViterbi/SCViterbi.h
         Decoder/SCs/SCViterbi/SCViterbi.cpp
         Decoder/SCs/SCBase.h
@@ -43,7 +39,7 @@ add_library(polar_code STATIC Message/Message.cpp
         Code/CRC/CrcPolarCode.h
         Code/CRC/CrcPolarCode.cpp
         Code/Code.h
-        Polynom/Polynom.cpp)
+        Polynom/Polynom.cpp Decoder/SCs/SCFlip/SCFlipArikan.cpp Decoder/SCs/SCFlip/SCFlipArikan.h)
 
 add_executable(diplom main.cpp graphic.h Polynom/Polynom.cpp)
 

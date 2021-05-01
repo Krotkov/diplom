@@ -2,8 +2,6 @@
 // Created by kranya on 01.05.2021.
 //
 
-#include <Code/PolarCode/PolarCodeWithArikan.h>
-#include <Code/PolarCodeWithLargeKernel/PolarCodeWithLargeKernel.h>
 #include "CrcPolarCode.h"
 
 int CrcPolarCode::getN() const {
@@ -19,15 +17,15 @@ Matrix CrcPolarCode::getG() const {
 }
 
 CrcPolarCode::CrcPolarCode(int n, int k, int m) {
+    polarCode_ = PolarCode(n, k + m, 0.5);
     createPolynom(m);
     m_ = m;
-    polarCode_ = PolarCodeWithArikan(n, k+m, 0.5);
 }
 
 CrcPolarCode::CrcPolarCode(int n, int k, const Matrix &kernel, int m) {
     createPolynom(m);
     m_ = m;
-    polarCode_ = PolarCodeWithLargeKernel(n, k+m, 0.5, kernel);
+    polarCode_ = PolarCode(n, k + m, kernel);
 }
 
 void CrcPolarCode::createPolynom(int m) {

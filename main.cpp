@@ -2,10 +2,8 @@
 #include <graphic.h>
 #include <getopt.h>
 #include <BCH/BchKernel.h>
-#include <Code/PolarCodeWithLargeKernel/PolarCodeWithLargeKernel.h>
 #include <Decoder/SCs/SCViterbi/SCViterbi.h>
 #include "Channel/Gaus/GausChannel.h"
-#include "Code/PolarCode/PolarCodeWithArikan.h"
 #include "utils/utils.h"
 #include "Decoder/SCs/SC/SC.h"
 
@@ -47,7 +45,7 @@ int main(int argc, char *argv[]) {
         x.push_back((i + 1) * 1.0 / 4);
     }
 
-    PolarCodeWithArikan code{n, k, erasure};
+    PolarCode code{n, k, erasure};
     GausChannel channel(n, k, noise);
     SC decoder(code);
 
@@ -56,7 +54,7 @@ int main(int argc, char *argv[]) {
     auto kernel = Matrix(in);
 
 
-    PolarCodeWithLargeKernel code1(n, k, 0.5, kernel);
+    PolarCode code1(n, k, kernel);
     SCViterbi decoder1(code1);
 
     auto results = build_graphic(code, channel, decoder, max_word_num, x);
