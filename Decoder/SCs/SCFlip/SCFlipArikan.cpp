@@ -125,7 +125,6 @@ double SCFlipArikan::calcMa(const std::vector<double> &l, const std::vector<int>
             ans2 += std::log(1 + std::exp(-a_ * std::abs(l[i])));
         }
     }
-    std::cout << ans2 << "\n";
     ans2 /= a_;
     return ans + ans2;
 }
