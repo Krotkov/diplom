@@ -5,8 +5,8 @@
 #include <cmath>
 #include "PerfectGauss.h"
 
-Message PerfectGauss::runMessage(const Message &message) const {
-    Message ans;
+MessageG PerfectGauss::runMessage(const Message &message) const {
+    MessageG ans;
     for (int i = 0; i < message.size(); i++) {
         if (message[i] == 0) {
             ans.add(1);
@@ -17,7 +17,7 @@ Message PerfectGauss::runMessage(const Message &message) const {
     return ans;
 }
 
-double PerfectGauss::getLLR(const Symbol &symbol) const {
+double PerfectGauss::getLLR(const double &symbol) const {
     if (symbol == 1) {
         return std::log(0.99 / 0.01);
     } else if (symbol == 0) {

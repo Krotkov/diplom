@@ -23,9 +23,9 @@ SCViterbi::SCViterbi(const PolarCode &code) {
     }
 }
 
-double SCViterbi::calculateLStep(std::vector<std::vector<double>> &l_, const Message &y, const Message &u,
+double SCViterbi::calculateLStep(std::vector<std::vector<double>> &l_, const MessageG &y, const Message &u,
                                  const Channel &channel, int n, int i, int pref) const {
-    Message ys = y;
+    MessageG ys = y;
     ys.add(0);
 
     int m = kernel_.size();
@@ -34,13 +34,13 @@ double SCViterbi::calculateLStep(std::vector<std::vector<double>> &l_, const Mes
     for (int j = 0; j < n_; j++) {
         a.add(0);
     }
-    Message cur_ys = ys;
+    MessageG cur_ys = ys;
 
     for (int j = 0; j < (pref + i) % m; j++) {
         a += kernel_.getRow(j) * u[i - (pref + i) % m + j].get();
     }
     for (int j = 0; j + 1 < ys.size(); j++) {
-        cur_ys[j] = ys[j].get() * (a[j] == 1 ? -1 : 1);
+        cur_ys[j] = ys[j] * (a[j] == 1 ? -1 : 1);
     }
 
     l_[n][pref + i] = viterbiVect_[(pref + i) % m].calcLLr(cur_ys, channel);

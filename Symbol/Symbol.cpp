@@ -3,39 +3,32 @@
 //
 
 #include <cmath>
+#include <ostream>
 #include "Symbol.h"
 
 Symbol operator+(const Symbol &a, const Symbol &b) {
-    return Symbol((int)(a.value_ + b.value_) % 2);
+    return Symbol((a.value_ + b.value_) & 1);
 }
 
 Symbol operator*(const Symbol &a, const Symbol &b) {
-    return Symbol((int)(a.value_ * b.value_) % 2);
+    return Symbol((a.value_ * b.value_) & 1);
 }
 
 Symbol &Symbol::operator+=(const Symbol &other) {
-    value_ = (int)(value_ + other.value_) % 2;
+    value_ = (value_ + other.value_) & 1;
     return *this;
 }
 
 Symbol &Symbol::operator*=(const Symbol &other) {
-    value_ = (int)(value_ * other.value_) % 2;
+    value_ = (value_ * other.value_) & 1;
     return *this;
-}
-
-void Symbol::addNoise(double noise) {
-    if (value_ == 0) {
-        value_ = 1.0 + noise;
-    } else {
-        value_ = noise - 1.0;
-    }
 }
 
 bool operator==(const Symbol &a, const Symbol &b) {
     return a.value_ == b.value_;
 }
 
-double Symbol::get() const {
+int Symbol::get() const {
     return value_;
 }
 
@@ -45,4 +38,14 @@ bool operator!=(const Symbol &a, const Symbol &b) {
 
 bool Symbol::operator<(const Symbol &other) const {
     return value_ < other.value_;
+}
+
+std::ostream &operator<<(std::ostream &os, const Symbol &symbol) {
+    os << symbol.value_;
+    return os;
+}
+
+Symbol &Symbol::operator=(const Symbol &other) {
+    (*this).value_ = other.value_;
+    return (*this);
 }

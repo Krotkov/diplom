@@ -5,6 +5,6 @@
 
 class Decoder {
 public:
-    virtual Message decode(const Message& message, const Channel& channel) const = 0;
+    virtual Message decode(const MessageG& message, const Channel& channel) const = 0;
     virtual ~Decoder() = default;
 };

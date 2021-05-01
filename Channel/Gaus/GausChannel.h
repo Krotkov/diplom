@@ -24,9 +24,9 @@ public:
         sigma_ = channel.sigma_;
     };
 
-    Message runMessage(const Message& message) const override;
+    MessageG runMessage(const Message& message) const override;
 
-    double getLLR(const Symbol& symbol) const override;
+    double getLLR(const double& symbol) const override;
 
     void setNoise(double noise);
 };

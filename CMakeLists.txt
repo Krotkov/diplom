@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 include_directories(${CMAKE_SOURCE_DIR})
 
-add_library(polar_code STATIC Message/Message.cpp
+add_library(polar_code STATIC
         Message/Message.h
         Channel/Gaus/GausChannel.cpp
         Channel/Gaus/GausChannel.h

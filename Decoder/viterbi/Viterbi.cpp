@@ -174,7 +174,7 @@ Viterbi::Viterbi(const Matrix &matrix) {
     build_grid();
 }
 
-Message Viterbi::decode(const Message &message, const Channel &channel) const {
+Message Viterbi::decode(const MessageG &message, const Channel &channel) const {
 
     auto dp = count_dp(message, channel);
 
@@ -213,7 +213,7 @@ Viterbi &Viterbi::operator=(Viterbi &&other) noexcept {
 }
 
 std::vector<std::vector<std::pair<double, int>>>
-Viterbi::count_dp(const Message &message, const Channel &channel) const {
+Viterbi::count_dp(const MessageG &message, const Channel &channel) const {
     std::vector<std::vector<std::pair<double, int>>> dp(grid_.size());
 
     for (int i = 0; i < dp.size(); i++) {
@@ -224,7 +224,7 @@ Viterbi::count_dp(const Message &message, const Channel &channel) const {
 
     for (int i = 0; i + 1 < dp.size(); i++) {
         for (int j = 0; j < dp[i].size(); j++) {
-            double value = message[i].get();
+            double value = message[i];
             double s0_value = value * (grid_[i][j].s_0 == 1 ? -1 : 1);
             if (s0_value > 0) {
                 s0_value = 0;
@@ -246,7 +246,7 @@ Viterbi::count_dp(const Message &message, const Channel &channel) const {
     return dp;
 }
 
-double Viterbi::calcLLr(const Message &message, const Channel &channel) const {
+double Viterbi::calcLLr(const MessageG &message, const Channel &channel) const {
     auto dp = count_dp(message, channel);
 
     if (dp.back().size() > 1) {

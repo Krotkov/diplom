@@ -16,7 +16,7 @@ Perebor::Perebor(const PolarCode &code) {
     }
 }
 
-Message Perebor::decode(const Message &message, const Channel &channel) const {
+Message Perebor::decode(const MessageG &message, const Channel &channel) const {
     double max = 0;
     int ans = 0;
     for (int i = 0; i < codeWords_.size(); i++) {

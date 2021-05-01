@@ -6,18 +6,18 @@
 class SCBase : public Decoder {
 protected:
     virtual double
-    calculateL(std::vector <std::vector<double>> &l_, const Message &y, const Message &u, const Channel &channel, int n,
+    calculateL(std::vector <std::vector<double>> &l_, const MessageG &y, const Message &u, const Channel &channel, int n,
                int i, int pref = 0) const;
 
     virtual double
-    calculateLStep(std::vector <std::vector<double>> &l_, const Message &y, const Message &u, const Channel &channel,
+    calculateLStep(std::vector <std::vector<double>> &l_, const MessageG &y, const Message &u, const Channel &channel,
                    int n,
                    int i, int pref = 0) const = 0;
 
 public:
     [[nodiscard]] virtual std::vector<double> calcZ(const Channel& channel, int iters=100000) const;
 
-    Message decode(const Message& message, const Channel& channel) const override;
+    Message decode(const MessageG& message, const Channel& channel) const override;
 
     virtual ~SCBase() = default;
 protected:

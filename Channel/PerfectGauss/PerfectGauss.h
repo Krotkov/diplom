@@ -7,7 +7,7 @@ public:
 
     PerfectGauss();
 
-    Message runMessage(const Message& message) const override;
+    MessageG runMessage(const Message& message) const override;
 
-    double getLLR(const Symbol& symbol) const override;
+    double getLLR(const double& symbol) const override;
 };

@@ -20,13 +20,13 @@ double build_graphic_step(const Code &code, GausChannel channel, const Decoder &
         auto a1 = code.encode(a);
 
         auto b = channel.runMessage(a1);
-        b = decoder.decode(b, channel);
+        auto c = decoder.decode(b, channel);
         if (dynamic_cast<const Viterbi*>(&decoder)) {
-            if (compare(a1, b) > 0) {
+            if (compare(a1, c) > 0) {
                 ans += 1;
             }
         } else {
-            if (compare(a, b) > 0) {
+            if (compare(a, c) > 0) {
                 ans += 1;
             }
         }

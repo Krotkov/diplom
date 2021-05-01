@@ -23,12 +23,12 @@ public:
 
     Viterbi &operator=(Viterbi &&other) noexcept;
 
-    Message decode(const Message& message, const Channel& channel) const override;
+    Message decode(const MessageG& message, const Channel& channel) const override;
 
-    double calcLLr(const Message& message, const Channel& channel) const;
+    double calcLLr(const MessageG& message, const Channel& channel) const;
 
 private:
-    std::vector<std::vector<std::pair<double, int>>> count_dp(const Message& message, const Channel& channel) const;
+    std::vector<std::vector<std::pair<double, int>>> count_dp(const MessageG& message, const Channel& channel) const;
 
     void build_grid();
 

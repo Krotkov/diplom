@@ -12,7 +12,7 @@ SCFlipArikan::SCFlipArikan(const CrcPolarCode &code, int iters) : SC(code.getPol
     iters_ = iters;
 }
 
-Message SCFlipArikan::decode(const Message &message, const Channel &channel) const {
+Message SCFlipArikan::decode(const MessageG &message, const Channel &channel) const {
     int ln = getLog(n_, kernel_.size());
     std::vector<std::vector<double>> l_;
     l_.resize(ln + 1);
@@ -71,7 +71,7 @@ Message SCFlipArikan::decode(const Message &message, const Channel &channel) con
 }
 
 std::pair<Message, std::vector<double>>
-SCFlipArikan::decodeStep(const Message &message, const Channel &channel, std::vector<std::vector<double>> &l_,
+SCFlipArikan::decodeStep(const MessageG &message, const Channel &channel, std::vector<std::vector<double>> &l_,
                          const std::vector<int> &flip) const {
     int ln = getLog(n_, kernel_.size());
     for (int i = 0; i <= ln; i++) {

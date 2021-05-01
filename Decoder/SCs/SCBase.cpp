@@ -7,7 +7,7 @@
 #include "SCBase.h"
 
 double
-SCBase::calculateL(std::vector<std::vector<double>> &l_, const Message &y, const Message &u, const Channel &channel,
+SCBase::calculateL(std::vector<std::vector<double>> &l_, const MessageG &y, const Message &u, const Channel &channel,
                    int n, int i, int pref) const {
     if (n == 0) {
         l_[n][pref + i] = channel.getLLR(y[pref + i]);
@@ -29,7 +29,7 @@ SCBase::calculateL(std::vector<std::vector<double>> &l_, const Message &y, const
         prefs[j] = pref + j * pow(m, n - 1);
     }
 
-    Message ys;
+    MessageG ys;
     for (int j = 0; j < m; j++) {
         if (std::isnan(l_[n - 1][prefs[j] + i / m])) {
             Message new_u;
@@ -90,7 +90,7 @@ std::vector<double> SCBase::calcZ(const Channel &channel, int iters) const {
     return ans;
 }
 
-Message SCBase::decode(const Message &message, const Channel &channel) const {
+Message SCBase::decode(const MessageG &message, const Channel &channel) const {
     int ln = getLog(n_, kernel_.size());
     std::vector<std::vector<double>> l_;
     l_.resize(ln + 1);

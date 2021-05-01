@@ -3,36 +3,109 @@
 #include <vector>
 #include <cassert>
 #include <Symbol/Symbol.h>
+#include <iostream>
 
-class Message : public std::vector<Symbol> {
+template<typename T>
+class MessageBase : public std::vector<T> {
 public:
-    Message() : vector() {};
+    MessageBase() : std::vector<T>() {};
 
-    void add(const Symbol &s);
+    void add(const T &s) {
+        this->push_back(s);
+    }
 
-    void print();
+    void print() {
+        for (int i = 0; i < this->size(); i++) {
+            std::cout << (*this)[i];
+        }
+        std::cout << "\n";
+    }
 
-    friend int compare(const Message &a, const Message &b);
+    template<class Z>
+    friend int compare(const MessageBase<Z> &a, const MessageBase<Z> &b);
 
-    friend Message operator+(const Message &a, const Message &b);
+    template<class Z>
+    friend MessageBase<Z> operator+(const MessageBase<Z> &a, const MessageBase<Z> &b);
 
-    friend Message operator*(const Message &a, const Message &b);
+    template<class Z>
+    friend MessageBase<Z> operator*(const MessageBase<Z> &a, const MessageBase<Z> &b);
 
-    friend Message operator*(const Message &a, double val);
+    template<class Z>
+    friend MessageBase<Z> operator*(const MessageBase<Z> &a, double val);
 
-    Message &operator+=(const Message &other);
+    MessageBase<T> &operator+=(const MessageBase<T> &other) {
+        if (this->size() < other.size()) {
+            this->resize(other.size(), 0);
+        }
+        for (int i = 0; i < other.size(); i++) {
+            (*this)[i] += other[i];
+        }
+        return (*this);
+    }
 
-    Message &operator*=(const Message &other);
+    MessageBase<T> &operator*=(const MessageBase<T> &other) {
+        if (this->size() < other.size()) {
+            this->resize(other.size(), 0);
+        }
+        for (int i = 0; i < other.size(); i++) {
+            (*this)[i] *= other[i];
+        }
+        return (*this);
+    }
 
-    Message &operator*=(double val);
+    MessageBase<T> &operator*=(double val) {
+        for (int i = 0; i < this->size(); i++) {
+            (*this)[i] = (*this)[i].get() * val;
+        }
+        return (*this);
+    }
 
-    int getWeight() const;
+    int getWeight() const {
+        int ans = 0;
+        for (int i = 0; i < this->size(); i++) {
+            if ((*this)[i] == 1) {
+                ans++;
+            }
+        }
+        return ans;
+    }
 };
 
-int compare(const Message &a, const Message &b);
+template<typename T>
+int compare(const MessageBase<T> &a, const MessageBase<T> &b) {
+    if (a.size() != b.size()) {
+        return (int) (1e9);
+    }
+    int ans = 0;
+    for (int i = 0; i < a.size(); i++) {
+        if (a[i] != b[i]) {
+            ans++;
+        }
+    }
+    return ans;
+}
 
-Message operator+(const Message &a, const Message &b);
+template<typename T>
+MessageBase<T> operator+(const MessageBase<T> &a, const MessageBase<T> &b) {
+    MessageBase ans(a);
+    ans += b;
+    return ans;
+}
 
-Message operator*(const Message &a, const Message &b);
+template<typename T>
+MessageBase<T> operator*(const MessageBase<T> &a, const MessageBase<T> &b) {
+    MessageBase ans(a);
+    ans *= b;
+    return ans;
+}
 
-Message operator*(const Message &a, double val);
+template<typename T>
+MessageBase<T> operator*(const MessageBase<T> &a, double val) {
+    MessageBase ans(a);
+    ans *= val;
+    return ans;
+}
+
+using Message = MessageBase<Symbol>;
+
+using MessageG = MessageBase<double>;
