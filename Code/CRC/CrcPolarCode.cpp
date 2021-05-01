@@ -67,3 +67,15 @@ bool CrcPolarCode::check(const Message &message) const {
     Polynom<int> modPol = polFromMessage(mod);
     return ((infoPol % crc_) == modPol);
 }
+
+PolarCode CrcPolarCode::getPolarCode() const {
+    return polarCode_;
+}
+
+int CrcPolarCode::getM() const {
+    return m_;
+}
+
+std::vector<bool> CrcPolarCode::getFrozen() const {
+    return polarCode_.getFrozen();
+}

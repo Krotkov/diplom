@@ -5,6 +5,8 @@
 
 class CrcPolarCode : public Code {
 public:
+    CrcPolarCode() = default;
+
     CrcPolarCode(int n, int k, int m = 16);
 
     CrcPolarCode(int n, int k, const Matrix &kernel, int m = 16);
@@ -13,11 +15,17 @@ public:
 
     int getK() const override;
 
+    int getM() const;
+
+    std::vector<bool> getFrozen() const;
+
     Matrix getG() const override;
 
     Message encode(const Message &message) const override;
 
     bool check(const Message &message) const;
+
+    PolarCode getPolarCode() const;
 
 private:
     void createPolynom(int m);

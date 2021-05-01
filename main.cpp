@@ -3,6 +3,8 @@
 #include <getopt.h>
 #include <BCH/BchKernel.h>
 #include <Decoder/SCs/SCViterbi/SCViterbi.h>
+#include <Code/CRC/CrcPolarCode.h>
+#include <Decoder/SCs/SCFlip/SCFlipArikan.h>
 #include "Channel/Gaus/GausChannel.h"
 #include "utils/utils.h"
 #include "Decoder/SCs/SC/SC.h"
@@ -50,12 +52,13 @@ int main(int argc, char *argv[]) {
     SC decoder(code);
 
 //    auto kernel = createExtendedBchKernel(16);
-    std::ifstream in("../kernels/16-1.txt", std::ifstream::in);
-    auto kernel = Matrix(in);
+//    std::ifstream in("../kernels/16-1.txt", std::ifstream::in);
+//    auto kernel = Matrix(in);
+//    PolarCode code1(n, k, kernel);
+//    SCViterbi decoder1(code1);
 
-
-    PolarCode code1(n, k, kernel);
-    SCViterbi decoder1(code1);
+    CrcPolarCode code1{n, k, 16};
+    SCFlipArikan decoder1{code1, 50};
 
     auto results = build_graphic(code, channel, decoder, max_word_num, x);
     auto results1 = build_graphic(code1, channel, decoder1, max_word_num, x);

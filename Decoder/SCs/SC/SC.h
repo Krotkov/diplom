@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <Code/PolarCode/PolarCode.h>
 #include <Decoder/Decoder.h>
 #include <Decoder/SCs/SCBase.h>
 #include "Channel/Channel.h"

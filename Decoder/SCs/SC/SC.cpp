@@ -30,3 +30,4 @@ SC::calculateLStep(std::vector<std::vector<double>> &l_, const Message &y, const
     }
     return l_[n][pref + i];
 }
+
