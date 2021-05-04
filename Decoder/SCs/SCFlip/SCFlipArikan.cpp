@@ -15,14 +15,17 @@ SCFlipArikan::SCFlipArikan(const CrcPolarCode &code, int iters) : SC(code.getPol
 Message SCFlipArikan::decode(const MessageG &message, const Channel &channel) const {
     int ln = getLog(n_, kernel_.size());
     std::vector<std::vector<double>> l_;
+    std::vector<std::vector<Symbol>> us;
     l_.resize(ln + 1);
+    us.resize(ln + 1);
 
     for (int i = 0; i < ln + 1; i++) {
         l_[i].resize(n_, NAN);
+        us[i].resize(n_, Symbol(-1));
     }
 
     std::vector<int> curE;
-    auto firstTry = decodeStep(message, channel, l_, curE);
+    auto firstTry = decodeStep(message, channel, l_, us, curE);
 
     if (code_.check(firstTry.first)) {
         return cutCrc(firstTry.first);
@@ -46,7 +49,7 @@ Message SCFlipArikan::decode(const MessageG &message, const Channel &channel) co
     std::pair<Message, std::vector<double>> decodedRes;
 
     for (int i = 0; i < iters_; i++) {
-        decodedRes = decodeStep(message, channel, l_, flips.begin()->second);
+        decodedRes = decodeStep(message, channel, l_, us, flips.begin()->second);
 
         if (code_.check(decodedRes.first)) {
             return cutCrc(decodedRes.first);
@@ -72,13 +75,16 @@ Message SCFlipArikan::decode(const MessageG &message, const Channel &channel) co
 
 std::pair<Message, std::vector<double>>
 SCFlipArikan::decodeStep(const MessageG &message, const Channel &channel, std::vector<std::vector<double>> &l_,
+                         std::vector<std::vector<Symbol>> &us,
                          const std::vector<int> &flip) const {
     int ln = getLog(n_, kernel_.size());
     for (int i = 0; i <= ln; i++) {
         for (int j = 0; j < n_; j++) {
             l_[i][j] = NAN;
+            us[i][j] = Symbol(-1);
         }
     }
+
     Message decoded;
     std::vector<double> ls;
     int ind = 0;
@@ -87,7 +93,7 @@ SCFlipArikan::decodeStep(const MessageG &message, const Channel &channel, std::v
             decoded.add(0);
             ls.push_back(0);
         } else {
-            double value = calculateL(l_, message, decoded, channel, ln, i);
+            double value = calculateL(l_, us, message, channel, ln, i);
             ls.push_back(value);
             if (value > 0) {
                 decoded.add(0);
@@ -100,6 +106,9 @@ SCFlipArikan::decodeStep(const MessageG &message, const Channel &channel, std::v
                 decoded.back() += 1;
                 ind++;
             }
+        }
+        if (i != n_ - 1) {
+            updateUs(us, ln, 0, i + 1, decoded.back());
         }
     }
 

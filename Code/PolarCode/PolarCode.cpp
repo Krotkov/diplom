@@ -146,7 +146,7 @@ PolarCode::PolarCode(int n, int k, const Matrix &kernel) {
 
     constructCode(n, k);
 
-    GausChannel channel(n, n, 0);
+    GausChannel channel(n, n, 1);
     SCViterbi viterbi(*this);
     auto z = viterbi.calcZ(channel, 10000);
 

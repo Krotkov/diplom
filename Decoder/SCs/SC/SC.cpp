@@ -22,7 +22,7 @@ SC::calculateLStep(std::vector<std::vector<double>> &l_, const MessageG &y, cons
         double value = std::min(std::abs(value1), std::abs(value2));
         l_[n][pref + i] = (value1 * value2 > 0) ? value : -value;
     } else {
-        if (u[i - 1].get() == 0) {
+        if (u.back().get() == 0) {
             l_[n][pref + i] = value1 + value2;
         } else {
             l_[n][pref + i] = value1 - value2;

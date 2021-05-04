@@ -37,7 +37,7 @@ double SCViterbi::calculateLStep(std::vector<std::vector<double>> &l_, const Mes
     MessageG cur_ys = ys;
 
     for (int j = 0; j < (pref + i) % m; j++) {
-        a += kernel_.getRow(j) * u[i - (pref + i) % m + j].get();
+        a += kernel_.getRow(j) * u[j].get();
     }
     for (int j = 0; j + 1 < ys.size(); j++) {
         cur_ys[j] = ys[j] * (a[j] == 1 ? -1 : 1);

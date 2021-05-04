@@ -6,7 +6,13 @@ class Symbol {
 public:
     Symbol() : value_(0) {};
 
-    Symbol(int v) : value_(v % 2) {};
+    Symbol(int v) {
+        if (v < 0) {
+            value_ = v;
+        } else {
+            value_ = v % 2;
+        }
+    };
 
     Symbol &operator=(const Symbol &other);
 

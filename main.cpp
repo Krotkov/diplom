@@ -5,6 +5,7 @@
 #include <Decoder/SCs/SCViterbi/SCViterbi.h>
 #include <Code/CRC/CrcPolarCode.h>
 #include <Decoder/SCs/SCFlip/SCFlipArikan.h>
+#include <Channel/PerfectGauss/PerfectGauss.h>
 #include "Channel/Gaus/GausChannel.h"
 #include "utils/utils.h"
 #include "Decoder/SCs/SC/SC.h"
@@ -51,20 +52,20 @@ int main(int argc, char *argv[]) {
     GausChannel channel(n, k, noise);
     SC decoder(code);
 
-//    auto kernel = createExtendedBchKernel(16);
-//    std::ifstream in("../kernels/32-1.txt", std::ifstream::in);
-//    auto kernel = Matrix(in);
-//    PolarCode code1(n, k, kernel);
-//    SCViterbi decoder1(code1);
+//    auto kernel = createExtendedBchKernel(4);
+    std::ifstream in("../kernels/32-1.txt", std::ifstream::in);
+    auto kernel = Matrix(in);
+    PolarCode code1(n, k, kernel);
+    SCViterbi decoder1(code1);
 
 //    CrcPolarCode code1{n, k, 16};
 //    SCFlipArikan decoder1{code1, 10};
 
     auto results = build_graphic(code, channel, decoder, max_word_num, x);
-//    auto results1 = build_graphic(code1, channel, decoder1, max_word_num, x);
+    auto results1 = build_graphic(code1, channel, decoder1, max_word_num, x);
 
     print_for_python(x);
     print_for_python(results);
-//    print_for_python(results1);
+    print_for_python(results1);
     return 0;
 }
