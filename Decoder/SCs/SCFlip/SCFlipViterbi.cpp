@@ -1,19 +1,19 @@
 //
-// Created by kranya on 01.05.2021.
+// Created by kranya on 04.05.2021.
 //
 
-#include "SCFlipArikan.h"
+#include "SCFlipViterbi.h"
 #include <utils/utils.h>
 #include <cmath>
 #include <set>
 
-SCFlipArikan::SCFlipArikan(const CrcPolarCode &code, double a, int iters) : SC(code.getPolarCode()) {
+SCFlipViterbi::SCFlipViterbi(const CrcPolarCode &code, double a, int iters) : SCViterbi(code.getPolarCode()) {
     code_ = code;
     a_ = a;
     iters_ = iters;
 }
 
-Message SCFlipArikan::decode(const MessageG &message, const Channel &channel) const {
+Message SCFlipViterbi::decode(const MessageG &message, const Channel &channel) const {
     int ln = getLog(n_, kernel_.size());
     std::vector<std::vector<double>> l_;
     std::vector<std::vector<Symbol>> us;
@@ -79,7 +79,7 @@ Message SCFlipArikan::decode(const MessageG &message, const Channel &channel) co
 }
 
 std::pair<Message, std::vector<double>>
-SCFlipArikan::decodeStep(const MessageG &message, const Channel &channel, std::vector<std::vector<double>> &l_,
+SCFlipViterbi::decodeStep(const MessageG &message, const Channel &channel, std::vector<std::vector<double>> &l_,
                          std::vector<std::vector<Symbol>> &us,
                          const std::vector<int> &flip) const {
     int ln = getLog(n_, kernel_.size());
@@ -127,7 +127,7 @@ SCFlipArikan::decodeStep(const MessageG &message, const Channel &channel, std::v
 
 }
 
-double SCFlipArikan::calcMa(const std::vector<double> &l, const std::vector<int> &flip) const {
+double SCFlipViterbi::calcMa(const std::vector<double> &l, const std::vector<int> &flip) const {
     double ans = 0;
     for (int i = 0; i < flip.size(); i++) {
         ans += std::abs(l[flip[i]]);
@@ -143,7 +143,7 @@ double SCFlipArikan::calcMa(const std::vector<double> &l, const std::vector<int>
     return ans + ans2;
 }
 
-Message SCFlipArikan::cutCrc(const Message &message) const {
+Message SCFlipViterbi::cutCrc(const Message &message) const {
     Message ans;
     for (int j = 0; j < code_.getK(); j++) {
         ans.add(message[j]);

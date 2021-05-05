@@ -148,7 +148,7 @@ PolarCode::PolarCode(int n, int k, const Matrix &kernel) {
 
     GausChannel channel(n, n, 1);
     SCViterbi viterbi(*this);
-    auto z = viterbi.calcZ(channel, 10000);
+    auto z = viterbi.calcZ(channel, 30000);
 
     std::vector<std::pair<long double, int>> zz(n);
     for (int i = 0; i < n; i++) {

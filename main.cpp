@@ -6,6 +6,7 @@
 #include <Code/CRC/CrcPolarCode.h>
 #include <Decoder/SCs/SCFlip/SCFlipArikan.h>
 #include <Channel/PerfectGauss/PerfectGauss.h>
+#include <Decoder/SCs/SCFlip/SCFlipViterbi.h>
 #include "Channel/Gaus/GausChannel.h"
 #include "utils/utils.h"
 #include "Decoder/SCs/SC/SC.h"
@@ -44,28 +45,41 @@ int main(int argc, char *argv[]) {
     }
 
     std::vector<double> x;
-    for (int i = 3; i < 23; i++) {
-        x.push_back((i + 1) * 1.0 / 4);
+    for (int i = 5; i <= 20; i++) {
+        x.push_back((i + 1) * 1.0 / 5);
     }
 
-    PolarCode code{n, k, erasure};
+    std::ifstream in("../kernels/16-1.txt", std::ifstream::in);
+    auto kernel = Matrix(in);
+
     GausChannel channel(n, k, noise);
+
+    PolarCode code{n, k, 0.5};
     SC decoder(code);
 
-//    auto kernel = createExtendedBchKernel(4);
-    std::ifstream in("../kernels/32-1.txt", std::ifstream::in);
-    auto kernel = Matrix(in);
+    CrcPolarCode code0{n, k, 10};
+    SCFlipArikan decoder0(code0, 0.3, 100);
+
     PolarCode code1(n, k, kernel);
     SCViterbi decoder1(code1);
 
-//    CrcPolarCode code1{n, k, 16};
-//    SCFlipArikan decoder1{code1, 10};
+    CrcPolarCode code2{n, k, kernel, 10};
+    SCFlipViterbi decoder2(code2, 0.3, 50);
+
+    CrcPolarCode code3{n, k, kernel, 10};
+    SCFlipViterbi decoder3(code3, 0.3, 100);
 
     auto results = build_graphic(code, channel, decoder, max_word_num, x);
+    auto result0 = build_graphic(code0, channel, decoder0, max_word_num, x);
     auto results1 = build_graphic(code1, channel, decoder1, max_word_num, x);
+    auto results2 = build_graphic(code2, channel, decoder2, max_word_num, x);
+    auto results3 = build_graphic(code3, channel, decoder3, max_word_num, x);
 
     print_for_python(x);
     print_for_python(results);
+    print_for_python(result0);
     print_for_python(results1);
+    print_for_python(results2);
+    print_for_python(results3);
     return 0;
 }

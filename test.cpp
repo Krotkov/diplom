@@ -5,28 +5,24 @@
 #include <utils/utils.h>
 #include <Decoder/SCs/SCViterbi/SCViterbi.h>
 #include <BCH/BchKernel.h>
+#include <Decoder/SCs/SCFlip/SCFlipViterbi.h>
 
 int main() {
-    int n = 4;
-    int k = 2;
+    int n = 256;
+    int k = 128;
 
 //    PolarCode code(n, k, 0.5);
 //    SC decoder(code);
 //    std::ifstream in("../kernels/16-1.txt", std::ifstream::in);
 //    auto kernel = Matrix(in);
     auto kernel = createExtendedBchKernel(4);
-    PolarCode code(n, k, kernel);
-    SCViterbi decoder(code);
-//    for (int i = 0; i < 10000; i++) {
+    CrcPolarCode code(n, k, kernel, 16);
+    SCFlipViterbi decoder(code, 0);
     Message a = generateWord(k);
-//    a[0] = 0;
-//    a[1] = 1;
-//    a[2] = 0;
-//    a[3] = 0;
-//        a.print();
     auto a1 = code.encode(a);
 
-    GausChannel channel(4, 2, 1);
+//    GausChannel channel(4, 2, 1);
+    PerfectGauss channel;
     auto b = channel.runMessage(a1);
 
     auto c = decoder.decode(b, channel);

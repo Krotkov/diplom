@@ -1,11 +1,11 @@
 #pragma once
 
-#include <Decoder/SCs/SC/SC.h>
 #include <Code/CRC/CrcPolarCode.h>
+#include <Decoder/SCs/SCViterbi/SCViterbi.h>
 
-class SCFlipArikan : public SC {
+class SCFlipViterbi : public SCViterbi {
 public:
-    explicit SCFlipArikan(const CrcPolarCode &code, double a_ = 0.5, int iters = 10);
+    explicit SCFlipViterbi(const CrcPolarCode &code, double a = 0.5, int iters = 10);
 
     Message decode(const MessageG &message, const Channel &channel) const override;
 

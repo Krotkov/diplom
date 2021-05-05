@@ -35,6 +35,14 @@ void CrcPolarCode::createPolynom(int m) {
         crc_[2] = 1;
         crc_[15] = 1;
         crc_[16] = 1;
+    } else if (m == 10) {
+        crc_ = Polynom<int>(10);
+        crc_[10] = 1;
+        crc_[9] = 1;
+        crc_[5] = 1;
+        crc_[4] = 1;
+        crc_[1] = 1;
+        crc_[0] = 1;
     } else {
         throw std::runtime_error("can't create crc polynom");
     }
