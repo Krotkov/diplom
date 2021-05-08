@@ -87,3 +87,7 @@ int CrcPolarCode::getM() const {
 std::vector<bool> CrcPolarCode::getFrozen() const {
     return polarCode_.getFrozen();
 }
+
+Matrix CrcPolarCode::getKernel() const {
+    return polarCode_.getKernel();
+}

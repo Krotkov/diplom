@@ -39,7 +39,11 @@ add_library(polar_code STATIC
         Code/CRC/CrcPolarCode.h
         Code/CRC/CrcPolarCode.cpp
         Code/Code.h
-        Polynom/Polynom.cpp Decoder/SCs/SCFlip/SCFlipArikan.cpp Decoder/SCs/SCFlip/SCFlipArikan.h Decoder/SCs/SCFlip/SCFlipViterbi.cpp Decoder/SCs/SCFlip/SCFlipViterbi.h)
+        Polynom/Polynom.cpp
+        Decoder/SCs/SCFlip/SCFlipArikan.cpp
+        Decoder/SCs/SCFlip/SCFlipArikan.h
+        Decoder/SCs/SCFlip/SCFlipViterbi.cpp
+        Decoder/SCs/SCFlip/SCFlipViterbi.h Decoder/SCs/SCFlip/SCFlip.cpp Decoder/SCs/SCFlip/SCFlip.h)
 
 add_executable(diplom main.cpp graphic.h Polynom/Polynom.cpp)
 

@@ -19,6 +19,8 @@ public:
 
     std::vector<bool> getFrozen() const;
 
+    Matrix getKernel() const;
+
     Matrix getG() const override;
 
     Message encode(const Message &message) const override;

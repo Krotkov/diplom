@@ -1,28 +1,40 @@
 //
-// Created by kranya on 01.05.2021.
+// Created by kranya on 06.05.2021.
 //
 
-#include "SCFlipArikan.h"
-#include <utils/utils.h>
 #include <cmath>
+#include <utils/utils.h>
+#include "SCFlip.h"
+#include "SCFlipViterbi.h"
+#include "SCFlipArikan.h"
 #include <set>
 
-SCFlipArikan::SCFlipArikan(const CrcPolarCode &code, double a, int iters) : SC(code.getPolarCode()) {
+SCFlip::SCFlip(const CrcPolarCode &code, double a, int iters) {
     code_ = code;
+    if (code_.getKernel().getN() == 2) {
+        sc_ = new SCFlipArikan(code);
+    } else {
+        sc_ = new SCFlipViterbi(code);
+    }
     a_ = a;
     iters_ = iters;
+    frozen_ = code.getFrozen();
 }
 
-Message SCFlipArikan::decode(const MessageG &message, const Channel &channel) const {
-    int ln = getLog(n_, kernel_.size());
+SCFlip::~SCFlip() {
+    delete sc_;
+}
+
+Message SCFlip::decode(const MessageG &message, const Channel &channel) const {
+    int ln = getLog(code_.getN(), code_.getKernel().size());
     std::vector<std::vector<double>> l_;
     std::vector<std::vector<Symbol>> us;
     l_.resize(ln + 1);
     us.resize(ln + 1);
 
     for (int i = 0; i < ln + 1; i++) {
-        l_[i].resize(n_, NAN);
-        us[i].resize(n_, Symbol(-1));
+        l_[i].resize(code_.getN(), NAN);
+        us[i].resize(code_.getN(), Symbol(-1));
     }
 
     std::vector<int> curE;
@@ -33,7 +45,7 @@ Message SCFlipArikan::decode(const MessageG &message, const Channel &channel) co
     }
 
     std::set<std::pair<double, std::vector<int>>> flips;
-    for (int i = 0; i < n_; i++) {
+    for (int i = 0; i < code_.getN(); i++) {
         if (!frozen_[i]) {
             std::vector<int> flip;
             flip.push_back(i);
@@ -62,7 +74,7 @@ Message SCFlipArikan::decode(const MessageG &message, const Channel &channel) co
 
         auto flip = flips.begin()->second;
         flip.push_back(-1);
-        for (int j = flips.begin()->second.back() + 1; j < n_; j++) {
+        for (int j = flips.begin()->second.back() + 1; j < code_.getN(); j++) {
             if (!frozen_[j]) {
                 flip.back() = j;
                 double ma = calcMa(decodedRes.second, flip);
@@ -79,12 +91,12 @@ Message SCFlipArikan::decode(const MessageG &message, const Channel &channel) co
 }
 
 std::pair<Message, std::vector<double>>
-SCFlipArikan::decodeStep(const MessageG &message, const Channel &channel, std::vector<std::vector<double>> &l_,
+SCFlip::decodeStep(const MessageG &message, const Channel &channel, std::vector<std::vector<double>> &l_,
                          std::vector<std::vector<Symbol>> &us,
                          const std::vector<int> &flip) const {
-    int ln = getLog(n_, kernel_.size());
+    int ln = getLog(code_.getN(), code_.getKernel().size());
     for (int i = 0; i <= ln; i++) {
-        for (int j = 0; j < n_; j++) {
+        for (int j = 0; j < code_.getN(); j++) {
             l_[i][j] = NAN;
             us[i][j] = Symbol(-1);
         }
@@ -98,7 +110,7 @@ SCFlipArikan::decodeStep(const MessageG &message, const Channel &channel, std::v
             decoded.add(0);
             ls.push_back(0);
         } else {
-            double value = calculateL(l_, us, message, channel, ln, i);
+            double value = sc_->calculateL(l_, us, message, channel, ln, i);
             ls.push_back(value);
             if (value > 0) {
                 decoded.add(0);
@@ -112,8 +124,8 @@ SCFlipArikan::decodeStep(const MessageG &message, const Channel &channel, std::v
                 ind++;
             }
         }
-        if (i != n_ - 1) {
-            updateUs(us, ln, 0, i + 1, decoded.back());
+        if (i != code_.getN() - 1) {
+            sc_->updateUs(us, ln, 0, i + 1, decoded.back());
         }
     }
 
@@ -127,25 +139,23 @@ SCFlipArikan::decodeStep(const MessageG &message, const Channel &channel, std::v
 
 }
 
-double SCFlipArikan::calcMa(const std::vector<double> &l, const std::vector<int> &flip) const {
-    long double ans = 0;
+double SCFlip::calcMa(const std::vector<double> &l, const std::vector<int> &flip) const {
+    double ans = 0;
     for (int i = 0; i < flip.size(); i++) {
         ans += std::abs(l[flip[i]]);
     }
 
-    long double ans2 = 0;
+    double ans2 = 0;
     for (int i = 0; i <= flip.back(); i++) {
         if (!frozen_[i]) {
-//            std::cout << std::exp(-a_ * (std::abs(l[i]) / 10)) << "\n";
-            ans2 += std::log(1 + std::exp(-a_ * ((long double) std::abs(l[i]))));
-//            std::cout << std::log(1 + std::exp(-a_ * (long double) std::abs(l[i]))) << "\n";
+            ans2 += std::log(1 + std::exp(-a_ * std::abs(l[i])));
         }
     }
     ans2 /= a_;
     return ans + ans2;
 }
 
-Message SCFlipArikan::cutCrc(const Message &message) const {
+Message SCFlip::cutCrc(const Message &message) const {
     Message ans;
     for (int j = 0; j < code_.getK(); j++) {
         ans.add(message[j]);

@@ -4,7 +4,7 @@
 #include <Matrix/Matrix.h>
 
 class SCBase : public Decoder {
-protected:
+public:
     virtual double
     calculateL(std::vector<std::vector<double>> &l_, std::vector<std::vector<Symbol>> &us, const MessageG &y, const Channel &channel, int n,
                int i, int pref = 0) const;
