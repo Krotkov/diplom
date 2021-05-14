@@ -58,7 +58,7 @@ std::vector<double> SCBase::calcZ(const Channel &channel, int iters) const {
     }
 
     for (int j = 0; j < iters; j++) {
-        if (j % 100 == 0) {
+        if (j % 1000 == 0) {
             std::cout << j << "\n";
         }
         auto message = channel.runMessage(coded);
