@@ -6,15 +6,15 @@
 #include <utils/utils.h>
 #include "SCFlip.h"
 #include "SCFlipViterbi.h"
-#include "SCFlipArikan.h"
 #include <set>
+#include <Decoder/SCs/SC/SC.h>
 
 SCFlip::SCFlip(const CrcPolarCode &code, double a, int iters) {
     code_ = code;
     if (code_.getKernel().getN() == 2) {
-        sc_ = new SCFlipArikan(code);
+        sc_ = new SC(code.getPolarCode());
     } else {
-        sc_ = new SCFlipViterbi(code);
+        sc_ = new SCViterbi(code.getPolarCode());
     }
     a_ = a;
     iters_ = iters;
@@ -51,19 +51,15 @@ Message SCFlip::decode(const MessageG &message, const Channel &channel) const {
             flip.push_back(i);
             double ma = calcMa(firstTry.second, flip);
             if (flips.size() < iters_) {
-                flips.insert({-ma, flip});
-            } else if (-flips.cbegin()->first > ma) {
-                flips.erase(flips.cbegin());
-                flips.insert({-ma, flip});
+                flips.insert({ma, flip});
+            } else if (flips.rbegin()->first > ma) {
+                flips.erase(--flips.end());
+                flips.insert({ma, flip});
             }
         }
     }
 
     std::pair<Message, std::vector<double>> decodedRes;
-
-    if (iters_ == 0) {
-        return cutCrc(firstTry.first);
-    }
 
     for (int i = 0; i < iters_; i++) {
         decodedRes = decodeStep(message, channel, l_, us, flips.begin()->second);
@@ -78,9 +74,9 @@ Message SCFlip::decode(const MessageG &message, const Channel &channel) const {
             if (!frozen_[j]) {
                 flip.back() = j;
                 double ma = calcMa(decodedRes.second, flip);
-                if (-flips.cbegin()->first > ma) {
-                    flips.erase(flips.cbegin());
-                    flips.insert({-ma, flip});
+                if (flips.rbegin()->first > ma) {
+                    flips.erase(--flips.end());
+                    flips.insert({ma, flip});
                 }
             }
         }

@@ -101,7 +101,13 @@ Message SCBase::decode(const MessageG &message, const Channel &channel) const {
     Message decoded;
     for (int i = 0; i < message.size(); i++) {
         if (frozen_[i]) {
-            decoded.add(0);
+            Symbol a;
+            if (dynamicFrozen_.contains(i)) {
+                for (auto &j: dynamicFrozen_.at(i)) {
+                    a += decoded[j];
+                }
+            }
+            decoded.add(a);
         } else {
             double value = calculateL(l_, us, message, channel, ln, i);
             if (value > 0) {

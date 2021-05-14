@@ -2,6 +2,7 @@
 
 #include <Message/Message.h>
 #include <Matrix/Matrix.h>
+#include <map>
 #include "Code/Code.h"
 
 class PolarCode : public Code {
@@ -10,7 +11,10 @@ public:
 
     PolarCode(int n, int k, double err);
 
+    PolarCode(int n, int k, const Matrix &kernel, const std::map<int, std::vector<int>> &dynamicFrozen);
+
     PolarCode(int n, int k, const Matrix &kernel);
+
 
     Message encode(const Message &message) const override;
 
@@ -21,6 +25,8 @@ public:
     int getK() const override;
 
     Matrix getG() const override;
+
+    std::map<int, std::vector<int>> getDynamicFrozen() const;
 
     virtual Matrix getFullG() const;
 
@@ -45,4 +51,5 @@ protected:
     Matrix g_;
     std::vector<bool> frozen_;
     Matrix kernel_;
+    std::map<int, std::vector<int>> dynamicFrozen_;
 };

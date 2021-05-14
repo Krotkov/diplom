@@ -9,6 +9,7 @@ SCViterbi::SCViterbi(const PolarCode &code) {
     n_ = code.getN();
     frozen_ = code.getFrozen();
     kernel_ = code.getKernel();
+    dynamicFrozen_ = code.getDynamicFrozen();
 
     auto curKernel = Matrix(kernel_.getN(), kernel_.getK() + 1);
     for (int i = 0; i < curKernel.getN(); i++) {

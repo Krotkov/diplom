@@ -9,6 +9,8 @@ public:
 
     CrcPolarCode(int n, int k, int m = 16);
 
+    CrcPolarCode(int n, int k, const Matrix &kernel, const std::map<int, std::vector<int>> &dynamicFrozen, int m = 16);
+
     CrcPolarCode(int n, int k, const Matrix &kernel, int m = 16);
 
     int getN() const override;

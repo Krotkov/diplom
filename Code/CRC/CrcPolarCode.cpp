@@ -22,6 +22,12 @@ CrcPolarCode::CrcPolarCode(int n, int k, int m) {
     m_ = m;
 }
 
+CrcPolarCode::CrcPolarCode(int n, int k, const Matrix &kernel, const std::map<int, std::vector<int>> &dynamicFrozen, int m) {
+    createPolynom(m);
+    m_ = m;
+    polarCode_ = PolarCode(n, k + m, kernel, dynamicFrozen);
+}
+
 CrcPolarCode::CrcPolarCode(int n, int k, const Matrix &kernel, int m) {
     createPolynom(m);
     m_ = m;
@@ -91,3 +97,4 @@ std::vector<bool> CrcPolarCode::getFrozen() const {
 Matrix CrcPolarCode::getKernel() const {
     return polarCode_.getKernel();
 }
+

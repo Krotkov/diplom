@@ -11,7 +11,13 @@ Message PolarCode::encode(const Message &message) const {
     int ind = 0;
     for (int i = 0; i < n_; i++) {
         if (frozen_[i]) {
-            expanded.add(0);
+            Symbol sum;
+            if (dynamicFrozen_.contains(i)) {
+                for (int j : dynamicFrozen_.at(i)) {
+                    sum += expanded[j];
+                }
+            }
+            expanded.add(sum);
         } else {
             expanded.add(message[ind]);
             ind++;
@@ -146,8 +152,10 @@ PolarCode::PolarCode(int n, int k, const Matrix &kernel) {
 
     constructCode(n, k);
 
-    GausChannel channel(n, n, 1);
+    frozen_.resize(n, false);
+    GausChannel channel(n, n, -3);
     SCViterbi viterbi(*this);
+
     auto z = viterbi.calcZ(channel, 30000);
 
     std::vector<std::pair<long double, int>> zz(n);
@@ -158,10 +166,21 @@ PolarCode::PolarCode(int n, int k, const Matrix &kernel) {
     std::sort(zz.begin(), zz.end());
     std::reverse(zz.begin(), zz.end());
 
-    frozen_.resize(n, false);
     for (int i = 0; i < n - k; i++) {
         frozen_[zz[i].second] = true;
     }
+}
+
+PolarCode::PolarCode(int n, int k, const Matrix &kernel, const std::map<int, std::vector<int>> &dynamicFrozen) {
+    kernel_ = kernel;
+
+    constructCode(n, k);
+
+    frozen_.resize(n, false);
+    for (auto &a: dynamicFrozen) {
+        frozen_[a.first] = true;
+    }
+    dynamicFrozen_ = dynamicFrozen;
 }
 
 double PolarCode::calculateZ(int n, int i, double err) const {
@@ -175,4 +194,8 @@ double PolarCode::calculateZ(int n, int i, double err) const {
         auto z = calculateZ(n / 2, (i + 1) / 2, err);
         return 2 * z - z * z;
     }
+}
+
+std::map<int, std::vector<int>> PolarCode::getDynamicFrozen() const {
+    return dynamicFrozen_;
 }

@@ -39,19 +39,15 @@ Message SCFlipViterbi::decode(const MessageG &message, const Channel &channel) c
             flip.push_back(i);
             double ma = calcMa(firstTry.second, flip);
             if (flips.size() < iters_) {
-                flips.insert({-ma, flip});
-            } else if (-flips.cbegin()->first > ma) {
-                flips.erase(flips.cbegin());
-                flips.insert({-ma, flip});
+                flips.insert({ma, flip});
+            } else if (flips.rbegin()->first > ma) {
+                flips.erase(--flips.end());
+                flips.insert({ma, flip});
             }
         }
     }
 
     std::pair<Message, std::vector<double>> decodedRes;
-
-    if (iters_ == 0) {
-        return cutCrc(firstTry.first);
-    }
 
     for (int i = 0; i < iters_; i++) {
         decodedRes = decodeStep(message, channel, l_, us, flips.begin()->second);
@@ -66,9 +62,9 @@ Message SCFlipViterbi::decode(const MessageG &message, const Channel &channel) c
             if (!frozen_[j]) {
                 flip.back() = j;
                 double ma = calcMa(decodedRes.second, flip);
-                if (-flips.cbegin()->first > ma) {
-                    flips.erase(flips.cbegin());
-                    flips.insert({-ma, flip});
+                if (flips.rbegin()->first > ma) {
+                    flips.erase(--flips.end());
+                    flips.insert({ma, flip});
                 }
             }
         }
@@ -80,8 +76,8 @@ Message SCFlipViterbi::decode(const MessageG &message, const Channel &channel) c
 
 std::pair<Message, std::vector<double>>
 SCFlipViterbi::decodeStep(const MessageG &message, const Channel &channel, std::vector<std::vector<double>> &l_,
-                         std::vector<std::vector<Symbol>> &us,
-                         const std::vector<int> &flip) const {
+                          std::vector<std::vector<Symbol>> &us,
+                          const std::vector<int> &flip) const {
     int ln = getLog(n_, kernel_.size());
     for (int i = 0; i <= ln; i++) {
         for (int j = 0; j < n_; j++) {
@@ -95,7 +91,13 @@ SCFlipViterbi::decodeStep(const MessageG &message, const Channel &channel, std::
     int ind = 0;
     for (int i = 0; i < message.size(); i++) {
         if (frozen_[i]) {
-            decoded.add(0);
+            Symbol a;
+            if (dynamicFrozen_.contains(i)) {
+                for (auto &j: dynamicFrozen_.at(i)) {
+                    a += decoded[j];
+                }
+            }
+            decoded.add(a);
             ls.push_back(0);
         } else {
             double value = calculateL(l_, us, message, channel, ln, i);

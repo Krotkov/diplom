@@ -2,6 +2,7 @@
 
 #include <Decoder/Decoder.h>
 #include <Matrix/Matrix.h>
+#include <map>
 
 class SCBase : public Decoder {
 public:
@@ -26,5 +27,6 @@ public:
 protected:
     int n_;
     std::vector<bool> frozen_;
+    std::map<int, std::vector<int>> dynamicFrozen_;
     Matrix kernel_;
 };
