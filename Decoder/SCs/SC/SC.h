@@ -11,7 +11,5 @@ public:
     SC(const PolarCode &code);
 protected:
     virtual double
-    calculateLStep(std::vector <std::vector<double>> &l_, const MessageG &y, const Message &u, const Channel &channel,
-                   int n,
-                   int i, int pref = 0) const override;
+    calculateLStep(const MessageG &y, const Message &u, const Channel &channel) const override;
 };

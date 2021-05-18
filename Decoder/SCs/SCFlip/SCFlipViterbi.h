@@ -10,8 +10,7 @@ public:
     Message decode(const MessageG &message, const Channel &channel) const override;
 
     std::pair<Message, std::vector<double>>
-    decodeStep(const MessageG &message, const Channel &channel, std::vector<std::vector<double>> &l_,
-               std::vector<std::vector<Symbol>> &us, const std::vector<int> &flip) const;
+    decodeStep(const MessageG &message, const Channel &channel, const std::vector<int> &flip) const;
 
     double calcMa(const std::vector<double> &l, const std::vector<int> &flip) const;
 

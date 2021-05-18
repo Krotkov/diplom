@@ -14,20 +14,18 @@ SC::SC(const PolarCode &code) {
 }
 
 double
-SC::calculateLStep(std::vector<std::vector<double>> &l_, const MessageG &y, const Message &u, const Channel &channel,
-                   int n, int i, int pref) const {
+SC::calculateLStep(const MessageG &y, const Message &u, const Channel &channel) const {
     double value1 = y[1], value2 = y[0];
 
-    if (i % 2 == 0) {
+    if (u.size() % 2 == 0) {
         double value = std::min(std::abs(value1), std::abs(value2));
-        l_[n][pref + i] = (value1 * value2 > 0) ? value : -value;
+        return (value1 * value2 > 0) ? value : -value;
     } else {
         if (u.back().get() == 0) {
-            l_[n][pref + i] = value1 + value2;
+            return value1 + value2;
         } else {
-            l_[n][pref + i] = value1 - value2;
+            return value1 - value2;
         }
     }
-    return l_[n][pref + i];
 }
 

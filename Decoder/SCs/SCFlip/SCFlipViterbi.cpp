@@ -14,26 +14,15 @@ SCFlipViterbi::SCFlipViterbi(const CrcPolarCode &code, double a, int iters) : SC
 }
 
 Message SCFlipViterbi::decode(const MessageG &message, const Channel &channel) const {
-    int ln = getLog(n_, kernel_.size());
-    std::vector<std::vector<double>> l_;
-    std::vector<std::vector<Symbol>> us;
-    l_.resize(ln + 1);
-    us.resize(ln + 1);
-
-    for (int i = 0; i < ln + 1; i++) {
-        l_[i].resize(n_, NAN);
-        us[i].resize(n_, Symbol(-1));
-    }
-
     std::vector<int> curE;
-    auto firstTry = decodeStep(message, channel, l_, us, curE);
+    auto firstTry = decodeStep(message, channel, curE);
 
     if (code_.check(firstTry.first)) {
         return cutCrc(firstTry.first);
     }
 
     std::set<std::pair<double, std::vector<int>>> flips;
-    for (int i = 0; i < n_; i++) {
+    for (int i = 0; i < code_.getN(); i++) {
         if (!frozen_[i]) {
             std::vector<int> flip;
             flip.push_back(i);
@@ -50,7 +39,7 @@ Message SCFlipViterbi::decode(const MessageG &message, const Channel &channel) c
     std::pair<Message, std::vector<double>> decodedRes;
 
     for (int i = 0; i < iters_; i++) {
-        decodedRes = decodeStep(message, channel, l_, us, flips.begin()->second);
+        decodedRes = decodeStep(message, channel, flips.begin()->second);
 
         if (code_.check(decodedRes.first)) {
             return cutCrc(decodedRes.first);
@@ -58,7 +47,7 @@ Message SCFlipViterbi::decode(const MessageG &message, const Channel &channel) c
 
         auto flip = flips.begin()->second;
         flip.push_back(-1);
-        for (int j = flips.begin()->second.back() + 1; j < n_; j++) {
+        for (int j = flips.begin()->second.back() + 1; j < code_.getN(); j++) {
             if (!frozen_[j]) {
                 flip.back() = j;
                 double ma = calcMa(decodedRes.second, flip);
@@ -75,58 +64,26 @@ Message SCFlipViterbi::decode(const MessageG &message, const Channel &channel) c
 }
 
 std::pair<Message, std::vector<double>>
-SCFlipViterbi::decodeStep(const MessageG &message, const Channel &channel, std::vector<std::vector<double>> &l_,
-                          std::vector<std::vector<Symbol>> &us,
-                          const std::vector<int> &flip) const {
-    int ln = getLog(n_, kernel_.size());
-    for (int i = 0; i <= ln; i++) {
-        for (int j = 0; j < n_; j++) {
-            l_[i][j] = NAN;
-            us[i][j] = Symbol(-1);
-        }
+SCFlipViterbi::decodeStep(const MessageG &message, const Channel &channel, const std::vector<int> &flip) const {
+    std::pair<Message, std::vector<double>> decoded1;
+    decoded1.first.resize(code_.getN());
+    decoded1.second.resize(code_.getN());
+    std::vector<bool> flip2;
+    flip2.resize(code_.getN(), false);
+    for (auto i: flip) {
+        flip2[i] = true;
     }
 
-    Message decoded;
-    std::vector<double> ls;
-    int ind = 0;
-    for (int i = 0; i < message.size(); i++) {
-        if (frozen_[i]) {
-            Symbol a;
-            if (dynamicFrozen_.contains(i)) {
-                for (auto &j: dynamicFrozen_.at(i)) {
-                    a += decoded[j];
-                }
-            }
-            decoded.add(a);
-            ls.push_back(0);
-        } else {
-            double value = calculateL(l_, us, message, channel, ln, i);
-            ls.push_back(value);
-            if (value > 0) {
-                decoded.add(0);
-            } else {
-                decoded.add(1);
-            }
+    calculateL(message, 0, channel, flip2, decoded1);
 
-            //flip if need
-            if (ind < flip.size() && i == flip[ind]) {
-                decoded.back() += 1;
-                ind++;
-            }
-        }
-        if (i != n_ - 1) {
-            updateUs(us, ln, 0, i + 1, decoded.back());
-        }
-    }
-
-    Message ans;
-    for (int i = 0; i < decoded.size(); i++) {
+    Message ans1;
+    for (int i = 0; i < decoded1.first.size(); i++) {
         if (!frozen_[i]) {
-            ans.add(decoded[i]);
+            ans1.add(decoded1.first[i]);
         }
     }
-    return {ans, ls};
-
+    decoded1.first = ans1;
+    return decoded1;
 }
 
 double SCFlipViterbi::calcMa(const std::vector<double> &l, const std::vector<int> &flip) const {

@@ -16,7 +16,7 @@ public:
 
     void print() {
         for (int i = 0; i < this->size(); i++) {
-            std::cout << (*this)[i];
+            std::cout << (*this)[i] << " ";
         }
         std::cout << "\n";
     }

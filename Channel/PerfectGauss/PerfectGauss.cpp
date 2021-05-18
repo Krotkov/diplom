@@ -18,7 +18,7 @@ MessageG PerfectGauss::runMessage(const Message &message) const {
 }
 
 double PerfectGauss::getLLR(const double &symbol) const {
-    if (symbol == 1) {
+    if (symbol > 0) {
         return std::log(0.99 / 0.01);
     } else if (symbol == 0) {
         //special for scviterbi

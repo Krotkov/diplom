@@ -67,10 +67,10 @@ int main(int argc, char *argv[]) {
     SCViterbi decoder2(code2);
 
     CrcPolarCode code3{n, k, kernel, 10};
-    SCFlip decoder3(code3, 0.5, 10);
+    SCFlipViterbi decoder3(code3, 0.5, 10);
 
     CrcPolarCode code4 = code3;
-    SCFlip decoder4(code4, 0.5, 50);
+    SCFlipViterbi decoder4(code4, 0.5, 50);
 
     auto results = build_graphic(code, channel, decoder, max_word_num, x);
     auto result0 = build_graphic(code0, channel, decoder0, max_word_num, x);
