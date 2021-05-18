@@ -4,6 +4,7 @@
 
 #include <cmath>
 #include <utils/utils.h>
+#include <Code/PolarCode/PolarCode.h>
 #include "SCBase.h"
 
 std::vector<double> SCBase::calcZ(const Channel &channel, int iters) const {
@@ -124,4 +125,10 @@ Message SCBase::calculateL(const MessageG &message1, int i, const Channel &chann
         }
     }
     return ans;
+}
+
+SCBase::SCBase(const PolarCode &code) {
+    n_ = code.getN();
+    frozen_ = code.getFrozen();
+    kernel_ = code.getKernel();
 }

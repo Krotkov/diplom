@@ -2,10 +2,13 @@
 
 #include <Decoder/Decoder.h>
 #include <Matrix/Matrix.h>
+#include <Code/PolarCode/PolarCode.h>
 #include <map>
 
 class SCBase : public Decoder {
 public:
+    SCBase(const PolarCode &code);
+
     virtual Message calculateL(const MessageG &message, int i, const Channel &channel, const std::vector<bool> &flip,
                                std::pair<Message, std::vector<double>> &decoderAnswer, bool calcZMode = false) const;
 
@@ -22,6 +25,6 @@ public:
 protected:
     int n_;
     std::vector<bool> frozen_;
-    std::map<int, std::vector<int>> dynamicFrozen_;
+    std::vector<std::vector<int>> specialNodes_;
     Matrix kernel_;
 };

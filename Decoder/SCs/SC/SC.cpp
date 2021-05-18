@@ -7,11 +7,7 @@
 #include "SC.h"
 #include "utils/utils.h"
 
-SC::SC(const PolarCode &code) {
-    frozen_ = code.getFrozen();
-    n_ = code.getN();
-    kernel_ = code.getKernel();
-}
+SC::SC(const PolarCode &code) : SCBase(code) {}
 
 double
 SC::calculateLStep(const MessageG &y, const Message &u, const Channel &channel) const {

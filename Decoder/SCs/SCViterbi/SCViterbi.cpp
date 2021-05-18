@@ -5,12 +5,7 @@
 #include <Decoder/viterbi/Viterbi.h>
 #include "SCViterbi.h"
 
-SCViterbi::SCViterbi(const PolarCode &code) {
-    n_ = code.getN();
-    frozen_ = code.getFrozen();
-    kernel_ = code.getKernel();
-    dynamicFrozen_ = code.getDynamicFrozen();
-
+SCViterbi::SCViterbi(const PolarCode &code) : SCBase(code) {
     auto curKernel = Matrix(kernel_.getN(), kernel_.getK() + 1);
     for (int i = 0; i < curKernel.getN(); i++) {
         auto row = kernel_[i];
@@ -29,8 +24,6 @@ double SCViterbi::calculateLStep(const MessageG &y, const Message &u,
     MessageG ys = y;
     ys.add(0);
 
-    int m = kernel_.size();
-
     Message a;
     for (int j = 0; j < n_; j++) {
         a.add(0);
@@ -45,7 +38,5 @@ double SCViterbi::calculateLStep(const MessageG &y, const Message &u,
     }
 
     return viterbiVect_[u.size()].calcLLr(cur_ys, channel);
-
-//    return l_[n][pref + i];
 }
 
