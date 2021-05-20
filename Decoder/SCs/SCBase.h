@@ -9,8 +9,9 @@ class SCBase : public Decoder {
 public:
     SCBase(const PolarCode &code);
 
-    virtual Message calculateL(const MessageG &message, int n, int i, const Channel &channel, const std::vector<bool> &flip,
-                               std::pair<Message, std::vector<double>> &decoderAnswer, bool calcZMode = false) const;
+    virtual Message
+    calculateL(const MessageG &message, int n, int i, const Channel &channel, const std::vector<bool> &flip,
+               bool calcZMode = false) const;
 
     virtual double
     calculateLStep(const MessageG &y, const Message &u, const Channel &channel) const = 0;
@@ -24,8 +25,11 @@ public:
 
     virtual ~SCBase() = default;
 
-    enum Special {NONE, RATE0, REP, SPC, RATE1};
+    enum Special {
+        NONE, RATE0, REP, SPC, RATE1
+    };
 
+    std::vector<std::vector<MessageG>> *nodes_l_;
 protected:
     int n_;
     std::vector<bool> frozen_;
