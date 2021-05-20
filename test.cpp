@@ -15,7 +15,8 @@ int main() {
     std::ifstream in("../kernels/16-1.txt", std::ifstream::in);
     auto kernel = Matrix(in);
 
-    GausChannel channel(n, k, 1);
+//    GausChannel channel(n, k, 1);
+    PerfectGauss channel;
 
 //    std::map<int, std::vector<int>> dynamicFrozen_;
 //
@@ -36,22 +37,22 @@ int main() {
 //        d >> num;
 //        dynamicFrozen_[num] = a;
 //    }
-
-    PolarCode code(n, k, 0.5);
+    k += 10;
+    PolarCode code(n, k, kernel);
     SC decoder(code);
 
 //    PolarCode code0(n, k, 0.5);
 //    SC decoder0(code0);
-    for (int i = 0; i < 2; i++) {
-        auto a1 = generateWord(k);
-        auto a2 = code.encode(a1);
-//        a2.print();
-        auto a3 = channel.runMessage(a2);
+//    for (int i = 0; i < 10000; i++) {
+    auto a1 = generateWord(k);
+    auto a2 = code.encode(a1);
+    auto a3 = channel.runMessage(a2);
 //        a3.print();
-        auto a4 = decoder.decode(a3, channel);
-//        a4.print();
-        a1.print();
-        std::cout << "\n";
-    }
+    auto a4 = decoder.decode(a3, channel);
+    a1.print();
+        a2.print();
+    a4.print();
+//        a1.print();
+//    }
     return 0;
 }

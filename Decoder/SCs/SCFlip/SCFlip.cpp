@@ -86,7 +86,7 @@ SCFlip::decodeStep(const MessageG &message, const Channel &channel, const std::v
         flip2[i] = true;
     }
 
-    sc_->calculateL(message, 0, channel, flip2, decoded1);
+    sc_->calculateL(message, 0, 0, channel, flip2, decoded1);
 
     Message ans1;
     for (int i = 0; i < decoded1.first.size(); i++) {

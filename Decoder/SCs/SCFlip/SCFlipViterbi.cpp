@@ -74,7 +74,7 @@ SCFlipViterbi::decodeStep(const MessageG &message, const Channel &channel, const
         flip2[i] = true;
     }
 
-    calculateL(message, 0, channel, flip2, decoded1);
+    calculateL(message, 0, 0, channel, flip2, decoded1);
 
     Message ans1;
     for (int i = 0; i < decoded1.first.size(); i++) {

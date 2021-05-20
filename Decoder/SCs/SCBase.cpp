@@ -26,7 +26,7 @@ std::vector<double> SCBase::calcZ(const Channel &channel, int iters) const {
         std::vector<bool> flip;
         flip.resize(n_, false);
 
-        calculateL(message1, 0, channel, flip, decoded, true);
+        calculateL(message1, 0, 0, channel, flip, decoded, true);
 
         for (int i = 0; i < n_; i++) {
             if (decoded.second[i] < 0) {
@@ -49,7 +49,7 @@ Message SCBase::decode(const MessageG &message, const Channel &channel) const {
     std::vector<bool> flip;
     flip.resize(n_, false);
 
-    calculateL(message, 0, channel, flip, decoded1);
+    calculateL(message, 0, 0, channel, flip, decoded1);
 
     Message ans1;
     for (int i = 0; i < decoded1.first.size(); i++) {
@@ -60,7 +60,7 @@ Message SCBase::decode(const MessageG &message, const Channel &channel) const {
     return ans1;
 }
 
-Message SCBase::calculateL(const MessageG &message1, int i, const Channel &channel, const std::vector<bool> &flip,
+Message SCBase::calculateL(const MessageG &message1, int n, int i, const Channel &channel, const std::vector<bool> &flip,
                            std::pair<Message, std::vector<double>> &decoderAnswer, bool calcZMode) const {
     MessageG message = message1;
     if (message.size() == n_) {
@@ -93,6 +93,34 @@ Message SCBase::calculateL(const MessageG &message1, int i, const Channel &chann
         return ans;
     }
 
+    if (specialNodes_[n][i] == REP) {
+        double sum = 0;
+        for (int j = 0; j < message.size(); j++) {
+            sum += message[j];
+        }
+        int newI = i;
+        for (int j = n+1; j < specialNodes_.size(); j++) {
+            newI = newI * kernel_.getN() + kernel_.getN() - 1;
+        }
+
+        Symbol a;
+        if ((sum >= 0 && !flip[newI]) || (sum < 0 && flip[newI])) {
+            a = 0;
+            decoderAnswer.first[newI] = 0;
+        } else {
+            a = 1;
+            decoderAnswer.first[newI] = 1;
+        }
+        Message ans;
+        for (int j = 0; j < message.size(); j++) {
+            ans.add(a);
+        }
+
+        decoderAnswer.second[newI] = sum;
+
+        return ans;
+    }
+
     std::vector<MessageG> parts(message.size() / kernel_.size());
 
     for (int j = 0; j < parts.size(); j++) {
@@ -103,14 +131,23 @@ Message SCBase::calculateL(const MessageG &message1, int i, const Channel &chann
     }
 
     MessageG curY;
-    Message curU;
     curY.resize(message.size() / kernel_.size());
     std::vector<Message> us(curY.size());
     for (int j = 0; j < kernel_.size(); j++) {
-        for (int q = 0; q < curY.size(); q++) {
-            curY[q] = calculateLStep(parts[q], us[q], channel);
+        Message curU;
+        int newN = n+1;
+        int newI = i * kernel_.getN() + j;
+
+        if (specialNodes_[newN][newI] == RATE0) {
+            for (int q = 0; q < curY.size(); q++) {
+                curU.add(0);
+            }
+        } else {
+            for (int q = 0; q < curY.size(); q++) {
+                curY[q] = calculateLStep(parts[q], us[q], channel);
+            }
+            curU = calculateL(curY, n + 1, i * kernel_.getN() + j, channel, flip, decoderAnswer, calcZMode);
         }
-        curU = calculateL(curY, i * kernel_.getN() + j, channel, flip, decoderAnswer, calcZMode);
         for (int q = 0; q < curU.size(); q++) {
             us[q].add(curU[q]);
         }
@@ -131,4 +168,59 @@ SCBase::SCBase(const PolarCode &code) {
     n_ = code.getN();
     frozen_ = code.getFrozen();
     kernel_ = code.getKernel();
+
+    int ln = getLog(n_, kernel_.getN());
+    specialNodes_.resize(ln + 1);
+    int a = 1;
+    for (int i = 0; i < specialNodes_.size(); i++) {
+        specialNodes_[i].resize(a, NONE);
+        a *= kernel_.getN();
+    }
+    recursiveSpecialNodesCalc(0, 0, 0, n_);
+}
+
+void SCBase::recursiveSpecialNodesCalc(int n, int i, int l, int r) {
+    if (r - l == 1) {
+        return;
+    }
+
+    bool flagRate0 = true, flagRep = true, flagSpc = true, flagRate1 = true;
+    for (int j = l; j < r; j++) {
+        if (!frozen_[j]) {
+            flagRate0 = false;
+        }
+        if (j < r-1 && !frozen_[j]) {
+            flagRep = false;
+        }
+        if (j == r-1 && frozen_[j]) {
+            flagRep = false;
+        }
+        if (frozen_[j]) {
+            flagRate1 = false;
+        }
+        if (j != 0 && frozen_[j]) {
+            flagSpc = false;
+        }
+        if (j == 0 && !frozen_[j]) {
+            flagSpc = false;
+        }
+    }
+    if (flagRate0) {
+        specialNodes_[n][i] = RATE0;
+        return;
+    }
+    if (flagRep) {
+        specialNodes_[n][i] = REP;
+    }
+    if (flagSpc) {
+        specialNodes_[n][i] = SPC;
+    }
+    if (flagRate1) {
+        specialNodes_[n][i] = RATE1;
+    }
+
+    for (int j = 0; j < kernel_.getN(); j++) {
+        recursiveSpecialNodesCalc(n + 1, i * kernel_.getN() + j, l + (r - l) * j / kernel_.getN(),
+                                  l + (r - l) * (j + 1) / kernel_.getN());
+    }
 }

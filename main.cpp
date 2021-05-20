@@ -55,7 +55,7 @@ int main(int argc, char *argv[]) {
     GausChannel channel(n, k, noise);
 
     PolarCode code{n, k, 0.5};
-    SCViterbi decoder(code);
+    SC decoder(code);
 
     CrcPolarCode code0{n, k, 10};
     SCFlip decoder0(code0, 0.5, 10);
