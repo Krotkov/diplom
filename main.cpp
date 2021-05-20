@@ -50,7 +50,9 @@ int main(int argc, char *argv[]) {
     }
 
     std::ifstream in("../kernels/16-1.txt", std::ifstream::in);
+    std::ifstream in2("../kernels/16-1-r.txt", std::ifstream::in);
     auto kernel = Matrix(in);
+    auto rKernel = Matrix(in2);
 
     GausChannel channel(n, k, noise);
 
@@ -63,10 +65,10 @@ int main(int argc, char *argv[]) {
 //    CrcPolarCode code1 = code0;
 //    SCFlip decoder1(code1, 0.5, 50);
 
-    PolarCode code2(n, k, kernel);
+    PolarCode code2(n, k, kernel, rKernel);
     SCViterbi decoder2(code2);
 
-    CrcPolarCode code3{n, k, kernel, 10};
+    CrcPolarCode code3{n, k, kernel, rKernel, 10};
     SCFlipViterbi decoder3(code3, 0.5, 10);
 
 //    CrcPolarCode code4 = code3;

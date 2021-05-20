@@ -52,11 +52,46 @@ void PolarCode::recursiveEncode(Message &message, int begin, int end) const {
     for (int i = begin; i < end; i++) {
         message[i] = newMessage[i - begin];
     }
-
     if (end - begin > kernel_.getN()) {
         int size = (end - begin) / kernel_.getN();
         for (int i = 0; i < kernel_.getN(); i++) {
             recursiveEncode(message, begin + (i * size), begin + (i + 1) * size);
+        }
+    }
+}
+
+Message PolarCode::reverseEncode(const Message &message) const {
+    Message ans = message;
+    for (int a = kernel_.getN(); a <= n_; a *= kernel_.getN()) {
+        for (int i = 0; i < n_; i += a) {
+            reverseEncode(ans, i, i + a);
+        }
+    }
+    return ans;
+}
+
+void PolarCode::reverseEncode(Message &message, int begin, int end) const {
+    Message newMessage;
+    newMessage.resize(end - begin);
+    int ind = 0;
+    for (int i = 0; i < (end - begin) / kernel_.getN(); i++) {
+        for (int j = begin + i; j < end; j += (end - begin) / kernel_.getN()) {
+            newMessage[ind] = message[j];
+            ind++;
+        }
+    }
+    for (int i = begin; i < end; i++) {
+        message[i] = newMessage[i - begin];
+    }
+
+    for (int i = begin; i < end; i += kernel_.getN()) {
+        Message cur;
+        for (int q = i; q < i + kernel_.getN(); q++) {
+            cur.add(message[q]);
+        }
+        cur = dot(Matrix(cur), rKernel_).getRow(0);
+        for (int q = i; q < i + kernel_.getN(); q++) {
+            message[q] = cur[q - i];
         }
     }
 }
@@ -132,6 +167,8 @@ PolarCode::PolarCode(int n, int k, double err) {
     kernel_[1][0] = 1;
     kernel_[1][1] = 1;
 
+    rKernel_ = kernel_;
+
     constructCode(n, k);
 
     std::vector<std::pair<double, int>> zz(n);
@@ -147,8 +184,9 @@ PolarCode::PolarCode(int n, int k, double err) {
     }
 }
 
-PolarCode::PolarCode(int n, int k, const Matrix &kernel) {
+PolarCode::PolarCode(int n, int k, const Matrix &kernel, const Matrix &rKernel) {
     kernel_ = kernel;
+    rKernel_ = rKernel;
 
     constructCode(n, k);
 
@@ -199,3 +237,4 @@ double PolarCode::calculateZ(int n, int i, double err) const {
 std::map<int, std::vector<int>> PolarCode::getDynamicFrozen() const {
     return dynamicFrozen_;
 }
+

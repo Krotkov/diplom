@@ -28,10 +28,10 @@ CrcPolarCode::CrcPolarCode(int n, int k, const Matrix &kernel, const std::map<in
     polarCode_ = PolarCode(n, k + m, kernel, dynamicFrozen);
 }
 
-CrcPolarCode::CrcPolarCode(int n, int k, const Matrix &kernel, int m) {
+CrcPolarCode::CrcPolarCode(int n, int k, const Matrix &kernel, const Matrix &rKernel, int m) {
     createPolynom(m);
     m_ = m;
-    polarCode_ = PolarCode(n, k + m, kernel);
+    polarCode_ = PolarCode(n, k + m, kernel, rKernel);
 }
 
 void CrcPolarCode::createPolynom(int m) {

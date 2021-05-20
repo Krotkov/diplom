@@ -30,5 +30,7 @@ protected:
     int n_;
     std::vector<bool> frozen_;
     std::vector<std::vector<Special>> specialNodes_;
+    std::vector<std::pair<int, int>> nodeList_;
     Matrix kernel_;
+    PolarCode code_;
 };

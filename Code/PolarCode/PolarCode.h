@@ -13,12 +13,16 @@ public:
 
     PolarCode(int n, int k, const Matrix &kernel, const std::map<int, std::vector<int>> &dynamicFrozen);
 
-    PolarCode(int n, int k, const Matrix &kernel);
+    PolarCode(int n, int k, const Matrix &kernel, const Matrix &rKernel);
 
 
     Message encode(const Message &message) const override;
 
+    Message reverseEncode(const Message &message) const;
+
     void recursiveEncode(Message &message, int begin, int end) const;
+
+    void reverseEncode(Message &message, int begin, int end) const;
 
     int getN() const override;
 
@@ -51,5 +55,6 @@ protected:
     Matrix g_;
     std::vector<bool> frozen_;
     Matrix kernel_;
+    Matrix rKernel_;
     std::map<int, std::vector<int>> dynamicFrozen_;
 };

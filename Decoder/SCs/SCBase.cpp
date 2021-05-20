@@ -49,12 +49,12 @@ Message SCBase::decode(const MessageG &message, const Channel &channel) const {
     std::vector<bool> flip;
     flip.resize(n_, false);
 
-    calculateL(message, 0, 0, channel, flip, decoded1);
+    auto ans = code_.reverseEncode(calculateL(message, 0, 0, channel, flip, decoded1));
 
     Message ans1;
-    for (int i = 0; i < decoded1.first.size(); i++) {
+    for (int i = 0; i < ans.size(); i++) {
         if (!frozen_[i]) {
-            ans1.add(decoded1.first[i]);
+            ans1.add(ans[i]);
         }
     }
     return ans1;
@@ -168,6 +168,7 @@ SCBase::SCBase(const PolarCode &code) {
     n_ = code.getN();
     frozen_ = code.getFrozen();
     kernel_ = code.getKernel();
+    code_ = code;
 
     int ln = getLog(n_, kernel_.getN());
     specialNodes_.resize(ln + 1);
@@ -181,6 +182,7 @@ SCBase::SCBase(const PolarCode &code) {
 
 void SCBase::recursiveSpecialNodesCalc(int n, int i, int l, int r) {
     if (r - l == 1) {
+        nodeList_.emplace_back(n, i);
         return;
     }
 
@@ -214,6 +216,8 @@ void SCBase::recursiveSpecialNodesCalc(int n, int i, int l, int r) {
     }
     if (flagSpc) {
         specialNodes_[n][i] = SPC;
+        nodeList_.emplace_back(n, i);
+        return;
     }
     if (flagRate1) {
         specialNodes_[n][i] = RATE1;

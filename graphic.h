@@ -44,7 +44,7 @@ std::vector<double> build_graphic(const Code &code, GausChannel &channel, const 
 
     for (double i : sn) {
         channel.setNoise(i);
-
+        threadCount = std::min(threadCount, calc_iter);
         std::vector<std::future<double>> results;
         results.reserve(threadCount);
         for (int j = 0; j < threadCount; j++) {
