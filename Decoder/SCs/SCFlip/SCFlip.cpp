@@ -214,7 +214,7 @@ double SCFlip::calcMa(const std::vector<NodeFlip> &flip, const std::vector<std::
             ma2 += calcFa(std::abs(q));
         } else if (sc_->specialNodes_[curN][curI] == RATE1) {
             while (ind < (int) flip.size() - 1 && flip[ind].n == curN && flip[ind].i == curI) {
-                ma2 += nodes_l_[curN][curI][flip[ind].f1];
+                ma2 += std::abs(nodes_l_[curN][curI][flip[ind].f1]);
                 ind++;
             }
             for (int j = 0; j < nodes_l_[curN][curI].size(); j++) {
