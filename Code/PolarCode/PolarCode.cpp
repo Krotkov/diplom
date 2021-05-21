@@ -24,74 +24,50 @@ Message PolarCode::encode(const Message &message) const {
         }
     }
 
-    recursiveEncode(expanded, 0, n_);
+    for (int i = kernel_.getN(); i <= n_; i *= kernel_.getN()) {
+        for (int j = 0; j < n_; j += i) {
+            recursiveEncode(expanded, j, j + i);
+        }
+    }
     return expanded;
 }
 
 void PolarCode::recursiveEncode(Message &message, int begin, int end) const {
-    for (int i = begin; i < end; i += kernel_.size()) {
+    for (int i = 0; i < (end - begin) / kernel_.getN(); i++) {
         Message cur;
-        for (int q = i; q < i + kernel_.getN(); q++) {
-            cur.add(message[q]);
+        for (int j = begin + i; j < end; j += (end - begin) / kernel_.getN()) {
+            cur.add(message[j]);
         }
         cur = dot(Matrix(cur), kernel_).getRow(0);
-        for (int q = i; q < i + kernel_.getN(); q++) {
-            message[q] = cur[q - i];
-        }
-    }
-    Message newMessage;
-    newMessage.resize(end - begin);
-
-    int ind = 0;
-    for (int i = 0; i < kernel_.getN(); i++) {
-        for (int j = begin + i; j < end; j += kernel_.getN()) {
-            newMessage[ind] = message[j];
+        int ind = 0;
+        for (int j = begin + i; j < end; j += (end - begin) / kernel_.getN()) {
+            message[j] = cur[ind];
             ind++;
-        }
-    }
-    for (int i = begin; i < end; i++) {
-        message[i] = newMessage[i - begin];
-    }
-    if (end - begin > kernel_.getN()) {
-        int size = (end - begin) / kernel_.getN();
-        for (int i = 0; i < kernel_.getN(); i++) {
-            recursiveEncode(message, begin + (i * size), begin + (i + 1) * size);
         }
     }
 }
 
 Message PolarCode::reverseEncode(const Message &message) const {
-    Message ans = message;
-    for (int a = kernel_.getN(); a <= n_; a *= kernel_.getN()) {
-        for (int i = 0; i < n_; i += a) {
-            reverseEncode(ans, i, i + a);
+    Message message1 = message;
+    for (int i = n_; i >= kernel_.getN(); i /= kernel_.getN()) {
+        for (int j = 0; j < n_; j += i) {
+            reverseEncode(message1, j, j + i);
         }
     }
-    return ans;
+    return message1;
 }
 
 void PolarCode::reverseEncode(Message &message, int begin, int end) const {
-    Message newMessage;
-    newMessage.resize(end - begin);
-    int ind = 0;
     for (int i = 0; i < (end - begin) / kernel_.getN(); i++) {
-        for (int j = begin + i; j < end; j += (end - begin) / kernel_.getN()) {
-            newMessage[ind] = message[j];
-            ind++;
-        }
-    }
-    for (int i = begin; i < end; i++) {
-        message[i] = newMessage[i - begin];
-    }
-
-    for (int i = begin; i < end; i += kernel_.getN()) {
         Message cur;
-        for (int q = i; q < i + kernel_.getN(); q++) {
-            cur.add(message[q]);
+        for (int j = begin + i; j < end; j += (end - begin) / kernel_.getN()) {
+            cur.add(message[j]);
         }
         cur = dot(Matrix(cur), rKernel_).getRow(0);
-        for (int q = i; q < i + kernel_.getN(); q++) {
-            message[q] = cur[q - i];
+        int ind = 0;
+        for (int j = begin + i; j < end; j += (end - begin) / kernel_.getN()) {
+            message[j] = cur[ind];
+            ind++;
         }
     }
 }

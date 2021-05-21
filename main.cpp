@@ -63,8 +63,8 @@ int main(int argc, char *argv[]) {
     CrcPolarCode code0{n, k, 10};
     SCFlip decoder0(code0, 0.5, 10);
 
-    CrcPolarCode code1 = code0;
-    SCFlip1 decoder1(code1, 0.5, 10);
+//    CrcPolarCode code1 = code0;
+//    SCFlip1 decoder1(code1, 0.5, 10);
 
 //    PolarCode code2(n, k, kernel, rKernel);
 //    SCViterbi decoder2(code2);
@@ -77,7 +77,7 @@ int main(int argc, char *argv[]) {
 
     auto results = build_graphic(code, channel, decoder, max_word_num, x);
     auto result0 = build_graphic(code0, channel, decoder0, max_word_num, x);
-    auto results1 = build_graphic(code1, channel, decoder1, max_word_num, x);
+//    auto results1 = build_graphic(code1, channel, decoder1, max_word_num, x);
 //    auto results2 = build_graphic(code2, channel, decoder2, max_word_num, x);
 //    auto results3 = build_graphic(code3, channel, decoder3, max_word_num, x);
 //    auto results4 = build_graphic(code4, channel, decoder4, max_word_num, x);
@@ -85,7 +85,7 @@ int main(int argc, char *argv[]) {
     print_for_python(x);
     print_for_python(results);
     print_for_python(result0);
-    print_for_python(results1);
+//    print_for_python(results1);
 //    print_for_python(results2);
 //    print_for_python(results3);
 //    print_for_python(results4);

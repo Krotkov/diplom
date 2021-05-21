@@ -159,9 +159,9 @@ SCBase::calculateL(const MessageG &message1, int n, int i, const Channel &channe
 
     std::vector<MessageG> parts(message.size() / kernel_.size());
 
-    for (int j = 0; j < parts.size(); j++) {
+    for (int j = 0; j < message.size() / kernel_.getN(); j++) {
         parts[j].reserve(kernel_.size());
-        for (int q = j * kernel_.size(); q < (j + 1) * kernel_.size(); q++) {
+        for (int q = j; q < message.size(); q += (int) message.size() / kernel_.getN()) {
             parts[j].add(message[q]);
         }
     }
@@ -190,13 +190,41 @@ SCBase::calculateL(const MessageG &message1, int n, int i, const Channel &channe
     }
 
     Message ans;
-    ans.reserve(message.size());
-    for (int j = 0; j < us.size(); j++) {
-        us[j] = dot(Matrix(us[j]), kernel_).getRow(0);
-        for (int q = 0; q < us[j].size(); q++) {
-            ans.add(us[j][q]);
+    ans.resize(message.size());
+
+    for (int j = 0; j < message.size() / kernel_.getN(); j++) {
+//        Message cur;
+//        cur.reserve(us.size());
+//        for (int q = 0; q < us.size(); q++) {
+//            cur.add(us[q][j]);
+//        }
+//        std::cout << "a: ";
+//        us[j].print();
+        us[j] = dot(us[j], kernel_).getRow(0);
+//        std::cout << "b: ";
+//        us[j].print();
+//        for (int q = 0; q < us.size(); q++) {
+//            us[q][j] = cur[q];
+//        }
+        int ind = 0;
+        for (int q = j; q < message.size(); q += (int) message.size() / kernel_.getN()) {
+            ans[q] = us[j][ind];
+            ind++;
         }
     }
+    //
+//    for (int j = 0; j < us.size(); j++) {
+//        for (int q = 0; q < us[j].size(); q++) {
+//            ans.add(us[j][q]);
+//        }
+//    }
+
+//    for (int j = 0; j < us.size(); j++) {
+//        us[j] = dot(Matrix(us[j]), kernel_).getRow(0);
+//        for (int q = 0; q < us[j].size(); q++) {
+//            ans.add(us[j][q]);
+//        }
+//    }
     return ans;
 }
 
@@ -276,7 +304,7 @@ std::vector<std::pair<int, int>> SCBase::getNodeList() const {
     return nodeList_;
 }
 
-std::vector<std::vector<MessageG>> SCBase::getNodesLShape() const{
+std::vector<std::vector<MessageG>> SCBase::getNodesLShape() const {
     int ln = getLog(n_, kernel_.getN());
     std::vector<std::vector<MessageG>> nodes_l_;
     nodes_l_.resize(ln + 1);
@@ -288,7 +316,7 @@ std::vector<std::vector<MessageG>> SCBase::getNodesLShape() const{
     return nodes_l_;
 }
 
-std::vector<std::vector<std::vector<bool>>> SCBase::getFlipsShape() const{
+std::vector<std::vector<std::vector<bool>>> SCBase::getFlipsShape() const {
     int ln = getLog(n_, kernel_.getN());
     std::vector<std::vector<std::vector<bool>>> flips_;
     flips_.resize(ln + 1);
