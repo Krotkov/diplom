@@ -97,30 +97,26 @@ SCBase::calculateL(const MessageG &message1, int n, int i, const Channel &channe
         return ans;
     }
 
-//    if (specialNodes_[n][i] == REP) {
-//        double sum = 0;
-//        for (int j = 0; j < message.size(); j++) {
-//            sum += message[j];
-//        }
-//        int newI = i;
-//        for (int j = n + 1; j < specialNodes_.size(); j++) {
-//            newI = newI * kernel_.getN() + kernel_.getN() - 1;
-//        }
-//
-//        Symbol a;
-//        if ((sum >= 0 && !(*flips_)[n][i][(int) message.size() - 1]) ||
-//            (sum < 0 && (*flips_)[n][i][(int) message.size() - 1])) {
-//            a = 0;
-//        } else {
-//            a = 1;
-//        }
-//        Message ans;
-//        for (int j = 0; j < message.size(); j++) {
-//            ans.add(a);
-//        }
-//
-//        return ans;
-//    }
+    if (specialNodes_[n][i] == REP) {
+        double sum = 0;
+        for (int j = 0; j < message.size(); j++) {
+            sum += message[j];
+        }
+
+        Symbol a;
+        if ((sum >= 0 && !flips_[n][i][0]) ||
+            (sum < 0 && flips_[n][i][0])) {
+            a = 0;
+        } else {
+            a = 1;
+        }
+        Message ans;
+        for (int j = 0; j < message.size(); j++) {
+            ans.add(a);
+        }
+
+        return ans;
+    }
 
 //    if (specialNodes_[n][i] == SPC) {
 //        Message ans;
@@ -251,6 +247,8 @@ void SCBase::recursiveSpecialNodesCalc(int n, int i, int l, int r) {
     }
     if (flagRep) {
         specialNodes_[n][i] = REP;
+        nodeList_.emplace_back(n, i);
+        return;
     }
     if (flagSpc) {
         specialNodes_[n][i] = SPC;

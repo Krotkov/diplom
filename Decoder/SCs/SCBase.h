@@ -29,6 +29,8 @@ public:
     virtual double
     calculateLStep(const MessageG &y, const Message &u, const Channel &channel) const = 0;
 
+//    std::vector<std::pair<int, int>> nodeIndex_;
+    Matrix kernel_;
 public:
     void recursiveSpecialNodesCalc(int n, int i, int l, int r);
 
@@ -52,7 +54,5 @@ public:
 protected:
     int n_;
     std::vector<bool> frozen_;
-//    std::vector<std::pair<int, int>> nodeIndex_;
-    Matrix kernel_;
     PolarCode code_;
 };
