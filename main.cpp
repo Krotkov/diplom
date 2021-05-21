@@ -7,6 +7,7 @@
 #include <Channel/PerfectGauss/PerfectGauss.h>
 #include <Decoder/SCs/SCFlip/SCFlipViterbi.h>
 #include <Decoder/SCs/SCFlip/SCFlip.h>
+#include <Decoder/SCs/Old/SCFlip1.h>
 #include "Channel/Gaus/GausChannel.h"
 #include "utils/utils.h"
 #include "Decoder/SCs/SC/SC.h"
@@ -69,7 +70,7 @@ int main(int argc, char *argv[]) {
     SCViterbi decoder2(code2);
 
     CrcPolarCode code3{n, k, kernel, rKernel, 10};
-    SCFlipViterbi decoder3(code3, 0.5, 10);
+    SCFlip decoder3(code3, 0.5, 10);
 
 //    CrcPolarCode code4 = code3;
 //    SCFlipViterbi decoder4(code4, 0.5, 50);

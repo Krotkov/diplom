@@ -14,7 +14,7 @@ public:
         this->push_back(s);
     }
 
-    void print() {
+    void print() const {
         for (int i = 0; i < this->size(); i++) {
             std::cout << (*this)[i] << " ";
         }

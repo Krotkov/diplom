@@ -17,10 +17,15 @@ public:
 
     Message decode(const MessageG &message, const Channel &channel) const override;
 
-    std::pair<Message, std::vector<double>>
-    decodeStep(const MessageG &message, const Channel &channel, const std::vector<int> &flip) const;
+    Message
+    decodeStep(const MessageG &message, const Channel &channel, const std::vector<NodeFlip> &flip,
+               std::vector<std::vector<MessageG>> &nodes_l_,
+               std::vector<std::vector<std::vector<bool>>> &flips_) const;
 
-    double calcMa(const std::vector<double> &l, const std::vector<int> &flip) const;
+    double calcMa(const std::vector<NodeFlip> &flip,
+                  const std::vector<std::vector<MessageG>> &nodes_l_) const;
+
+    double calcFa(double val) const;
 
     Message cutCrc(const Message &message) const;
 

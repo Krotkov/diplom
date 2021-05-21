@@ -14,6 +14,9 @@ std::vector<double> SCBase::calcZ(const Channel &channel, int iters) const {
         coded.add(0);
     }
 
+    auto nodes_l = getNodesLShape();
+    auto flips = getFlipsShape();
+
     for (int j = 0; j < iters; j++) {
         if (j % 1000 == 0) {
             std::cout << j << "\n";
@@ -23,11 +26,11 @@ std::vector<double> SCBase::calcZ(const Channel &channel, int iters) const {
         std::vector<bool> flip;
         flip.resize(n_, false);
 
-        calculateL(message1, 0, 0, channel, flip, true);
+        calculateL(message1, 0, 0, channel, nodes_l, flips, true);
 
         int ln = getLog(n_, kernel_.getN());
         for (int i = 0; i < n_; i++) {
-            if ((*nodes_l_)[ln][i][0] < 0) {
+            if (nodes_l[ln][i][0] < 0) {
                 ans[i] += 1;
             }
         }
@@ -41,10 +44,12 @@ std::vector<double> SCBase::calcZ(const Channel &channel, int iters) const {
 
 
 Message SCBase::decode(const MessageG &message, const Channel &channel) const {
-    std::vector<bool> flip;
-    flip.resize(n_, false);
 
-    auto ans = code_.reverseEncode(calculateL(message, 0, 0, channel, flip));
+    auto nodes_l = getNodesLShape();
+    auto flips = getFlipsShape();
+
+
+    auto ans = code_.reverseEncode(calculateL(message, 0, 0, channel, nodes_l, flips));
 
     Message ans1;
     for (int i = 0; i < ans.size(); i++) {
@@ -56,7 +61,9 @@ Message SCBase::decode(const MessageG &message, const Channel &channel) const {
 }
 
 Message
-SCBase::calculateL(const MessageG &message1, int n, int i, const Channel &channel, const std::vector<bool> &flip,
+SCBase::calculateL(const MessageG &message1, int n, int i, const Channel &channel,
+                   std::vector<std::vector<MessageG>> &nodes_l_,
+                   const std::vector<std::vector<std::vector<bool>>> &flips_,
                    bool calcZMode) const {
     MessageG message = message1;
     if (message.size() == n_) {
@@ -65,7 +72,10 @@ SCBase::calculateL(const MessageG &message1, int n, int i, const Channel &channe
         }
     }
 
-    (*nodes_l_)[n][i] = message;
+//    std::cout << n << " " << i << "\n";
+//    message.print();
+
+    nodes_l_[n][i] = message;
 
     if (message.size() == 1) {
         Message ans;
@@ -80,68 +90,70 @@ SCBase::calculateL(const MessageG &message1, int n, int i, const Channel &channe
         }
 
         //flip
-        if (flip[i]) {
+        if (flips_[n][i][0]) {
+//            std::cout << "f: " << n << " " << i << "\n";
             ans.back() += 1;
         }
         return ans;
     }
 
-    if (specialNodes_[n][i] == REP) {
-        double sum = 0;
-        for (int j = 0; j < message.size(); j++) {
-            sum += message[j];
-        }
-        int newI = i;
-        for (int j = n + 1; j < specialNodes_.size(); j++) {
-            newI = newI * kernel_.getN() + kernel_.getN() - 1;
-        }
+//    if (specialNodes_[n][i] == REP) {
+//        double sum = 0;
+//        for (int j = 0; j < message.size(); j++) {
+//            sum += message[j];
+//        }
+//        int newI = i;
+//        for (int j = n + 1; j < specialNodes_.size(); j++) {
+//            newI = newI * kernel_.getN() + kernel_.getN() - 1;
+//        }
+//
+//        Symbol a;
+//        if ((sum >= 0 && !(*flips_)[n][i][(int) message.size() - 1]) ||
+//            (sum < 0 && (*flips_)[n][i][(int) message.size() - 1])) {
+//            a = 0;
+//        } else {
+//            a = 1;
+//        }
+//        Message ans;
+//        for (int j = 0; j < message.size(); j++) {
+//            ans.add(a);
+//        }
+//
+//        return ans;
+//    }
 
-        Symbol a;
-        if ((sum >= 0 && !flip[newI]) || (sum < 0 && flip[newI])) {
-            a = 0;
-        } else {
-            a = 1;
-        }
-        Message ans;
-        for (int j = 0; j < message.size(); j++) {
-            ans.add(a);
-        }
+//    if (specialNodes_[n][i] == SPC) {
+//        Message ans;
+//        Symbol parity = 0;
+//        int minInd = 0;
+//        for (int j = 0; j < message.size(); j++) {
+//            if (message[j] >= 0) {
+//                ans.add(0);
+//            } else {
+//                ans.add(1);
+//            }
+//            if (std::abs(message[j]) < std::abs(message[minInd])) {
+//                minInd = j;
+//            }
+//            parity += ans[j];
+//        }
+//        ans[minInd] += parity;
+//
+//        return ans;
+//    }
 
-        return ans;
-    }
-
-    if (specialNodes_[n][i] == SPC) {
-        Message ans;
-        Symbol parity = 0;
-        int minInd = 0;
-        for (int j = 0; j < message.size(); j++) {
-            if (message[j] >= 0) {
-                ans.add(0);
-            } else {
-                ans.add(1);
-            }
-            if (std::abs(message[j]) < std::abs(message[minInd])) {
-                minInd = j;
-            }
-            parity += ans[j];
-        }
-        ans[minInd] += parity;
-
-        return ans;
-    }
-
-    if (specialNodes_[n][i] == RATE1 && !calcZMode) {
-        Message ans;
-        for (int j = 0; j < message.size(); j++) {
-            if (message[j] >= 0) {
-                ans.add(0);
-            } else {
-                ans.add(1);
-            }
-        }
-
-        return ans;
-    }
+//    if (specialNodes_[n][i] == RATE1 && !calcZMode) {
+//        Message ans;
+//        for (int j = 0; j < message.size(); j++) {
+//            if (message[j] >= 0) {
+//                ans.add(0);
+//            } else {
+//                ans.add(1);
+//            }
+//        }
+//
+//        return ans;
+//    }
 
     std::vector<MessageG> parts(message.size() / kernel_.size());
 
@@ -168,7 +180,7 @@ SCBase::calculateL(const MessageG &message1, int n, int i, const Channel &channe
             for (int q = 0; q < curY.size(); q++) {
                 curY[q] = calculateLStep(parts[q], us[q], channel);
             }
-            curU = calculateL(curY, n + 1, i * kernel_.getN() + j, channel, flip, calcZMode);
+            curU = calculateL(curY, n + 1, i * kernel_.getN() + j, channel, nodes_l_, flips_, calcZMode);
         }
         for (int q = 0; q < curU.size(); q++) {
             us[q].add(curU[q]);
@@ -193,13 +205,10 @@ SCBase::SCBase(const PolarCode &code) {
     code_ = code;
 
     int ln = getLog(n_, kernel_.getN());
-    nodes_l_ = new std::vector<std::vector<MessageG>>;
-    (*nodes_l_).resize(ln + 1);
     specialNodes_.resize(ln + 1);
     int a = 1;
     for (int i = 0; i < specialNodes_.size(); i++) {
         specialNodes_[i].resize(a, NONE);
-        (*nodes_l_)[i].resize(a);
         a *= kernel_.getN();
     }
     recursiveSpecialNodesCalc(0, 0, 0, n_);
@@ -207,7 +216,11 @@ SCBase::SCBase(const PolarCode &code) {
 
 void SCBase::recursiveSpecialNodesCalc(int n, int i, int l, int r) {
     if (r - l == 1) {
-        nodeList_.emplace_back(n, i);
+        specialNodes_[n][i] = LEAF;
+        if (!frozen_[i]) {
+            nodeList_.emplace_back(n, i);
+        }
+//        nodeIndex_[l] = {n, i};
         return;
     }
 
@@ -238,11 +251,9 @@ void SCBase::recursiveSpecialNodesCalc(int n, int i, int l, int r) {
     }
     if (flagRep) {
         specialNodes_[n][i] = REP;
-        nodeList_.emplace_back(n, i);
     }
     if (flagSpc) {
         specialNodes_[n][i] = SPC;
-        nodeList_.emplace_back(n, i);
     }
     if (flagRate1) {
         specialNodes_[n][i] = RATE1;
@@ -253,3 +264,39 @@ void SCBase::recursiveSpecialNodesCalc(int n, int i, int l, int r) {
                                   l + (r - l) * (j + 1) / kernel_.getN());
     }
 }
+
+
+std::vector<std::pair<int, int>> SCBase::getNodeList() const {
+    return nodeList_;
+}
+
+std::vector<std::vector<MessageG>> SCBase::getNodesLShape() const{
+    int ln = getLog(n_, kernel_.getN());
+    std::vector<std::vector<MessageG>> nodes_l_;
+    nodes_l_.resize(ln + 1);
+    int a = 1;
+    for (int i = 0; i < specialNodes_.size(); i++) {
+        nodes_l_[i].resize(a);
+        a *= kernel_.getN();
+    }
+    return nodes_l_;
+}
+
+std::vector<std::vector<std::vector<bool>>> SCBase::getFlipsShape() const{
+    int ln = getLog(n_, kernel_.getN());
+    std::vector<std::vector<std::vector<bool>>> flips_;
+    flips_.resize(ln + 1);
+    int a = 1;
+    int messageSize = n_;
+    for (int i = 0; i < specialNodes_.size(); i++) {
+        flips_[i].resize(a);
+        for (int j = 0; j < flips_[i].size(); j++) {
+            flips_[i][j].resize(messageSize, false);
+        }
+        a *= kernel_.getN();
+        messageSize /= kernel_.getN();
+    }
+
+    return flips_;
+}
+
