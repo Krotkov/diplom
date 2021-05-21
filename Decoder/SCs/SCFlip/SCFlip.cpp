@@ -70,6 +70,9 @@ Message SCFlip::decode(const MessageG &message, const Channel &channel) const {
             }
         }
         flips.erase(flips.begin());
+        if (flips.empty()) {
+            break;
+        }
     }
 
     return cutCrc(decodedRes.first);
