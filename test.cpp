@@ -10,8 +10,8 @@
 #include <Decoder/SCs/Old/SCFlip1.h>
 
 int main() {
-    int n = 4;
-    int k = 2;
+    int n = 8;
+    int k = 4;
 
     std::ifstream in("../kernels/16-1.txt", std::ifstream::in);
     std::ifstream in2("../kernels/16-1-r.txt", std::ifstream::in);

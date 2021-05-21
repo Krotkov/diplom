@@ -43,6 +43,13 @@ add_library(polar_code STATIC
         Decoder/SCs/SCFlip/SCFlipViterbi.cpp
         Decoder/SCs/SCFlip/SCFlipViterbi.h
         Decoder/SCs/SCFlip/SCFlip.cpp
+        Decoder/SCs/SCFlip/SCFlip.h
+        Decoder/SCs/Old/SCBase1.h
+        Decoder/SCs/Old/SCBase1.cpp
+        Decoder/SCs/Old/SCFlip1.h
+        Decoder/SCs/Old/SCFlip1.cpp
+        Decoder/SCs/Old/SC1.h
+        Decoder/SCs/Old/SC1.cpp
         )
 
 add_executable(diplom main.cpp graphic.h Polynom/Polynom.cpp)

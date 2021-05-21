@@ -51,36 +51,41 @@ Message SCFlip::decode(const MessageG &message, const Channel &channel) const {
         if (specialNodes[curN][curI] == LEAF || specialNodes[curN][curI] == REP) {
             curFlips.emplace_back(curN, curI);
             ma = calcMa(curFlips, nodes_l);
+            if (flips.size() < iters_) {
+                flips.insert({ma, curFlips});
+            } else if (flips.rbegin()->first > ma) {
+                flips.erase(--flips.end());
+                flips.insert({ma, curFlips});
+            }
+//            std::cout << "m: ";
+//            for (int q = 0; q < curFlips.size(); q++) {
+//                std::cout << "(" << curFlips[q].n << " " << curFlips[q].i << " " << curFlips[q].f1 << ") ";
+//            }
+//            std::cout << ma << "\n";
+            curFlips.pop_back();
+        } else if (specialNodes[curN][curI] == RATE1) {
+            for (int j = 0; j < flips_[curN][curI].size(); j++) {
+                curFlips.emplace_back(curN, curI, j);
+                ma = calcMa(curFlips, nodes_l);
+                if (flips.size() < iters_) {
+                    flips.insert({ma, curFlips});
+                } else if (flips.rbegin()->first > ma) {
+                    flips.erase(--flips.end());
+                    flips.insert({ma, curFlips});
+                }
+//                std::cout << "m: ";
+//                for (int q = 0; q < curFlips.size(); q++) {
+//                    std::cout << "(" << curFlips[q].n << " " << curFlips[q].i << " " << curFlips[q].f1 << ") ";
+//                }
+//                std::cout << ma << "\n";
+                curFlips.pop_back();
+            }
         }
-//        std::cout << curN << " " << curI << " " << ma << "\n";
-//        std::cout << "m: ";
-//        for (int q = 0; q < curFlips.size(); q++) {
-//            std::cout << curFlips[q].i << " ";
-//        }
-//        std::cout << ma << "\n";
-        if (flips.size() < iters_) {
-            flips.insert({ma, curFlips});
-        } else if (flips.rbegin()->first > ma) {
-            flips.erase(--flips.end());
-            flips.insert({ma, curFlips});
-        }
-        curFlips.pop_back();
     }
 
     Message decodedRes;
 
     for (int i = 0; i < iters_; i++) {
-//        for (int j = 0; j < message.size(); j++) {
-//            std::cout << (*sc_->nodes_l_)[2][j][0] << " ";
-//        }
-//        std::cout << "\n";
-//
-//        std::cout << flips.begin()->first << "\n";
-//        for (int j = 0; j < flips.begin()->second.size(); j++) {
-//            std::cout << flips.begin()->second[j].i << " ";
-//        }
-//        std::cout << "\n";
-
         decodedRes = decodeStep(message, channel, flips.begin()->second, nodes_l, flips_);
 
         if (code_.check(decodedRes)) {
@@ -105,18 +110,45 @@ Message SCFlip::decode(const MessageG &message, const Channel &channel) const {
 
         for (int j = ind; j < nodeList.size(); j++) {
             if (j == ind) {
-                if (specialNodes[nodeList[j].first][nodeList[j].second] == LEAF) {
-                    continue;
-                }
-            } else {
                 if (specialNodes[nodeList[j].first][nodeList[j].second] == LEAF ||
                     specialNodes[nodeList[j].first][nodeList[j].second] == REP) {
-                    flip.emplace_back(nodeList[j].first, nodeList[j].second);
-                    double ma = calcMa(flip, nodes_l);
-                    if (flips.rbegin()->first > ma) {
+                    continue;
+                }
+            }
+            double ma;
+            if (specialNodes[nodeList[j].first][nodeList[j].second] == LEAF ||
+                specialNodes[nodeList[j].first][nodeList[j].second] == REP) {
+                flip.emplace_back(nodeList[j].first, nodeList[j].second);
+                ma = calcMa(flip, nodes_l);
+                if (flips.rbegin()->first > ma) {
+                    flips.erase(--flips.end());
+                    flips.insert({ma, flip});
+                }
+//                std::cout << "m: ";
+//                for (int q = 0; q < flip.size(); q++) {
+//                    std::cout << "(" << flip[q].n << " " << flip[q].i << " " << flip[q].f1 << ") ";
+//                }
+//                std::cout << ma << "\n";
+                flip.pop_back();
+            } else if (specialNodes[nodeList[j].first][nodeList[j].second] == RATE1) {
+                int minInd = 0;
+                if (j == ind) {
+                    minInd = flip.back().f1 + 1;
+                }
+                for (int q = 0; q < flips_[nodeList[j].first][nodeList[j].second].size(); q++) {
+                    flip.emplace_back(nodeList[j].first, nodeList[j].second, q);
+                    ma = calcMa(flip, nodes_l);
+                    if (flips.size() < iters_) {
+                        flips.insert({ma, flip});
+                    } else if (flips.rbegin()->first > ma) {
                         flips.erase(--flips.end());
                         flips.insert({ma, flip});
                     }
+//                    std::cout << "m: ";
+//                    for (int w = 0; w < flip.size(); w++) {
+//                        std::cout << "(" << flip[w].n << " " << flip[w].i << " " << flip[w].f1 << ") ";
+//                    }
+//                    std::cout << ma << "\n";
                     flip.pop_back();
                 }
             }
@@ -137,7 +169,7 @@ SCFlip::decodeStep(const MessageG &message, const Channel &channel, const std::v
 //    std::cout << "STEP\n";
 //    message.print();
 //    for (int i = 0; i < flip.size(); i++) {
-//        std::cout << flip[i].i << " ";
+//        std::cout << "(" << flip[i].n << " " << flip[i].i << " " << flip[i].f1 << ") ";
 //    }
 //    std::cout << "\n";
 
@@ -156,6 +188,8 @@ SCFlip::decodeStep(const MessageG &message, const Channel &channel, const std::v
             for (int j = 0; j < flips_[flip[i].n][flip[i].i].size(); j++) {
                 flips_[flip[i].n][flip[i].i][j] = true;
             }
+        } else if (sc_->specialNodes_[flip[i].n][flip[i].i] == RATE1) {
+            flips_[flip[i].n][flip[i].i][flip[i].f1] = true;
         }
     }
 
@@ -198,10 +232,17 @@ double SCFlip::calcMa(const std::vector<NodeFlip> &flip, const std::vector<std::
                 q += nodes_l_[curN][curI][j];
             }
             ma2 += calcFa(std::abs(q));
+        } else if (sc_->specialNodes_[curN][curI] == RATE1) {
+            while (ind < (int) flip.size() - 1 && flip[ind].n == curN && flip[ind].i == curI) {
+                ma2 += nodes_l_[curN][curI][flip[ind].f1];
+                ind++;
+            }
+            for (int j = 0; j < nodes_l_[curN][curI].size(); j++) {
+                ma2 += calcFa(std::abs(nodes_l_[curN][curI][j]));
+            }
         } else {
             throw std::runtime_error("bad special node");
         }
-//        std::cout << i << " " << ma2 << "\n";
         if (curN == flip.back().n && curI == flip.back().i) {
             break;
         }
@@ -215,6 +256,8 @@ double SCFlip::calcMa(const std::vector<NodeFlip> &flip, const std::vector<std::
             q += nodes_l_[flip.back().n][flip.back().i][j];
         }
         ma2 += std::abs(q);
+    } else if (sc_->specialNodes_[flip.back().n][flip.back().i] == RATE1) {
+        ma2 += std::abs(nodes_l_[flip.back().n][flip.back().i][flip.back().f1]);
     }
 
     return ma2;
