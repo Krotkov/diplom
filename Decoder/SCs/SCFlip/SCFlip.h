@@ -23,7 +23,11 @@ public:
                std::vector<std::vector<std::vector<bool>>> &flips_) const;
 
     double calcMa(const std::vector<NodeFlip> &flip,
-                  const std::vector<std::vector<MessageG>> &nodes_l_) const;
+                  std::vector<std::vector<MessageG>> &nodes_l_,
+                  const std::map<std::pair<int, int>, int> & spcParity,
+                  const std::map<std::pair<int, int>, int> & minIndex,
+                  const Channel &channel,
+                  std::vector<std::vector<std::vector<bool>>> &flips_) const;
 
     double calcFa(double val) const;
 

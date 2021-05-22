@@ -10,8 +10,8 @@
 #include <Decoder/SCs/Old/SCFlip1.h>
 
 int main() {
-    int n = 16;
-    int k = 8;
+    int n = 4;
+    int k = 2;
 
     std::ifstream in("../kernels/16-1.txt", std::ifstream::in);
     std::ifstream in2("../kernels/16-1-r.txt", std::ifstream::in);
@@ -64,7 +64,7 @@ int main() {
 //        std::cout << "----------\n";
 //    }
 
-    PolarCode code(n, k, kernel, rKernel);
+    PolarCode code(n, k, 0.5);
 //    PolarCode code(n, k, 0.5);
     std::cout << "-------------------------------------------------------------------------\n";
     SCViterbi decoder(code);
