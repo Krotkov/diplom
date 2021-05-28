@@ -5,7 +5,7 @@
 #include <Decoder/viterbi/Viterbi.h>
 #include "SCViterbi.h"
 
-SCViterbi::SCViterbi(const PolarCode &code) : SCBase(code) {
+SCViterbi::SCViterbi(const PolarCode &code, bool useSpecialNodes) : SCBase(code, useSpecialNodes) {
     auto curKernel = Matrix(kernel_.getN(), kernel_.getK() + 1);
     for (int i = 0; i < curKernel.getN(); i++) {
         auto row = kernel_[i];

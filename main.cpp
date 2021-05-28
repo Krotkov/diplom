@@ -61,19 +61,23 @@ int main(int argc, char *argv[]) {
     SC decoder(code);
 
     CrcPolarCode code0{n, k, 10};
-    SCFlip decoder0(code0, 0.5, 10);
+    SCFlip decoder0(code0, 0.5, 10, false);
 
     CrcPolarCode code1 = code0;
-    SCFlip decoder1(code1, 0.5, 50);
+    SCFlip decoder1(code1, 0.5, 10, true);
+
+//    CrcPolarCode code2 = code0;
+//    SCFlip decoder2(code2, 0.5, 100);
+
 
     PolarCode code2(n, k, kernel, rKernel);
     SCViterbi decoder2(code2);
 
     CrcPolarCode code3{n, k, kernel, rKernel, 10};
-    SCFlip decoder3(code3, 0.3, 10);
+    SCFlip decoder3(code3, 0.5, 10, false);
 
     CrcPolarCode code4 = code3;
-    SCFlip decoder4(code4, 0.5, 50);
+    SCFlip decoder4(code4, 0.5, 10, true);
 
     auto results = build_graphic(code, channel, decoder, max_word_num, x);
     auto result0 = build_graphic(code0, channel, decoder0, max_word_num, x);

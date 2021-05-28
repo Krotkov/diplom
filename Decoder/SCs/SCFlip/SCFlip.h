@@ -11,7 +11,7 @@
 
 class SCFlip : public Decoder {
 public:
-    SCFlip(const CrcPolarCode &code, double a = 0.5, int iters = 10);
+    SCFlip(const CrcPolarCode &code, double a = 0.5, int iters = 10, bool useSpecialNodes = true);
 
     ~SCFlip();
 

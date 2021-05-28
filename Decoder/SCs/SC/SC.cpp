@@ -7,7 +7,7 @@
 #include "SC.h"
 #include "utils/utils.h"
 
-SC::SC(const PolarCode &code) : SCBase(code) {}
+SC::SC(const PolarCode &code, bool useSpecialNodes) : SCBase(code, useSpecialNodes) {}
 
 double
 SC::calculateLStep(const MessageG &y, const Message &u, const Channel &channel) const {

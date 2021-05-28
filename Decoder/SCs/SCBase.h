@@ -18,7 +18,7 @@ struct NodeFlip {
 
 class SCBase : public Decoder {
 public:
-    SCBase(const PolarCode &code);
+    SCBase(const PolarCode &code, bool useSpecialNodes = true);
 
     virtual Message
     calculateL(const MessageG &message, int n, int i, const Channel &channel,
@@ -52,6 +52,7 @@ public:
     std::vector<std::pair<int, int>> nodeList_;
 
 protected:
+    bool useSpecailNodes_;
     int n_;
     std::vector<bool> frozen_;
     PolarCode code_;

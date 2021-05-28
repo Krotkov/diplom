@@ -72,9 +72,6 @@ SCBase::calculateL(const MessageG &message1, int n, int i, const Channel &channe
         }
     }
 
-//    std::cout << n << " " << i << "\n";
-//    message.print();
-
     nodes_l_[n][i] = message;
 
     if (message.size() == 1) {
@@ -128,18 +125,15 @@ SCBase::calculateL(const MessageG &message1, int n, int i, const Channel &channe
             } else {
                 ans.add(1);
             }
+            if (flips_[n][i][j]) {
+                ans[j] += 1;
+            }
             if (std::abs(message[j]) < std::abs(message[minInd])) {
                 minInd = j;
             }
             parity += ans[j];
         }
         ans[minInd] += parity;
-
-        for (int j = 0; j < message.size(); j++) {
-            if (flips_[n][i][j]) {
-                ans[j] += 1;
-            }
-        }
 
         return ans;
     }
@@ -152,14 +146,10 @@ SCBase::calculateL(const MessageG &message1, int n, int i, const Channel &channe
             } else {
                 ans.add(1);
             }
-        }
-
-        for (int j = 0; j < message.size(); j++) {
             if (flips_[n][i][j]) {
                 ans[j] += 1;
             }
         }
-
         return ans;
     }
 
@@ -199,46 +189,22 @@ SCBase::calculateL(const MessageG &message1, int n, int i, const Channel &channe
     ans.resize(message.size());
 
     for (int j = 0; j < message.size() / kernel_.getN(); j++) {
-//        Message cur;
-//        cur.reserve(us.size());
-//        for (int q = 0; q < us.size(); q++) {
-//            cur.add(us[q][j]);
-//        }
-//        std::cout << "a: ";
-//        us[j].print();
         us[j] = dot(us[j], kernel_).getRow(0);
-//        std::cout << "b: ";
-//        us[j].print();
-//        for (int q = 0; q < us.size(); q++) {
-//            us[q][j] = cur[q];
-//        }
         int ind = 0;
         for (int q = j; q < message.size(); q += (int) message.size() / kernel_.getN()) {
             ans[q] = us[j][ind];
             ind++;
         }
     }
-    //
-//    for (int j = 0; j < us.size(); j++) {
-//        for (int q = 0; q < us[j].size(); q++) {
-//            ans.add(us[j][q]);
-//        }
-//    }
-
-//    for (int j = 0; j < us.size(); j++) {
-//        us[j] = dot(Matrix(us[j]), kernel_).getRow(0);
-//        for (int q = 0; q < us[j].size(); q++) {
-//            ans.add(us[j][q]);
-//        }
-//    }
     return ans;
 }
 
-SCBase::SCBase(const PolarCode &code) {
+SCBase::SCBase(const PolarCode &code, bool useSpecialNodes) {
     n_ = code.getN();
     frozen_ = code.getFrozen();
     kernel_ = code.getKernel();
     code_ = code;
+    useSpecailNodes_ = useSpecialNodes;
 
     int ln = getLog(n_, kernel_.getN());
     specialNodes_.resize(ln + 1);
@@ -281,24 +247,31 @@ void SCBase::recursiveSpecialNodesCalc(int n, int i, int l, int r) {
             flagSpc = false;
         }
     }
-    if (flagRate0) {
-        specialNodes_[n][i] = RATE0;
-        return;
-    }
-    if (flagRep) {
-        specialNodes_[n][i] = REP;
-        nodeList_.emplace_back(n, i);
-        return;
-    }
-    if (flagSpc) {
-        specialNodes_[n][i] = SPC;
-        nodeList_.emplace_back(n, i);
-        return;
-    }
-    if (flagRate1) {
-//        specialNodes_[n][i] = RATE1;
-//        nodeList_.emplace_back(n, i);
-//        return;
+    if (useSpecailNodes_) {
+        if (flagRate0) {
+            specialNodes_[n][i] = RATE0;
+            return;
+        }
+        if (flagRep) {
+            specialNodes_[n][i] = REP;
+            nodeList_.emplace_back(n, i);
+            return;
+        }
+        if (flagSpc) {
+//            std::cout << n << " " << i << " " << l << " " << r << "\n";
+//            for (int j = l; j < r; j++) {
+//                std::cout << frozen_[j];
+//            }
+//            std::cout << "\n";
+//            specialNodes_[n][i] = SPC;
+//            nodeList_.emplace_back(n, i);
+//            return;
+        }
+        if (flagRate1) {
+            specialNodes_[n][i] = RATE1;
+            nodeList_.emplace_back(n, i);
+            return;
+        }
     }
 
     for (int j = 0; j < kernel_.getN(); j++) {

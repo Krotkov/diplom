@@ -8,7 +8,7 @@
 
 class SC : public SCBase {
 public:
-    SC(const PolarCode &code);
+    SC(const PolarCode &code, bool useSpecialNodes = true);
 protected:
     virtual double
     calculateLStep(const MessageG &y, const Message &u, const Channel &channel) const override;

@@ -9,7 +9,7 @@
 
 class SCViterbi : public SCBase {
 public:
-    explicit SCViterbi(const PolarCode& code);
+    explicit SCViterbi(const PolarCode& code, bool useSpecialNodes = true);
 protected:
     virtual double
     calculateLStep(const MessageG &y, const Message &u, const Channel &channel) const override;

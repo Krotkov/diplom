@@ -17,6 +17,9 @@ double build_graphic_step(const Code &code, const GausChannel &channel, const De
             std::cout << x << " " << i << "\n";
         }
         auto a = generateWord(code.getK());
+//        for (int j = 0; j < code.getK(); j++) {
+//            a[j] = 0;
+//        }
         auto a1 = code.encode(a);
 
         auto b = channel.runMessage(a1);
@@ -37,7 +40,7 @@ double build_graphic_step(const Code &code, const GausChannel &channel, const De
 
 std::vector<double> build_graphic(const Code &code, GausChannel &channel, const Decoder &decoder, int calc_iter,
                                   const std::vector<double> &sn) {
-    int threadCount = 20;
+    int threadCount = 16;
 
     std::vector<double> ans;
     ans.reserve(sn.size());

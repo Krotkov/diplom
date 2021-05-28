@@ -50,8 +50,14 @@ void CrcPolarCode::createPolynom(int m) {
         crc_[1] = 1;
         crc_[0] = 1;
     } else if (m == 1) {
-        crc_ = Polynom<int>(0);
+        crc_ = Polynom<int>(1);
         crc_[0] = 1;
+        crc_[1] = 1;
+    } else if (m == 4) {
+        crc_ = Polynom<int>(4);
+        crc_[0] = 1;
+        crc_[1] = 1;
+        crc_[4] = 1;
     } else {
         throw std::runtime_error("can't create crc polynom");
     }
