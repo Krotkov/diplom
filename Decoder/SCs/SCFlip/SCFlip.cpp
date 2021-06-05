@@ -37,9 +37,6 @@ Message SCFlip::decode(const MessageG &message, const Channel &channel) const {
         return cutCrc(firstTry);
     }
 
-    std::map<std::pair<int, int>, int> spcParity;
-    std::map<std::pair<int, int>, int> minIndex;
-
     auto comparator = [](const std::pair<double, std::vector<NodeFlip>> &a,
                          const std::pair<double, std::vector<NodeFlip>> &b) {
         return a.first < b.first;
@@ -53,7 +50,7 @@ Message SCFlip::decode(const MessageG &message, const Channel &channel) const {
         double ma;
         if (specialNodes[curN][curI] == LEAF || specialNodes[curN][curI] == REP) {
             curFlips.emplace_back(curN, curI);
-            ma = calcMa(curFlips, nodes_l, spcParity, minIndex, channel, flips_);
+            ma = calcMa(curFlips, nodes_l, channel);
             if (flips.size() < iters_) {
                 flips.insert({ma, curFlips});
             } else if (flips.rbegin()->first > ma) {
@@ -64,7 +61,7 @@ Message SCFlip::decode(const MessageG &message, const Channel &channel) const {
         } else if (specialNodes[curN][curI] == RATE1) {
             for (int j = 0; j < flips_[curN][curI].size(); j++) {
                 curFlips.emplace_back(curN, curI, j);
-                ma = calcMa(curFlips, nodes_l, spcParity, minIndex, channel, flips_);
+                ma = calcMa(curFlips, nodes_l, channel);
                 if (flips.size() < iters_) {
                     flips.insert({ma, curFlips});
                 } else if (flips.rbegin()->first > ma) {
@@ -74,25 +71,10 @@ Message SCFlip::decode(const MessageG &message, const Channel &channel) const {
                 curFlips.pop_back();
             }
         } else if (specialNodes[curN][curI] == SPC) {
-            int minimum_index = 0;
-            for (int q = 0; q < nodes_l[curN][curI].size(); q++) {
-                if (std::abs(nodes_l[curN][curI][q]) <
-                    std::abs(nodes_l[curN][curI][minimum_index])) {
-                    minimum_index = q;
-                }
-            }
             for (int j = 0; j < flips_[curN][curI].size(); j++) {
                 for (int q = j + 1; q < flips_[curN][curI].size(); q++) {
-                    if (j == minimum_index || q == minimum_index) {
-                        continue;
-                    }
                     curFlips.emplace_back(curN, curI, j, q);
-                    ma = calcMa(curFlips, nodes_l, spcParity, minIndex, channel, flips_);
-//                    std::cout << "m: ";
-//                    for (int e = 0; e < curFlips.size(); e++) {
-//                        std::cout << "(" << curFlips[e].n << " " << curFlips[e].i << " " << curFlips[e].f1 << " " << curFlips[e].f2 << ") ";
-//                    }
-//                    std::cout << ma << "\n";
+                    ma = calcMa(curFlips, nodes_l, channel);
                     if (flips.size() < iters_) {
                         flips.insert({ma, curFlips});
                     } else if (flips.rbegin()->first > ma) {
@@ -108,7 +90,6 @@ Message SCFlip::decode(const MessageG &message, const Channel &channel) const {
     Message decodedRes;
 
     for (int i = 0; i < iters_; i++) {
-//        std::cout << "\n" << flips.begin()->first << "\n";
         decodedRes = decodeStep(message, channel, flips.begin()->second, nodes_l, flips_);
 
         if (code_.check(decodedRes)) {
@@ -142,7 +123,7 @@ Message SCFlip::decode(const MessageG &message, const Channel &channel) const {
             if (specialNodes[nodeList[j].first][nodeList[j].second] == LEAF ||
                 specialNodes[nodeList[j].first][nodeList[j].second] == REP) {
                 flip.emplace_back(nodeList[j].first, nodeList[j].second);
-                ma = calcMa(flip, nodes_l, spcParity, minIndex, channel, flips_);
+                ma = calcMa(flip, nodes_l, channel);
                 if (flips.size() < iters_) {
                     flips.insert({ma, flip});
                 } else if (flips.rbegin()->first > ma) {
@@ -157,7 +138,7 @@ Message SCFlip::decode(const MessageG &message, const Channel &channel) const {
                 }
                 for (int q = minInd; q < flips_[nodeList[j].first][nodeList[j].second].size(); q++) {
                     flip.emplace_back(nodeList[j].first, nodeList[j].second, q);
-                    ma = calcMa(flip, nodes_l, spcParity, minIndex, channel, flips_);
+                    ma = calcMa(flip, nodes_l, channel);
                     if (flips.size() < iters_) {
                         flips.insert({ma, flip});
                     } else if (flips.rbegin()->first > ma) {
@@ -171,25 +152,10 @@ Message SCFlip::decode(const MessageG &message, const Channel &channel) const {
                 if (j == ind) {
                     minInd = flip.back().f2 + 1;
                 }
-                int minimum_index = 0;
-                for (int q = 0; q < nodes_l[nodeList[j].first][nodeList[j].second].size(); q++) {
-                    if (std::abs(nodes_l[nodeList[j].first][nodeList[j].second][q]) <
-                        std::abs(nodes_l[nodeList[j].first][nodeList[j].second][minimum_index])) {
-                        minimum_index = q;
-                    }
-                }
                 for (int q = minInd; q < flips_[nodeList[j].first][nodeList[j].second].size(); q++) {
                     for (int w = q + 1; w < flips_[nodeList[j].first][nodeList[j].second].size(); w++) {
-                        if (q == minimum_index || w == minimum_index) {
-                            continue;
-                        }
                         flip.emplace_back(nodeList[j].first, nodeList[j].second, q, w);
-                        ma = calcMa(flip, nodes_l, spcParity, minIndex, channel, flips_);
-//                        std::cout << "m: ";
-//                        for (int e = 0; e < flip.size(); e++) {
-//                            std::cout << "(" << flip[e].n << " " << flip[e].i << " " << flip[e].f1 << " " << flip[e].f2 << ") ";
-//                        }
-//                        std::cout << ma << "\n";
+                        ma = calcMa(flip, nodes_l, channel);
                         if (flips.size() < iters_) {
                             flips.insert({ma, flip});
                         } else if (flips.rbegin()->first > ma) {
@@ -214,14 +180,6 @@ Message
 SCFlip::decodeStep(const MessageG &message, const Channel &channel, const std::vector<NodeFlip> &flip,
                    std::vector<std::vector<MessageG>> &nodes_l_,
                    std::vector<std::vector<std::vector<bool>>> &flips_) const {
-//    std::cout << "STEP\n";
-//    message.print();
-//    for (int i = 0; i < flip.size(); i++) {
-//        std::cout << "(" << flip[i].n << " " << flip[i].i << " " << flip[i].f1 << " " << flip[i].f2 << ") ";
-//    }
-//    std::cout << "\n";
-
-
     for (int i = 0; i < flips_.size(); i++) {
         for (int j = 0; j < flips_[i].size(); j++) {
             for (int q = 0; q < flips_[i][j].size(); q++) {
@@ -256,18 +214,15 @@ SCFlip::decodeStep(const MessageG &message, const Channel &channel, const std::v
 }
 
 double SCFlip::calcMa(const std::vector<NodeFlip> &flip, std::vector<std::vector<MessageG>> &nodes_l_,
-                      const std::map<std::pair<int, int>, int> &spcParity,
-                      const std::map<std::pair<int, int>, int> &minIndex,
-                      const Channel &channel,
-                      std::vector<std::vector<std::vector<bool>>> &flips_) const {
+                      const Channel &channel) const {
     double ma2 = 0;
     int ind = 0;
     for (int i = 0; i < sc_->nodeList_.size(); i++) {
         int curN = sc_->nodeList_[i].first, curI = sc_->nodeList_[i].second;
 
-//        if (curN == flip.back().n && curI == flip.back().i) {
-//            break;
-//        }
+        if (curN == flip.back().n && curI == flip.back().i) {
+            break;
+        }
 
         if (sc_->specialNodes_[curN][curI] == LEAF) {
             if (ind < flip.size() - 1 && flip[ind].n == curN && flip[ind].i == curI) {
@@ -299,8 +254,6 @@ double SCFlip::calcMa(const std::vector<NodeFlip> &flip, std::vector<std::vector
             }
         } else if (sc_->specialNodes_[curN][curI] == SPC) {
             const MessageG &curMessage = nodes_l_[curN][curI];
-//            std::cout << ma2 << "\n";
-//            curMessage.print();
             int min_ind = 0;
             for (int j = 0; j < curMessage.size(); j++) {
                 if (std::abs(curMessage[j]) < std::abs(curMessage[min_ind])) {
@@ -308,8 +261,8 @@ double SCFlip::calcMa(const std::vector<NodeFlip> &flip, std::vector<std::vector
                 }
             }
             int parity = 0;
-            for (int q = 0; q < nodes_l_[flip.back().n][flip.back().i].size(); q++) {
-                if (nodes_l_[flip.back().n][flip.back().i][q] < 0) {
+            for (int q = 0; q < nodes_l_[curN][curI].size(); q++) {
+                if (nodes_l_[curN][curI][q] < 0) {
                     parity += 1;
                 }
             }
@@ -379,11 +332,6 @@ Message SCFlip::cutCrc(const Message &message) const {
 }
 
 double SCFlip::calcFa(double val) const {
-//    if (std::abs(val) <= 5) {
-//        return 1.5;
-//    } else {
-//        return 0;
-//    }
     return std::log(1 + std::exp(-a_ * val)) / a_;
 }
 

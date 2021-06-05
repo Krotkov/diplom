@@ -263,9 +263,9 @@ void SCBase::recursiveSpecialNodesCalc(int n, int i, int l, int r) {
 //                std::cout << frozen_[j];
 //            }
 //            std::cout << "\n";
-//            specialNodes_[n][i] = SPC;
-//            nodeList_.emplace_back(n, i);
-//            return;
+            specialNodes_[n][i] = SPC;
+            nodeList_.emplace_back(n, i);
+            return;
         }
         if (flagRate1) {
             specialNodes_[n][i] = RATE1;
