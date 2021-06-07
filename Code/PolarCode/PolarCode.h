@@ -28,11 +28,7 @@ public:
 
     int getK() const override;
 
-    Matrix getG() const override;
-
     std::map<int, std::vector<int>> getDynamicFrozen() const;
-
-    virtual Matrix getFullG() const;
 
     virtual std::vector<bool> getFrozen() const;
 
@@ -52,7 +48,6 @@ protected:
 
     int n_;
     int k_;
-    Matrix g_;
     std::vector<bool> frozen_;
     Matrix kernel_;
     Matrix rKernel_;

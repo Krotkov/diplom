@@ -88,7 +88,6 @@ SCBase::calculateL(const MessageG &message1, int n, int i, const Channel &channe
 
         //flip
         if (flips_[n][i][0]) {
-//            std::cout << "f: " << n << " " << i << "\n";
             ans.back() += 1;
         }
         return ans;
@@ -222,7 +221,6 @@ void SCBase::recursiveSpecialNodesCalc(int n, int i, int l, int r) {
         if (!frozen_[i]) {
             nodeList_.emplace_back(n, i);
         }
-//        nodeIndex_[l] = {n, i};
         return;
     }
 
@@ -258,11 +256,6 @@ void SCBase::recursiveSpecialNodesCalc(int n, int i, int l, int r) {
             return;
         }
         if (flagSpc) {
-//            std::cout << n << " " << i << " " << l << " " << r << "\n";
-//            for (int j = l; j < r; j++) {
-//                std::cout << frozen_[j];
-//            }
-//            std::cout << "\n";
             specialNodes_[n][i] = SPC;
             nodeList_.emplace_back(n, i);
             return;

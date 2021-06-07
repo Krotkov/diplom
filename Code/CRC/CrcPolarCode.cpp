@@ -12,10 +12,6 @@ int CrcPolarCode::getK() const {
     return polarCode_.getK() - m_;
 }
 
-Matrix CrcPolarCode::getG() const {
-    return polarCode_.getG();
-}
-
 CrcPolarCode::CrcPolarCode(int n, int k, int m) {
     polarCode_ = PolarCode(n, k + m, 0.5);
     createPolynom(m);

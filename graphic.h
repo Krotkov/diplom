@@ -51,7 +51,6 @@ std::vector<double> build_graphic(const Code &code, GausChannel &channel, const 
         std::vector<std::future<double>> results;
         results.reserve(threadCount);
         for (int j = 0; j < threadCount; j++) {
-//            auto decoder1 = decoder;
             results.push_back(std::async(build_graphic_step, std::cref(code), std::cref(channel), std::cref(decoder),
                                          calc_iter / threadCount, i, j));
         }

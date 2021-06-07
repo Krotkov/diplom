@@ -23,8 +23,6 @@ public:
 
     Matrix getKernel() const;
 
-    Matrix getG() const override;
-
     Message encode(const Message &message) const override;
 
     bool check(const Message &message) const;

@@ -15,20 +15,20 @@ class Viterbi : public Decoder {
 public:
     Viterbi() = default;
 
-    explicit Viterbi(const Matrix& matrix);
+    explicit Viterbi(const Matrix &matrix);
 
-    Viterbi(const Viterbi& viterbi);
+    Viterbi(const Viterbi &viterbi);
 
-    Viterbi& operator=(const Viterbi& other);
+    Viterbi &operator=(const Viterbi &other);
 
     Viterbi &operator=(Viterbi &&other) noexcept;
 
-    Message decode(const MessageG& message, const Channel& channel) const override;
+    Message decode(const MessageG &message, const Channel &channel) const override;
 
-    double calcLLr(const MessageG& message, const Channel& channel) const;
+    double calcLLr(const MessageG &message, const Channel &channel) const;
 
 private:
-    std::vector<std::vector<std::pair<double, int>>> count_dp(const MessageG& message, const Channel& channel) const;
+    std::vector<std::vector<std::pair<double, int>>> count_dp(const MessageG &message, const Channel &channel) const;
 
     void build_grid();
 

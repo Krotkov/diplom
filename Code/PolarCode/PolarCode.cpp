@@ -80,22 +80,6 @@ int PolarCode::getK() const {
     return k_;
 }
 
-Matrix PolarCode::getG() const {
-    Matrix ans(k_, n_);
-    int ind = 0;
-    for (int i = 0; i < n_; i++) {
-        if (!frozen_[i]) {
-            ans[ind] = g_[i];
-            ind++;
-        }
-    }
-    return ans;
-}
-
-Matrix PolarCode::getFullG() const {
-    return g_;
-}
-
 std::vector<bool> PolarCode::getFrozen() const {
     return frozen_;
 }
@@ -133,7 +117,6 @@ void PolarCode::constructCode(int n, int k) {
     k_ = k;
 
     auto b = calcBn(n, kernel_.getN());
-    g_ = dot(calcBn(n, kernel_.getN()), kronPower(kernel_, getLog(n, kernel_.getN())));
 }
 
 PolarCode::PolarCode(int n, int k, double err) {

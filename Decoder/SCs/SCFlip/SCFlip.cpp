@@ -5,9 +5,9 @@
 #include <cmath>
 #include <utils/utils.h>
 #include "SCFlip.h"
-#include "SCFlipViterbi.h"
 #include <set>
 #include <Decoder/SCs/SC/SC.h>
+#include <Decoder/SCs/SCViterbi/SCViterbi.h>
 
 SCFlip::SCFlip(const CrcPolarCode &code, double a, int iters, bool useSpecialNodes) {
     code_ = code;
@@ -37,54 +37,11 @@ Message SCFlip::decode(const MessageG &message, const Channel &channel) const {
         return cutCrc(firstTry);
     }
 
-    auto comparator = [](const std::pair<double, std::vector<NodeFlip>> &a,
-                         const std::pair<double, std::vector<NodeFlip>> &b) {
-        return a.first < b.first;
-    };
-    std::set<std::pair<double, std::vector<NodeFlip>>, decltype(comparator)> flips;
+    std::set<std::pair<double, std::vector<NodeFlip>>> flips;
     auto nodeList = sc_->getNodeList();
-    auto specialNodes = sc_->getSpecialNodes();
+    std::vector<NodeFlip> curFlips;
     for (int i = 0; i < nodeList.size(); i++) {
-        std::vector<NodeFlip> curFlips;
-        int curN = nodeList[i].first, curI = nodeList[i].second;
-        double ma;
-        if (specialNodes[curN][curI] == LEAF || specialNodes[curN][curI] == REP) {
-            curFlips.emplace_back(curN, curI);
-            ma = calcMa(curFlips, nodes_l, channel);
-            if (flips.size() < iters_) {
-                flips.insert({ma, curFlips});
-            } else if (flips.rbegin()->first > ma) {
-                flips.erase(--flips.end());
-                flips.insert({ma, curFlips});
-            }
-            curFlips.pop_back();
-        } else if (specialNodes[curN][curI] == RATE1) {
-            for (int j = 0; j < flips_[curN][curI].size(); j++) {
-                curFlips.emplace_back(curN, curI, j);
-                ma = calcMa(curFlips, nodes_l, channel);
-                if (flips.size() < iters_) {
-                    flips.insert({ma, curFlips});
-                } else if (flips.rbegin()->first > ma) {
-                    flips.erase(--flips.end());
-                    flips.insert({ma, curFlips});
-                }
-                curFlips.pop_back();
-            }
-        } else if (specialNodes[curN][curI] == SPC) {
-            for (int j = 0; j < flips_[curN][curI].size(); j++) {
-                for (int q = j + 1; q < flips_[curN][curI].size(); q++) {
-                    curFlips.emplace_back(curN, curI, j, q);
-                    ma = calcMa(curFlips, nodes_l, channel);
-                    if (flips.size() < iters_) {
-                        flips.insert({ma, curFlips});
-                    } else if (flips.rbegin()->first > ma) {
-                        flips.erase(--flips.end());
-                        flips.insert({ma, curFlips});
-                    }
-                    curFlips.pop_back();
-                }
-            }
-        }
+        tryInsertNode(nodeList[i], flips, curFlips, nodes_l, channel);
     }
 
     Message decodedRes;
@@ -113,59 +70,7 @@ Message SCFlip::decode(const MessageG &message, const Channel &channel) const {
         }
 
         for (int j = ind; j < nodeList.size(); j++) {
-            if (j == ind) {
-                if (specialNodes[nodeList[j].first][nodeList[j].second] == LEAF ||
-                    specialNodes[nodeList[j].first][nodeList[j].second] == REP) {
-                    continue;
-                }
-            }
-            double ma;
-            if (specialNodes[nodeList[j].first][nodeList[j].second] == LEAF ||
-                specialNodes[nodeList[j].first][nodeList[j].second] == REP) {
-                flip.emplace_back(nodeList[j].first, nodeList[j].second);
-                ma = calcMa(flip, nodes_l, channel);
-                if (flips.size() < iters_) {
-                    flips.insert({ma, flip});
-                } else if (flips.rbegin()->first > ma) {
-                    flips.erase(--flips.end());
-                    flips.insert({ma, flip});
-                }
-                flip.pop_back();
-            } else if (specialNodes[nodeList[j].first][nodeList[j].second] == RATE1) {
-                int minInd = 0;
-                if (j == ind) {
-                    minInd = flip.back().f1 + 1;
-                }
-                for (int q = minInd; q < flips_[nodeList[j].first][nodeList[j].second].size(); q++) {
-                    flip.emplace_back(nodeList[j].first, nodeList[j].second, q);
-                    ma = calcMa(flip, nodes_l, channel);
-                    if (flips.size() < iters_) {
-                        flips.insert({ma, flip});
-                    } else if (flips.rbegin()->first > ma) {
-                        flips.erase(--flips.end());
-                        flips.insert({ma, flip});
-                    }
-                    flip.pop_back();
-                }
-            } else if (specialNodes[nodeList[j].first][nodeList[j].second] == SPC) {
-                int minInd = 0;
-                if (j == ind) {
-                    minInd = flip.back().f2 + 1;
-                }
-                for (int q = minInd; q < flips_[nodeList[j].first][nodeList[j].second].size(); q++) {
-                    for (int w = q + 1; w < flips_[nodeList[j].first][nodeList[j].second].size(); w++) {
-                        flip.emplace_back(nodeList[j].first, nodeList[j].second, q, w);
-                        ma = calcMa(flip, nodes_l, channel);
-                        if (flips.size() < iters_) {
-                            flips.insert({ma, flip});
-                        } else if (flips.rbegin()->first > ma) {
-                            flips.erase(--flips.end());
-                            flips.insert({ma, flip});
-                        }
-                        flip.pop_back();
-                    }
-                }
-            }
+            tryInsertNode(nodeList[j], flips, flip, nodes_l, channel);
         }
         flips.erase(flips.begin());
         if (flips.empty()) {
@@ -335,3 +240,48 @@ double SCFlip::calcFa(double val) const {
     return std::log(1 + std::exp(-a_ * val)) / a_;
 }
 
+void SCFlip::tryInsertNode(const std::pair<int, int> &node, std::set<std::pair<double, std::vector<NodeFlip>>> &flips,
+                           std::vector<NodeFlip> &flip, std::vector<std::vector<MessageG>> &nodes_l_,
+                           const Channel &channel) const {
+    auto specialNodes = sc_->getSpecialNodes();
+    if ((specialNodes[node.first][node.second] == LEAF ||
+         specialNodes[node.first][node.second] == REP) && (flip.empty() ||
+        (flip.back().n != node.first || flip.back().i != node.second))) {
+        flip.emplace_back(node.first, node.second);
+        tryInsertFlip(flips, flip, nodes_l_, channel);
+        flip.pop_back();
+    } else if (specialNodes[node.first][node.second] == RATE1) {
+        int minInd = 0;
+        if (!flip.empty() && flip.back().n == node.first && flip.back().i == node.second) {
+            minInd = flip.back().f1 + 1;
+        }
+        for (int q = minInd; q < nodes_l_[node.first][node.second].size(); q++) {
+            flip.emplace_back(node.first, node.second, q);
+            tryInsertFlip(flips, flip, nodes_l_, channel);
+            flip.pop_back();
+        }
+    } else if (specialNodes[node.first][node.second] == SPC) {
+        int minInd = 0;
+        if (!flip.empty() && flip.back().n == node.first && flip.back().i == node.second) {
+            minInd = flip.back().f2 + 1;
+        }
+        for (int q = minInd; q < nodes_l_[node.first][node.second].size(); q++) {
+            for (int w = q + 1; w < nodes_l_[node.first][node.second].size(); w++) {
+                flip.emplace_back(node.first, node.second, q, w);
+                tryInsertFlip(flips, flip, nodes_l_, channel);
+                flip.pop_back();
+            }
+        }
+    }
+}
+
+void SCFlip::tryInsertFlip(std::set<std::pair<double, std::vector<NodeFlip>>> &flips, const std::vector<NodeFlip> &flip,
+                           std::vector<std::vector<MessageG>> &nodes_l_, const Channel &channel) const {
+    double ma = calcMa(flip, nodes_l_, channel);
+    if (flips.size() < iters_) {
+        flips.insert({ma, flip});
+    } else if (flips.rbegin()->first > ma) {
+        flips.erase(--flips.end());
+        flips.insert({ma, flip});
+    }
+}

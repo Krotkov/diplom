@@ -5,9 +5,7 @@
 #include <Decoder/SCs/SCViterbi/SCViterbi.h>
 #include <Code/CRC/CrcPolarCode.h>
 #include <Channel/PerfectGauss/PerfectGauss.h>
-#include <Decoder/SCs/SCFlip/SCFlipViterbi.h>
 #include <Decoder/SCs/SCFlip/SCFlip.h>
-#include <Decoder/SCs/Old/SCFlip1.h>
 #include "Channel/Gaus/GausChannel.h"
 #include "utils/utils.h"
 #include "Decoder/SCs/SC/SC.h"

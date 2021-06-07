@@ -8,6 +8,7 @@
 #include <Decoder/Decoder.h>
 #include <Decoder/SCs/SCBase.h>
 #include <Code/CRC/CrcPolarCode.h>
+#include <set>
 
 class SCFlip : public Decoder {
 public:
@@ -21,6 +22,17 @@ public:
     decodeStep(const MessageG &message, const Channel &channel, const std::vector<NodeFlip> &flip,
                std::vector<std::vector<MessageG>> &nodes_l_,
                std::vector<std::vector<std::vector<bool>>> &flips_) const;
+
+    void tryInsertNode(const std::pair<int, int> &node,
+                       std::set<std::pair<double, std::vector<NodeFlip>>> &flips,
+                       std::vector<NodeFlip> &flip,
+                       std::vector<std::vector<MessageG>> &nodes_l_,
+                       const Channel &channel) const;
+
+    void tryInsertFlip(std::set<std::pair<double, std::vector<NodeFlip>>> &flips,
+                       const std::vector<NodeFlip> &flip,
+                       std::vector<std::vector<MessageG>> &nodes_l_,
+                       const Channel &channel) const;
 
     double calcMa(const std::vector<NodeFlip> &flip,
                   std::vector<std::vector<MessageG>> &nodes_l_,

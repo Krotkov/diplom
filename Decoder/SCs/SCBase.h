@@ -13,6 +13,10 @@ struct NodeFlip {
     NodeFlip(int n_, int i_, int f1_ = -1, int f2_ = -1) : n(n_), i(i_), f1(f1_), f2(f2_) {};
     int n, i;
     int f1, f2;
+
+    bool operator<(const NodeFlip &other) const {
+        return n < other.n;
+    }
 };
 
 
@@ -29,7 +33,6 @@ public:
     virtual double
     calculateLStep(const MessageG &y, const Message &u, const Channel &channel) const = 0;
 
-//    std::vector<std::pair<int, int>> nodeIndex_;
     Matrix kernel_;
 public:
     void recursiveSpecialNodesCalc(int n, int i, int l, int r);
