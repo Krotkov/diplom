@@ -39,6 +39,7 @@ Matrix dot(const Matrix &a, const Matrix &b) {
     for (int i = 0; i < a.n_; i++) {
         for (int j = 0; j < b.k_; j++) {
             for (int q = 0; q < a.k_; q++) {
+                global_counter += 2;
                 ans[i][j] += a[i][q] * b[q][j];
             }
         }

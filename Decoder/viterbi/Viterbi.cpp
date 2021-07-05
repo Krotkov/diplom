@@ -84,8 +84,8 @@ void Viterbi::build_grid() {
 
     //make grid shape
     int openedNum = 0;
-    bool hasOneSymbolStr = false;
     for (int i = 0; i < matrix_.getK(); i++) {
+        bool hasOneSymbolStr = false;
         for (int j = 0; j < matrix_.getN(); j++) {
             int first = getFirst(matrix_[j]);
             if (first == i) {
@@ -94,9 +94,9 @@ void Viterbi::build_grid() {
             int last = getLast(matrix_[j]);
             if (last == i) {
                 openedNum--;
-            }
-            if (first == last) {
-                hasOneSymbolStr = true;
+                if (first == last) {
+                    hasOneSymbolStr = true;
+                }
             }
         }
         int layout_size = pow(2, openedNum + (hasOneSymbolStr ? 1 : 0));
@@ -241,6 +241,7 @@ Viterbi::count_dp(const MessageG &message, const Channel &channel) const {
                 dp[i + 1][grid_[i][j].next_1].first = dp[i][j].first + s1_value;
                 dp[i + 1][grid_[i][j].next_1].second = j;
             }
+            global_counter += 4;
         }
     }
     return dp;
@@ -248,7 +249,7 @@ Viterbi::count_dp(const MessageG &message, const Channel &channel) const {
 
 double Viterbi::calcLLr(const MessageG &message, const Channel &channel) const {
     auto dp = count_dp(message, channel);
-
+    global_counter += 1;
     if (dp.back().size() > 1) {
         return dp.back()[0].first - dp.back()[1].first;
     } else {

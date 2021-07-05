@@ -151,21 +151,29 @@ PolarCode::PolarCode(int n, int k, const Matrix &kernel, const Matrix &rKernel) 
 
     frozen_.resize(n, false);
     GausChannel channel(n, n, -3);
-    SCViterbi viterbi(*this);
+    SCViterbi viterbi(*this, false);
 
     auto z = viterbi.calcZ(channel, 10000);
 
     std::vector<std::pair<long double, int>> zz(n);
     for (int i = 0; i < n; i++) {
         zz[i] = {z[i], i};
+        std::cout << zz[i].first << " ";
     }
+    std::cout << "\n";
 
     std::sort(zz.begin(), zz.end());
     std::reverse(zz.begin(), zz.end());
 
+    std::cout << n << " " << k << "\n";
+    std::cout << "frozen: ";
     for (int i = 0; i < n - k; i++) {
         frozen_[zz[i].second] = true;
     }
+    for (int i = 0; i < n; i++) {
+        std::cout << frozen_[i];
+    }
+    std::cout << "\n";
 }
 
 PolarCode::PolarCode(int n, int k, const Matrix &kernel, const std::map<int, std::vector<int>> &dynamicFrozen) {

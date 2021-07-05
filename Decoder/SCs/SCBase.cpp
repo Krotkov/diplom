@@ -88,6 +88,7 @@ SCBase::calculateL(const MessageG &message1, int n, int i, const Channel &channe
 
         //flip
         if (flips_[n][i][0]) {
+            global_counter++;
             ans.back() += 1;
         }
         return ans;
@@ -96,6 +97,7 @@ SCBase::calculateL(const MessageG &message1, int n, int i, const Channel &channe
     if (specialNodes_[n][i] == REP) {
         double sum = 0;
         for (int j = 0; j < message.size(); j++) {
+            global_counter++;
             sum += message[j];
         }
 
@@ -130,8 +132,10 @@ SCBase::calculateL(const MessageG &message1, int n, int i, const Channel &channe
             if (std::abs(message[j]) < std::abs(message[minInd])) {
                 minInd = j;
             }
+            global_counter++;
             parity += ans[j];
         }
+        global_counter++;
         ans[minInd] += parity;
 
         return ans;
@@ -225,7 +229,9 @@ void SCBase::recursiveSpecialNodesCalc(int n, int i, int l, int r) {
     }
 
     bool flagRate0 = true, flagRep = true, flagSpc = true, flagRate1 = true;
+    std::cout << n << " " << i << "\n";
     for (int j = l; j < r; j++) {
+        std::cout << frozen_[j];
         if (!frozen_[j]) {
             flagRate0 = false;
         }
@@ -245,6 +251,7 @@ void SCBase::recursiveSpecialNodesCalc(int n, int i, int l, int r) {
             flagSpc = false;
         }
     }
+    std::cout << "\n";
     if (useSpecailNodes_) {
         if (flagRate0) {
             specialNodes_[n][i] = RATE0;
@@ -256,6 +263,7 @@ void SCBase::recursiveSpecialNodesCalc(int n, int i, int l, int r) {
             return;
         }
         if (flagSpc) {
+            std::cout << "SPC!!\n";
             specialNodes_[n][i] = SPC;
             nodeList_.emplace_back(n, i);
             return;

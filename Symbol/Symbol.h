@@ -2,6 +2,8 @@
 
 #include <ostream>
 
+inline int global_counter = 0;
+
 class Symbol {
 public:
     Symbol() : value_(0) {};

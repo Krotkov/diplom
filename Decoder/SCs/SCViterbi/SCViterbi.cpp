@@ -31,9 +31,11 @@ double SCViterbi::calculateLStep(const MessageG &y, const Message &u,
     MessageG cur_ys = ys;
 
     for (int j = 0; j < u.size(); j++) {
+        global_counter += 2;
         a += kernel_.getRow(j) * u[j].get();
     }
     for (int j = 0; j + 1 < ys.size(); j++) {
+        global_counter += 1;
         cur_ys[j] = ys[j] * (a[j] == 1 ? -1 : 1);
     }
 

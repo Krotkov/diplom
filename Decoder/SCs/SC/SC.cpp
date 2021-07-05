@@ -12,7 +12,7 @@ SC::SC(const PolarCode &code, bool useSpecialNodes) : SCBase(code, useSpecialNod
 double
 SC::calculateLStep(const MessageG &y, const Message &u, const Channel &channel) const {
     double value1 = y[1], value2 = y[0];
-
+    global_counter += 1;
     if (u.size() % 2 == 0) {
         double value = std::min(std::abs(value1), std::abs(value2));
         return (value1 * value2 > 0) ? value : -value;

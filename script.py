@@ -62,22 +62,22 @@ b6 = [0.21683,0.14358,0.08525,0.04775,0.02497,0.01212,0.00538,0.00265,0.00112,0.
 # b4 = [0.327,0.2356,0.1611,0.1029,0.0617,0.0338,0.0179,0.0092,0.0051,0.0015,0.0011,0.0006]
 
 line1, = plt.plot(a, b1)
-line1.set_label('(256, 128), SC')
+line1.set_label('(256, 128), Arikan kernel, SC')
 
 line2, = plt.plot(a, b2)
-line2.set_label('(256, 128+10), SCFlip T = 10')
+line2.set_label('(256, 128+10), Arikan kernel, FastSCFlip T = 10')
 
-line3, = plt.plot(a, b3)
-line3.set_label('(256, 128+10), SCFlip T = 50')
+# line3, = plt.plot(a, b3)
+# line3.set_label('(256, 128+10), Arikan kernel, FastSCFlip T = 50')
 
 line4, = plt.plot(a, b4)
 line4.set_label('(256, 128+10), 16x16 kernel, SC')
 
-line5, = plt.plot(a, b5)
-line5.set_label('(256, 128+10), 16x16 kernel, SCFlip T = 10')
+# line5, = plt.plot(a, b5)
+# line5.set_label('(256, 128+10), 16x16 kernel, FastSCFlip T = 10')
 
-line6, = plt.plot(a, b6)
-line6.set_label('(256, 128+10), 16x16 kernel, SCFlip T = 50')
+# line6, = plt.plot(a, b6)
+# line6.set_label('(256, 128+10), 16x16 kernel, FastSCFlip T = 50')
 
 # line7, = plt.plot(a, b52)
 # line7.set_label('(256, 128+10), 16x16 kernel, FastSCFlip T = 10')
